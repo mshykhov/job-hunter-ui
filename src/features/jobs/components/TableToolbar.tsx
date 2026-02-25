@@ -1,5 +1,5 @@
-import { Button, Flex, Tooltip, Typography } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
+import { Button, Flex, Popconfirm, Tooltip, Typography } from "antd";
+import { ReloadOutlined, SyncOutlined } from "@ant-design/icons";
 import type {
   TableSettings as TableSettingsType,
   ColumnKey,
@@ -12,6 +12,8 @@ interface TableToolbarProps {
   isFetching: boolean;
   dataUpdatedAt: number;
   onRefresh: () => void;
+  onRematch: () => void;
+  rematchLoading: boolean;
   settings: TableSettingsType;
   onToggleColumn: (key: ColumnKey) => void;
   onRefreshChange: (interval: number) => void;
@@ -23,6 +25,8 @@ export const TableToolbar = ({
   isFetching,
   dataUpdatedAt,
   onRefresh,
+  onRematch,
+  rematchLoading,
   settings,
   onToggleColumn,
   onRefreshChange,
@@ -36,6 +40,21 @@ export const TableToolbar = ({
         {total} jobs {lastUpdated && `\u00B7 Updated ${lastUpdated}`}
       </Typography.Text>
       <Flex align="center" gap={2}>
+        <Popconfirm
+          title="Re-match all jobs?"
+          description="This will reset matched jobs and re-run AI evaluation."
+          onConfirm={onRematch}
+          okText="Rematch"
+        >
+          <Tooltip title="Re-match jobs">
+            <Button
+              type="text"
+              size="small"
+              icon={<SyncOutlined spin={rematchLoading} />}
+              loading={rematchLoading}
+            />
+          </Tooltip>
+        </Popconfirm>
         <Tooltip title="Refresh">
           <Button
             type="text"

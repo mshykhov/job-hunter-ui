@@ -3,6 +3,7 @@ import { Flex, Typography } from "antd";
 import type { Job, UserJobStatus } from "../types";
 import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
+import { useRematch } from "../hooks/useRematch";
 import { useJobFilters } from "../hooks/useJobFilters";
 import { useTableSettings } from "../hooks/useTableSettings";
 import { useResizablePanel } from "../hooks/useResizablePanel";
@@ -28,6 +29,7 @@ export const JobsPage = () => {
   } = useJobs(filters, settings.refreshInterval);
 
   const statusMutation = useJobStatus();
+  const rematchMutation = useRematch();
   const filteredJobs = filterJobsLocally(jobs, filters);
 
   const handleSelect = (job: Job) => {
@@ -58,6 +60,8 @@ export const JobsPage = () => {
             isFetching={isFetching}
             dataUpdatedAt={dataUpdatedAt}
             onRefresh={() => refetch()}
+            onRematch={() => rematchMutation.mutate(undefined)}
+            rematchLoading={rematchMutation.isPending}
             settings={settings}
             onToggleColumn={toggleColumn}
             onRefreshChange={setRefreshInterval}
