@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Flex, Typography } from "antd";
-import type { Job, JobFilters as JobFiltersType, UserJobStatus } from "../types";
+import type { Job, UserJobStatus } from "../types";
 import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
+import { useJobFilters } from "../hooks/useJobFilters";
 import { useTableSettings } from "../hooks/useTableSettings";
 import { JobFilters } from "./JobFilters";
 import { JobTable } from "./JobTable";
@@ -10,7 +11,7 @@ import { JobSidePanel } from "./JobSidePanel";
 import { TableToolbar } from "./TableToolbar";
 
 export const JobsPage = () => {
-  const [filters, setFilters] = useState<JobFiltersType>({});
+  const { filters, setFilters } = useJobFilters();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const { settings, toggleColumn, setRefreshInterval, setDensity } = useTableSettings();
