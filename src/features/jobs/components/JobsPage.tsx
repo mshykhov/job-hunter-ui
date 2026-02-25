@@ -5,9 +5,10 @@ import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
 import { useJobFilters } from "../hooks/useJobFilters";
 import { useTableSettings } from "../hooks/useTableSettings";
+import { useResizablePanel } from "../hooks/useResizablePanel";
 import { JobFilters } from "./JobFilters";
 import { JobTable } from "./JobTable";
-import { JobSidePanel } from "./JobSidePanel";
+import { JobDetailPanel } from "./JobDetailPanel";
 import { TableToolbar } from "./TableToolbar";
 
 export const JobsPage = () => {
@@ -15,6 +16,7 @@ export const JobsPage = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const { settings, toggleColumn, setRefreshInterval, setDensity } = useTableSettings();
+  const { width: panelWidth, onDragStart } = useResizablePanel();
 
   const {
     data: jobs = [],
@@ -38,7 +40,7 @@ export const JobsPage = () => {
         onSuccess: (updated) => {
           if (selectedJob?.jobId === updated.jobId) setSelectedJob(updated);
         },
-      }
+      },
     );
   };
 
@@ -48,8 +50,8 @@ export const JobsPage = () => {
         Jobs
       </Typography.Title>
       <JobFilters filters={filters} onChange={setFilters} />
-      <Flex gap={16}>
-        <div style={{ flex: 1, minWidth: 0 }}>
+      <Flex style={{ height: "calc(100vh - 200px)" }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: "auto" }}>
           <TableToolbar
             total={filteredJobs.length}
             isFetching={isFetching}
@@ -70,19 +72,23 @@ export const JobsPage = () => {
           />
         </div>
         {selectedJob && (
-          <div
-            style={{
-              width: 360,
-              flexShrink: 0,
-              borderLeft: "1px solid var(--ant-color-border-secondary, #2A2A2E)",
-            }}
-          >
-            <JobSidePanel
-              job={selectedJob}
-              onStatusChange={handleStatusChange}
-              loading={statusMutation.isPending}
-            />
-          </div>
+          <>
+            <div className="resize-handle" onMouseDown={onDragStart} />
+            <div
+              style={{
+                width: panelWidth,
+                flexShrink: 0,
+                overflow: "hidden",
+              }}
+            >
+              <JobDetailPanel
+                job={selectedJob}
+                onClose={() => setSelectedJob(null)}
+                onStatusChange={handleStatusChange}
+                statusLoading={statusMutation.isPending}
+              />
+            </div>
+          </>
         )}
       </Flex>
     </Flex>

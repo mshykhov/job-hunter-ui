@@ -31,6 +31,11 @@ export interface Job {
   matchedAt: string | null;
 }
 
+export interface JobDetail extends Job {
+  description: string;
+  aiReasoning: string | null;
+}
+
 export interface JobFilters {
   status?: UserJobStatus;
   source?: JobSource;
