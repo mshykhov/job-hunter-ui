@@ -1,9 +1,12 @@
+import { useMemo } from "react";
 import { Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import type { Job } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS } from "../constants";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
+import { DEFAULT_COLUMN_WIDTHS } from "../hooks/useTableSettings";
+import { ResizableHeaderCell } from "./ResizableHeaderCell";
 
 interface JobTableProps {
   jobs: Job[];
@@ -11,6 +14,8 @@ interface JobTableProps {
   selectedJobId: string | null;
   onSelect: (job: Job) => void;
   visibleColumns: ColumnKey[];
+  columnWidths: Record<ColumnKey, number>;
+  onColumnResize: (key: ColumnKey, width: number) => void;
   density: TableDensity;
 }
 
@@ -25,13 +30,12 @@ const formatRelativeDate = (dateStr: string | null): string => {
   return new Date(dateStr).toLocaleDateString();
 };
 
-const ALL_COLUMNS: ColumnsType<Job> = [
+const BASE_COLUMNS: ColumnsType<Job> = [
   {
     key: "title",
     title: "Title",
     dataIndex: "title",
     ellipsis: true,
-    width: "25%",
     render: (title: string) => <strong>{title}</strong>,
   },
   {
@@ -39,21 +43,18 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     title: "Company",
     dataIndex: "company",
     ellipsis: true,
-    width: "15%",
     render: (company: string | null) => company ?? "\u2014",
   },
   {
     key: "source",
     title: "Source",
     dataIndex: "source",
-    width: 90,
     render: (source: Job["source"]) => <Tag color={SOURCE_COLORS[source]}>{source}</Tag>,
   },
   {
     key: "salary",
     title: "Salary",
     dataIndex: "salary",
-    width: 120,
     render: (salary: string | null) => salary ?? "\u2014",
   },
   {
@@ -61,14 +62,12 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     title: "Location",
     dataIndex: "location",
     ellipsis: true,
-    width: 120,
     render: (location: string | null) => location ?? "\u2014",
   },
   {
     key: "remote",
     title: "Remote",
     dataIndex: "remote",
-    width: 70,
     align: "center",
     render: (remote: boolean) =>
       remote ? <CheckCircleOutlined style={{ color: "#52c41a" }} /> : null,
@@ -77,7 +76,6 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     key: "status",
     title: "Status",
     dataIndex: "status",
-    width: 100,
     render: (status: Job["status"]) => (
       <Tag color={STATUS_COLORS[status]}>{STATUS_LABELS[status]}</Tag>
     ),
@@ -86,7 +84,6 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     key: "publishedAt",
     title: "Published",
     dataIndex: "publishedAt",
-    width: 100,
     sorter: (a, b) => (a.publishedAt ?? "").localeCompare(b.publishedAt ?? ""),
     showSorterTooltip: false,
     render: formatRelativeDate,
@@ -95,7 +92,6 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     key: "matchedAt",
     title: "Matched",
     dataIndex: "matchedAt",
-    width: 100,
     sorter: (a, b) => (a.matchedAt ?? "").localeCompare(b.matchedAt ?? ""),
     showSorterTooltip: false,
     render: formatRelativeDate,
@@ -108,9 +104,25 @@ export const JobTable = ({
   selectedJobId,
   onSelect,
   visibleColumns,
+  columnWidths,
+  onColumnResize,
   density,
 }: JobTableProps) => {
-  const columns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey));
+  const columns = useMemo(
+    () =>
+      BASE_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey)).map((col) => {
+        const key = col.key as ColumnKey;
+        return {
+          ...col,
+          width: columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key],
+          onHeaderCell: () => ({
+            width: columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key],
+            onResize: (w: number) => onColumnResize(key, w),
+          }),
+        };
+      }),
+    [visibleColumns, columnWidths, onColumnResize],
+  );
 
   return (
     <Table<Job>
@@ -119,6 +131,7 @@ export const JobTable = ({
       loading={loading}
       rowKey="id"
       size={density}
+      components={{ header: { cell: ResizableHeaderCell } }}
       pagination={{
         pageSize: 25,
         showSizeChanger: true,
@@ -128,7 +141,8 @@ export const JobTable = ({
         onClick: () => onSelect(record),
         style: {
           cursor: "pointer",
-          borderLeft: record.id === selectedJobId ? "3px solid #4F46E5" : "3px solid transparent",
+          borderLeft:
+            record.id === selectedJobId ? "3px solid #4F46E5" : "3px solid transparent",
         },
       })}
     />

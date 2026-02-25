@@ -15,7 +15,8 @@ export const JobsPage = () => {
   const { filters, setFilters } = useJobFilters();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const { settings, toggleColumn, setRefreshInterval, setDensity } = useTableSettings();
+  const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity } =
+    useTableSettings();
   const { width: panelWidth, onDragStart } = useResizablePanel();
 
   const {
@@ -68,6 +69,8 @@ export const JobsPage = () => {
             selectedJobId={selectedJob?.id ?? null}
             onSelect={handleSelect}
             visibleColumns={settings.visibleColumns}
+            columnWidths={settings.columnWidths}
+            onColumnResize={setColumnWidth}
             density={settings.density}
           />
         </div>

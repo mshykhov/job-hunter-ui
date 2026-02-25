@@ -1,17 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
+import { createStorage } from "@/lib/storage";
 
-const SIDEBAR_KEY = "job-hunter-sidebar-collapsed";
+interface SidebarState {
+  collapsed: boolean;
+}
 
-const loadCollapsed = (): boolean => {
-  try {
-    return localStorage.getItem(SIDEBAR_KEY) === "true";
-  } catch {
-    return false;
-  }
-};
+const storage = createStorage<SidebarState>("job-hunter-sidebar", 1, { collapsed: false });
 
 interface AppLayoutProps {
   isDark: boolean;
@@ -19,11 +16,14 @@ interface AppLayoutProps {
 }
 
 export const AppLayout = ({ isDark, onThemeToggle }: AppLayoutProps) => {
-  const [collapsed, setCollapsed] = useState(loadCollapsed);
+  const [collapsed, setCollapsed] = useState(() => storage.load().collapsed);
+
+  useEffect(() => {
+    storage.save({ collapsed });
+  }, [collapsed]);
 
   const handleCollapse = useCallback((value: boolean) => {
     setCollapsed(value);
-    localStorage.setItem(SIDEBAR_KEY, String(value));
   }, []);
 
   return (

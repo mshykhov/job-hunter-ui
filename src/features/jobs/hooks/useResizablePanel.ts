@@ -1,23 +1,20 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { createStorage } from "@/lib/storage";
 
-const STORAGE_KEY = "job-hunter-detail-panel-width";
-const DEFAULT_WIDTH = 480;
+interface PanelState {
+  width: number;
+}
+
 const MIN_WIDTH = 350;
 const MAX_WIDTH = 800;
 
-const loadWidth = (): number => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return DEFAULT_WIDTH;
-    const width = Number(stored);
-    return width >= MIN_WIDTH && width <= MAX_WIDTH ? width : DEFAULT_WIDTH;
-  } catch {
-    return DEFAULT_WIDTH;
-  }
-};
+const storage = createStorage<PanelState>("job-hunter-detail-panel", 1, { width: 480 });
 
 export const useResizablePanel = () => {
-  const [width, setWidth] = useState(loadWidth);
+  const [width, setWidth] = useState(() => {
+    const { width: w } = storage.load();
+    return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, w));
+  });
   const isDragging = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
@@ -47,7 +44,6 @@ export const useResizablePanel = () => {
       isDragging.current = false;
       document.body.style.cursor = "";
       document.body.style.userSelect = "";
-      localStorage.setItem(STORAGE_KEY, String(startWidth.current));
     };
 
     document.addEventListener("mousemove", onMouseMove);
@@ -59,7 +55,7 @@ export const useResizablePanel = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, String(width));
+    storage.save({ width });
   }, [width]);
 
   return { width, onDragStart };

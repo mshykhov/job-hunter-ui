@@ -41,6 +41,23 @@ body {
   background: var(--ant-color-primary, #4f46e5);
 }
 
+/* Column resize handle */
+.column-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.column-resize-handle:hover,
+.column-resize-handle:active {
+  background: var(--ant-color-primary, #4f46e5);
+  opacity: 0.5;
+}
+
 /* Job description HTML content */
 .job-description {
   font-size: 13px;

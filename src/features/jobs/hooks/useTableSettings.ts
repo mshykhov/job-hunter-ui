@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-
-const STORAGE_KEY = "job-hunter-table-settings";
+import { createStorage } from "@/lib/storage";
 
 export const COLUMN_KEYS = [
   "title",
@@ -28,6 +27,18 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
   matchedAt: "Matched",
 };
 
+export const DEFAULT_COLUMN_WIDTHS: Record<ColumnKey, number> = {
+  title: 260,
+  company: 160,
+  source: 90,
+  salary: 120,
+  location: 120,
+  remote: 70,
+  status: 100,
+  publishedAt: 100,
+  matchedAt: 100,
+};
+
 const ALWAYS_VISIBLE: ColumnKey[] = ["title"];
 
 export const REFRESH_OPTIONS = [
@@ -42,31 +53,25 @@ export type TableDensity = "small" | "middle";
 
 export interface TableSettings {
   visibleColumns: ColumnKey[];
+  columnWidths: Record<ColumnKey, number>;
   refreshInterval: number;
   density: TableDensity;
 }
 
 const DEFAULT_SETTINGS: TableSettings = {
   visibleColumns: [...COLUMN_KEYS],
+  columnWidths: { ...DEFAULT_COLUMN_WIDTHS },
   refreshInterval: 60_000,
   density: "small",
 };
 
-const loadSettings = (): TableSettings => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
-};
+const storage = createStorage<TableSettings>("job-hunter-table-settings", 2, DEFAULT_SETTINGS);
 
 export const useTableSettings = () => {
-  const [settings, setSettings] = useState<TableSettings>(loadSettings);
+  const [settings, setSettings] = useState<TableSettings>(storage.load);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    storage.save(settings);
   }, [settings]);
 
   const toggleColumn = useCallback((key: ColumnKey) => {
@@ -79,6 +84,13 @@ export const useTableSettings = () => {
     });
   }, []);
 
+  const setColumnWidth = useCallback((key: ColumnKey, width: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      columnWidths: { ...prev.columnWidths, [key]: width },
+    }));
+  }, []);
+
   const setRefreshInterval = useCallback((refreshInterval: number) => {
     setSettings((prev) => ({ ...prev, refreshInterval }));
   }, []);
@@ -87,5 +99,5 @@ export const useTableSettings = () => {
     setSettings((prev) => ({ ...prev, density }));
   }, []);
 
-  return { settings, toggleColumn, setRefreshInterval, setDensity };
+  return { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity };
 };
