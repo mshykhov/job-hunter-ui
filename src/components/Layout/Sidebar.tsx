@@ -74,10 +74,18 @@ export const Sidebar = ({
             justify={collapsed ? "center" : "space-between"}
             style={{ padding: "0 16px", marginBottom: 24 }}
           >
-            <Flex align="center" gap={8}>
-              <AimOutlined style={{ fontSize: 20, color: token.colorPrimary }} />
+            <Flex align="center" gap={10}>
+              <AimOutlined style={{ fontSize: 22, color: token.colorPrimary }} />
               {!collapsed && (
-                <span style={{ fontSize: 16, fontWeight: 600, whiteSpace: "nowrap" }}>
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                    color: token.colorText,
+                    letterSpacing: -0.3,
+                  }}
+                >
                   Job Hunter
                 </span>
               )}
