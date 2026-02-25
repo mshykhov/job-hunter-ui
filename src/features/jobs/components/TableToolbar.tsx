@@ -21,17 +21,15 @@ interface TableToolbarProps {
   onDensityChange: (density: TableDensity) => void;
 }
 
-type RematchPeriod = "24h" | "week" | "month" | "all";
+type RematchPeriod = "24h" | "week" | "month";
 
 const PERIOD_LABELS: Record<RematchPeriod, string> = {
   "24h": "Last 24 hours",
   week: "Last week",
   month: "Last month",
-  all: "All time",
 };
 
-const periodToSince = (period: RematchPeriod): string | undefined => {
-  if (period === "all") return undefined;
+const periodToSince = (period: RematchPeriod): string => {
   const now = new Date();
   const ms = { "24h": 86400000, week: 604800000, month: 2592000000 }[period];
   return new Date(now.getTime() - ms).toISOString();
