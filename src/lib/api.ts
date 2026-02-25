@@ -46,5 +46,6 @@ export const API_PATHS = {
   JOB_STATUS: (jobId: string) => `/jobs/${jobId}/status`,
   CRITERIA: "/criteria",
   PREFERENCES: "/preferences",
+  PREFERENCES_NORMALIZE: "/preferences/normalize",
   HEALTH: "/actuator/health",
 } as const;
