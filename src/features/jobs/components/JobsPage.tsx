@@ -60,7 +60,7 @@ export const JobsPage = () => {
             isFetching={isFetching}
             dataUpdatedAt={dataUpdatedAt}
             onRefresh={() => refetch()}
-            onRematch={() => rematchMutation.mutate(undefined)}
+            onRematch={(since) => rematchMutation.mutate(since)}
             rematchLoading={rematchMutation.isPending}
             settings={settings}
             onToggleColumn={toggleColumn}
