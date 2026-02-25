@@ -88,6 +88,7 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     dataIndex: "publishedAt",
     width: 100,
     sorter: (a, b) => (a.publishedAt ?? "").localeCompare(b.publishedAt ?? ""),
+    showSorterTooltip: false,
     render: formatRelativeDate,
   },
   {
@@ -96,6 +97,7 @@ const ALL_COLUMNS: ColumnsType<Job> = [
     dataIndex: "matchedAt",
     width: 100,
     sorter: (a, b) => (a.matchedAt ?? "").localeCompare(b.matchedAt ?? ""),
+    showSorterTooltip: false,
     render: formatRelativeDate,
   },
 ];
