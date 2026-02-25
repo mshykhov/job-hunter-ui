@@ -5,7 +5,7 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import type { Job } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS } from "../constants";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
-import { DEFAULT_COLUMN_WIDTHS } from "../hooks/useTableSettings";
+import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
 import { ResizableHeaderCell } from "./ResizableHeaderCell";
 
 interface JobTableProps {
@@ -14,9 +14,10 @@ interface JobTableProps {
   selectedJobId: string | null;
   onSelect: (job: Job) => void;
   visibleColumns: ColumnKey[];
-  columnWidths: Record<ColumnKey, number>;
+  columnWidths: Partial<Record<ColumnKey, number>>;
   onColumnResize: (key: ColumnKey, width: number) => void;
   density: TableDensity;
+  flexColumn: ColumnKey;
 }
 
 const formatRelativeDate = (dateStr: string | null): string => {
@@ -107,25 +108,39 @@ export const JobTable = ({
   columnWidths,
   onColumnResize,
   density,
+  flexColumn,
 }: JobTableProps) => {
   const columns = useMemo(
     () =>
-      BASE_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey)).map(
-        (col) => {
-          const key = col.key as ColumnKey;
-          const w = columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key];
-          const isFlex = !w;
-          return {
-            ...col,
-            width: isFlex ? undefined : w,
-            onHeaderCell: () => ({
-              width: isFlex ? 0 : w,
-              onResize: isFlex ? undefined : (nw: number) => onColumnResize(key, nw),
-            }),
-          };
-        },
-      ),
-    [visibleColumns, columnWidths, onColumnResize],
+      BASE_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey)).map((col) => {
+        const key = col.key as ColumnKey;
+        const isFlex = key === flexColumn;
+        const userWidth = columnWidths[key];
+        const minW = MIN_COLUMN_WIDTHS[key];
+
+        return {
+          ...col,
+          ...(isFlex
+            ? { minWidth: minW }
+            : userWidth
+              ? { width: userWidth, minWidth: minW }
+              : { width: minW, minWidth: minW }),
+          onHeaderCell: () => ({
+            width: isFlex ? 0 : (userWidth ?? minW),
+            onResize: isFlex ? undefined : (nw: number) => onColumnResize(key, nw),
+          }),
+        };
+      }),
+    [visibleColumns, columnWidths, onColumnResize, flexColumn],
+  );
+
+  const scrollX = useMemo(
+    () =>
+      visibleColumns.reduce((sum, key) => {
+        const userWidth = columnWidths[key];
+        return sum + (userWidth ?? MIN_COLUMN_WIDTHS[key]);
+      }, 0),
+    [visibleColumns, columnWidths],
   );
 
   return (
@@ -135,6 +150,7 @@ export const JobTable = ({
       loading={loading}
       rowKey="id"
       size={density}
+      scroll={{ x: scrollX }}
       components={{ header: { cell: ResizableHeaderCell } }}
       pagination={{
         pageSize: 25,

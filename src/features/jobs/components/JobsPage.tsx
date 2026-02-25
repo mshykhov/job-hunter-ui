@@ -16,7 +16,7 @@ export const JobsPage = () => {
   const { filters, setFilters } = useJobFilters();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity } =
+  const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, FLEX_COLUMN } =
     useTableSettings();
   const { width: panelWidth, onDragStart } = useResizablePanel();
 
@@ -76,6 +76,7 @@ export const JobsPage = () => {
             columnWidths={settings.columnWidths}
             onColumnResize={setColumnWidth}
             density={settings.density}
+            flexColumn={FLEX_COLUMN}
           />
         </div>
         {selectedJob && (

@@ -27,17 +27,19 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
   matchedAt: "Matched",
 };
 
-export const DEFAULT_COLUMN_WIDTHS: Record<ColumnKey, number> = {
-  title: 0,
-  company: 120,
-  source: 70,
-  salary: 90,
+export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
+  title: 150,
+  company: 100,
+  source: 80,
+  salary: 80,
   location: 100,
-  remote: 50,
+  remote: 70,
   status: 80,
-  publishedAt: 80,
-  matchedAt: 80,
+  publishedAt: 100,
+  matchedAt: 95,
 };
+
+const FLEX_COLUMN: ColumnKey = "title";
 
 const ALWAYS_VISIBLE: ColumnKey[] = ["title"];
 
@@ -53,19 +55,19 @@ export type TableDensity = "small" | "middle";
 
 export interface TableSettings {
   visibleColumns: ColumnKey[];
-  columnWidths: Record<ColumnKey, number>;
+  columnWidths: Partial<Record<ColumnKey, number>>;
   refreshInterval: number;
   density: TableDensity;
 }
 
 const DEFAULT_SETTINGS: TableSettings = {
   visibleColumns: [...COLUMN_KEYS],
-  columnWidths: { ...DEFAULT_COLUMN_WIDTHS },
+  columnWidths: {},
   refreshInterval: 60_000,
   density: "small",
 };
 
-const storage = createStorage<TableSettings>("job-hunter-table-settings", 3, DEFAULT_SETTINGS);
+const storage = createStorage<TableSettings>("job-hunter-table-settings", 5, DEFAULT_SETTINGS);
 
 export const useTableSettings = () => {
   const [settings, setSettings] = useState<TableSettings>(storage.load);
@@ -99,5 +101,5 @@ export const useTableSettings = () => {
     setSettings((prev) => ({ ...prev, density }));
   }, []);
 
-  return { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity };
+  return { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, FLEX_COLUMN };
 };
