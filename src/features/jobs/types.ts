@@ -1,7 +1,6 @@
 export const JOB_SOURCE = {
   DOU: "dou",
   DJINNI: "djinni",
-  INDEED: "indeed",
   LINKEDIN: "linkedin",
 } as const;
 
@@ -41,4 +40,5 @@ export interface JobFilters {
   source?: JobSource;
   search?: string;
   remote?: boolean;
+  minScore?: number;
 }

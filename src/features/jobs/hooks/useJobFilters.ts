@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import type { JobFilters, JobSource, UserJobStatus } from "../types";
 import { JOB_SOURCE, USER_JOB_STATUS } from "../types";
 
-const PARAM_KEYS = ["source", "status", "search", "remote"] as const;
+const PARAM_KEYS = ["source", "status", "search", "remote", "minScore"] as const;
 
 const SOURCE_VALUES = new Set<string>(Object.values(JOB_SOURCE));
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
@@ -21,6 +21,12 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
   if (search) filters.search = search;
 
   if (params.get("remote") === "true") filters.remote = true;
+
+  const minScore = params.get("minScore");
+  if (minScore != null) {
+    const parsed = Number(minScore);
+    if (!Number.isNaN(parsed)) filters.minScore = parsed;
+  }
 
   return filters;
 };
@@ -40,6 +46,7 @@ export const useJobFilters = () => {
           if (next.status) params.set("status", next.status);
           if (next.search) params.set("search", next.search);
           if (next.remote) params.set("remote", "true");
+          if (next.minScore != null) params.set("minScore", String(next.minScore));
 
           return params;
         },

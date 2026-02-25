@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Flex, Skeleton, Typography } from "antd";
 import {
   usePreferences,
@@ -14,7 +15,8 @@ const EMPTY_PREFERENCES: Preferences = {
   keywords: [],
   excludedKeywords: [],
   remoteOnly: false,
-  enabledSources: [],
+  disabledSources: [],
+  minScore: 50,
   notificationsEnabled: true,
 };
 
@@ -22,6 +24,19 @@ export const SettingsPage = () => {
   const { data: preferences, isLoading } = usePreferences();
   const saveMutation = useSavePreferences();
   const normalizeMutation = useNormalizePreferences();
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!saved) return;
+    const timer = setTimeout(() => setSaved(false), 2500);
+    return () => clearTimeout(timer);
+  }, [saved]);
+
+  const handleSave = (p: Preferences) => {
+    saveMutation.mutate(p, {
+      onSuccess: () => setSaved(true),
+    });
+  };
 
   return (
     <Flex vertical gap={16}>
@@ -33,9 +48,10 @@ export const SettingsPage = () => {
       ) : (
         <PreferencesForm
           initial={preferences ?? EMPTY_PREFERENCES}
-          onSave={(p) => saveMutation.mutate(p)}
+          onSave={handleSave}
           onNormalize={(raw) => normalizeMutation.mutate(raw)}
           saving={saveMutation.isPending}
+          saved={saved}
           normalizing={normalizeMutation.isPending}
           normalizedResult={normalizeMutation.data ?? null}
         />

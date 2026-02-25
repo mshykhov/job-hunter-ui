@@ -7,6 +7,7 @@ export interface Preferences {
   keywords: string[];
   excludedKeywords: string[];
   remoteOnly: boolean;
-  enabledSources: JobSource[];
+  disabledSources: JobSource[];
+  minScore: number;
   notificationsEnabled: boolean;
 }

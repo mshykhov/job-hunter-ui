@@ -1,4 +1,4 @@
-import { Flex, Select, Input, Switch, Typography } from "antd";
+import { Flex, Select, Input, InputNumber, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { JOB_SOURCE } from "../types";
 import { STATUS_LABELS } from "../constants";
@@ -56,6 +56,20 @@ export const JobFilters = ({ filters, onChange }: JobFiltersProps) => {
         value={filters.search}
         onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
       />
+      <Flex align="center" gap={6}>
+        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+          Min score
+        </Typography.Text>
+        <InputNumber
+          size="small"
+          min={0}
+          max={100}
+          step={5}
+          style={{ width: 70 }}
+          value={filters.minScore}
+          onChange={(v) => onChange({ ...filters, minScore: v ?? undefined })}
+        />
+      </Flex>
     </Flex>
   );
 };

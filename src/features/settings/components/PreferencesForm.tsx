@@ -1,6 +1,22 @@
-import { useState, useEffect } from "react";
-import { Button, Card, Checkbox, Col, Flex, Input, Row, Switch, Typography } from "antd";
-import { RobotOutlined, SaveOutlined } from "@ant-design/icons";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  Flex,
+  Input,
+  Row,
+  Slider,
+  Switch,
+  Typography,
+} from "antd";
+import {
+  CheckOutlined,
+  RobotOutlined,
+  SaveOutlined,
+  UndoOutlined,
+} from "@ant-design/icons";
 import { JOB_SOURCE } from "@/features/jobs/types";
 import type { JobSource } from "@/features/jobs/types";
 import type { Preferences } from "../types";
@@ -11,6 +27,7 @@ interface PreferencesFormProps {
   onSave: (preferences: Preferences) => void;
   onNormalize: (rawInput: string) => void;
   saving: boolean;
+  saved: boolean;
   normalizing: boolean;
   normalizedResult: Preferences | null;
 }
@@ -25,6 +42,7 @@ export const PreferencesForm = ({
   onSave,
   onNormalize,
   saving,
+  saved,
   normalizing,
   normalizedResult,
 }: PreferencesFormProps) => {
@@ -45,6 +63,11 @@ export const PreferencesForm = ({
       remoteOnly: normalizedResult.remoteOnly,
     }));
   }, [normalizedResult]);
+
+  const isDirty = useMemo(
+    () => JSON.stringify(form) !== JSON.stringify(initial),
+    [form, initial],
+  );
 
   const update = <K extends keyof Preferences>(key: K, value: Preferences[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -132,17 +155,32 @@ export const PreferencesForm = ({
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card size="small" title="Sources" style={{ height: "100%" }}>
+          <Card size="small" title="Disabled Sources" style={{ height: "100%" }}>
+            <Typography.Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 8 }}>
+              Sources to exclude from job matching
+            </Typography.Text>
             <Checkbox.Group
-              value={form.enabledSources}
-              onChange={(v) => update("enabledSources", v as JobSource[])}
+              value={form.disabledSources}
+              onChange={(v) => update("disabledSources", v as JobSource[])}
               options={SOURCE_OPTIONS}
             />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card size="small" title="Other" style={{ height: "100%" }}>
+          <Card size="small" title="Matching" style={{ height: "100%" }}>
             <Flex vertical gap={12}>
+              <div>
+                <Typography.Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 4 }}>
+                  Minimum AI score: {form.minScore}
+                </Typography.Text>
+                <Slider
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={form.minScore}
+                  onChange={(v) => update("minScore", v)}
+                />
+              </div>
               <Flex align="center" gap={8}>
                 <Switch
                   checked={form.remoteOnly}
@@ -162,15 +200,34 @@ export const PreferencesForm = ({
         </Col>
       </Row>
 
-      <Button
-        type="primary"
-        icon={<SaveOutlined />}
-        size="large"
-        loading={saving}
-        onClick={() => onSave(form)}
-      >
-        Save Preferences
-      </Button>
+      <div className="settings-save-bar" data-visible={isDirty || saved}>
+        {saved && !isDirty ? (
+          <Flex align="center" justify="center" gap={8}>
+            <CheckOutlined style={{ color: "#52c41a" }} />
+            <Typography.Text style={{ color: "#52c41a" }}>Preferences saved</Typography.Text>
+          </Flex>
+        ) : (
+          <Flex align="center" justify="space-between">
+            <Typography.Text type="secondary">You have unsaved changes</Typography.Text>
+            <Flex gap={8}>
+              <Button
+                icon={<UndoOutlined />}
+                onClick={() => setForm(initial)}
+              >
+                Discard
+              </Button>
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                loading={saving}
+                onClick={() => onSave(form)}
+              >
+                Save
+              </Button>
+            </Flex>
+          </Flex>
+        )}
+      </div>
     </Flex>
   );
 };

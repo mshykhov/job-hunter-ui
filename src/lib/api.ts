@@ -47,5 +47,6 @@ export const API_PATHS = {
   CRITERIA: "/criteria",
   PREFERENCES: "/preferences",
   PREFERENCES_NORMALIZE: "/preferences/normalize",
+  JOBS_REMATCH: "/jobs/rematch",
   HEALTH: "/actuator/health",
 } as const;

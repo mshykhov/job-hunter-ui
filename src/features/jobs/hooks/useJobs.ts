@@ -5,6 +5,7 @@ import type { Job, JobFilters, UserJobStatus } from "../types";
 const fetchJobs = async (filters: JobFilters): Promise<Job[]> => {
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;
+  if (filters.minScore != null) params.minScore = String(filters.minScore);
 
   const { data } = await api.get<Job[]>(API_PATHS.JOBS, { params });
   return data;
