@@ -51,8 +51,8 @@ export const JobsPage = () => {
         Jobs
       </Typography.Title>
       <JobFilters filters={filters} onChange={setFilters} />
-      <Flex style={{ height: "calc(100vh - 200px)" }}>
-        <div style={{ flex: 1, minWidth: 0, overflow: "auto" }}>
+      <Flex>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <TableToolbar
             total={filteredJobs.length}
             isFetching={isFetching}
@@ -81,7 +81,10 @@ export const JobsPage = () => {
               style={{
                 width: panelWidth,
                 flexShrink: 0,
-                overflow: "hidden",
+                height: "calc(100vh - 200px)",
+                position: "sticky",
+                top: 24,
+                alignSelf: "flex-start",
               }}
             >
               <JobDetailPanel

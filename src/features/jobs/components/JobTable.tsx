@@ -135,6 +135,7 @@ export const JobTable = ({
       loading={loading}
       rowKey="id"
       size={density}
+      scroll={{ x: "max-content" }}
       components={{ header: { cell: ResizableHeaderCell } }}
       pagination={{
         pageSize: 25,
