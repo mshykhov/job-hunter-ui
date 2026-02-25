@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Flex, Typography } from "antd";
-import type { Job, JobFilters as JobFiltersType } from "../types";
+import type { Job, JobFilters as JobFiltersType, UserJobStatus } from "../types";
 import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
 import { StatCards } from "./StatCards";
@@ -21,12 +21,12 @@ export const JobsPage = () => {
     setSelectedJob(job.id === selectedJob?.id ? null : job);
   };
 
-  const handleStatusChange = (jobId: string, status: Job["status"]) => {
+  const handleStatusChange = (jobId: string, status: UserJobStatus) => {
     statusMutation.mutate(
       { jobId, status },
       {
         onSuccess: (updated) => {
-          if (selectedJob?.id === updated.id) setSelectedJob(updated);
+          if (selectedJob?.jobId === updated.jobId) setSelectedJob(updated);
         },
       }
     );

@@ -12,7 +12,7 @@ interface JobTableProps {
 }
 
 const formatRelativeDate = (dateStr: string | null): string => {
-  if (!dateStr) return "—";
+  if (!dateStr) return "\u2014";
   const diff = Date.now() - new Date(dateStr).getTime();
   const hours = Math.floor(diff / (1000 * 60 * 60));
   if (hours < 1) return "Just now";
@@ -35,6 +35,7 @@ const columns: ColumnsType<Job> = [
     dataIndex: "company",
     ellipsis: true,
     width: "15%",
+    render: (company: string | null) => company ?? "\u2014",
   },
   {
     title: "Source",
@@ -46,14 +47,14 @@ const columns: ColumnsType<Job> = [
     title: "Salary",
     dataIndex: "salary",
     width: 120,
-    render: (salary: string | null) => salary ?? "—",
+    render: (salary: string | null) => salary ?? "\u2014",
   },
   {
     title: "Location",
     dataIndex: "location",
     ellipsis: true,
     width: 120,
-    render: (location: string | null) => location ?? "—",
+    render: (location: string | null) => location ?? "\u2014",
   },
   {
     title: "Remote",
@@ -72,8 +73,8 @@ const columns: ColumnsType<Job> = [
     ),
   },
   {
-    title: "Date",
-    dataIndex: "createdAt",
+    title: "Matched",
+    dataIndex: "matchedAt",
     width: 90,
     render: formatRelativeDate,
   },
@@ -87,7 +88,11 @@ export const JobTable = ({ jobs, loading, selectedJobId, onSelect }: JobTablePro
       loading={loading}
       rowKey="id"
       size="small"
-      pagination={{ pageSize: 25, showSizeChanger: true, pageSizeOptions: [10, 25, 50] }}
+      pagination={{
+        pageSize: 25,
+        showSizeChanger: true,
+        pageSizeOptions: [10, 25, 50],
+      }}
       onRow={(record) => ({
         onClick: () => onSelect(record),
         style: {

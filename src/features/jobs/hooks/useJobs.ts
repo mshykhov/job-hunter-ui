@@ -24,19 +24,19 @@ export const filterJobsLocally = (jobs: Job[], filters: JobFilters): Job[] => {
     if (filters.search) {
       const q = filters.search.toLowerCase();
       const matchesTitle = job.title.toLowerCase().includes(q);
-      const matchesCompany = job.company.toLowerCase().includes(q);
+      const matchesCompany = job.company?.toLowerCase().includes(q) ?? false;
       if (!matchesTitle && !matchesCompany) return false;
     }
     return true;
   });
 };
 
-export const countByStatus = (jobs: Job[]): Record<UserJobStatus, number> => {
+export const countByStatus = (jobs: Job[]): Partial<Record<UserJobStatus, number>> => {
   return jobs.reduce(
     (acc, job) => {
       acc[job.status] = (acc[job.status] || 0) + 1;
       return acc;
     },
-    {} as Record<UserJobStatus, number>
+    {} as Partial<Record<UserJobStatus, number>>
   );
 };

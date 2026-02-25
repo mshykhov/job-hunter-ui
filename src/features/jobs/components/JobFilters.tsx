@@ -10,7 +10,7 @@ interface JobFiltersProps {
 }
 
 const sourceOptions = Object.values(JOB_SOURCE).map((s) => ({
-  label: s,
+  label: s.toUpperCase(),
   value: s,
 }));
 

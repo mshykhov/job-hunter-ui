@@ -10,11 +10,7 @@ interface StatCardsProps {
 
 export const StatCards = ({ jobs }: StatCardsProps) => {
   const counts = countByStatus(jobs);
-  const newToday = jobs.filter((j) => {
-    const created = new Date(j.createdAt);
-    const today = new Date();
-    return created.toDateString() === today.toDateString();
-  }).length;
+  const newCount = counts[USER_JOB_STATUS.NEW] ?? 0;
 
   return (
     <Flex gap={16} wrap="wrap">
@@ -23,17 +19,17 @@ export const StatCards = ({ jobs }: StatCardsProps) => {
       </Card>
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>
         <Statistic
-          title="New Today"
-          value={newToday}
-          valueStyle={{ color: "#52c41a" }}
-          prefix={newToday > 0 ? <ArrowUpOutlined /> : undefined}
+          title="New"
+          value={newCount}
+          valueStyle={{ color: "#1677ff" }}
+          prefix={newCount > 0 ? <ArrowUpOutlined /> : undefined}
         />
       </Card>
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>
         <Statistic
           title="Applied"
           value={counts[USER_JOB_STATUS.APPLIED] ?? 0}
-          valueStyle={{ color: "#4F46E5" }}
+          valueStyle={{ color: "#52c41a" }}
         />
       </Card>
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>

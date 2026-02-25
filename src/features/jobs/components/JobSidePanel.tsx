@@ -10,7 +10,8 @@ interface JobSidePanelProps {
   loading: boolean;
 }
 
-const formatDate = (dateStr: string): string => {
+const formatDate = (dateStr: string | null): string => {
+  if (!dateStr) return "\u2014";
   const date = new Date(dateStr);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -42,21 +43,12 @@ export const JobSidePanel = ({ job, onStatusChange, loading }: JobSidePanelProps
       <Descriptions column={1} size="small">
         {job.salary && <Descriptions.Item label="Salary">{job.salary}</Descriptions.Item>}
         {job.location && <Descriptions.Item label="Location">{job.location}</Descriptions.Item>}
-        <Descriptions.Item label="Published">
-          {job.publishedAt ? formatDate(job.publishedAt) : "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Collected">{formatDate(job.createdAt)}</Descriptions.Item>
+        <Descriptions.Item label="Published">{formatDate(job.publishedAt)}</Descriptions.Item>
+        <Descriptions.Item label="Matched">{formatDate(job.matchedAt)}</Descriptions.Item>
+        {job.aiRelevanceScore != null && (
+          <Descriptions.Item label="AI Score">{job.aiRelevanceScore}%</Descriptions.Item>
+        )}
       </Descriptions>
-
-      {job.description && (
-        <Typography.Paragraph
-          type="secondary"
-          ellipsis={{ rows: 8, expandable: true, symbol: "more" }}
-          style={{ fontSize: 13 }}
-        >
-          <span dangerouslySetInnerHTML={{ __html: job.description }} />
-        </Typography.Paragraph>
-      )}
 
       <Flex vertical gap={8} style={{ marginTop: "auto" }}>
         <Space>
@@ -64,7 +56,7 @@ export const JobSidePanel = ({ job, onStatusChange, loading }: JobSidePanelProps
             type="primary"
             icon={<CheckOutlined />}
             loading={loading}
-            onClick={() => onStatusChange(job.id, USER_JOB_STATUS.APPLIED)}
+            onClick={() => onStatusChange(job.jobId, USER_JOB_STATUS.APPLIED)}
             disabled={job.status === USER_JOB_STATUS.APPLIED}
           >
             Mark Applied
@@ -72,7 +64,7 @@ export const JobSidePanel = ({ job, onStatusChange, loading }: JobSidePanelProps
           <Button
             icon={<CloseOutlined />}
             loading={loading}
-            onClick={() => onStatusChange(job.id, USER_JOB_STATUS.IRRELEVANT)}
+            onClick={() => onStatusChange(job.jobId, USER_JOB_STATUS.IRRELEVANT)}
             disabled={job.status === USER_JOB_STATUS.IRRELEVANT}
           >
             Irrelevant
