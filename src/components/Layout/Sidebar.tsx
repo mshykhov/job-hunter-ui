@@ -1,4 +1,4 @@
-import { Layout, Menu, Button, Badge, Flex } from "antd";
+import { Layout, Menu, Button, Badge, Flex, theme } from "antd";
 import {
   FileSearchOutlined,
   BarChartOutlined,
@@ -35,6 +35,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { token } = theme.useToken();
 
   const menuItems = NAV_ITEMS.map((item) => ({
     ...item,
@@ -56,7 +57,15 @@ export const Sidebar = ({
       trigger={null}
       width={220}
       collapsedWidth={60}
-      style={{ height: "100vh", position: "fixed", left: 0, top: 0, zIndex: 10 }}
+      theme={isDark ? "dark" : "light"}
+      style={{
+        height: "100vh",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        zIndex: 10,
+        borderRight: isDark ? "none" : `1px solid ${token.colorBorderSecondary}`,
+      }}
     >
       <Flex vertical justify="space-between" style={{ height: "100%", padding: "12px 0" }}>
         <div>
@@ -66,7 +75,7 @@ export const Sidebar = ({
             style={{ padding: "0 16px", marginBottom: 24 }}
           >
             <Flex align="center" gap={8}>
-              <AimOutlined style={{ fontSize: 20, color: "#4F46E5" }} />
+              <AimOutlined style={{ fontSize: 20, color: token.colorPrimary }} />
               {!collapsed && (
                 <span style={{ fontSize: 16, fontWeight: 600, whiteSpace: "nowrap" }}>
                   Job Hunter
@@ -96,6 +105,7 @@ export const Sidebar = ({
 
           <Menu
             mode="inline"
+            theme={isDark ? "dark" : "light"}
             selectedKeys={[location.pathname]}
             items={menuItems}
             onClick={({ key }) => navigate(key)}
