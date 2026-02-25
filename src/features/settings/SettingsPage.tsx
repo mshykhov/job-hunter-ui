@@ -24,7 +24,7 @@ export const SettingsPage = () => {
   const normalizeMutation = useNormalizePreferences();
 
   return (
-    <Flex vertical gap={16} style={{ maxWidth: 640 }}>
+    <Flex vertical gap={16}>
       <Typography.Title level={4} style={{ margin: 0 }}>
         Settings
       </Typography.Title>
