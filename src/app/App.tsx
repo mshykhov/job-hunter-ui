@@ -1,3 +1,13 @@
+import { useTheme } from "@/hooks/useTheme";
+import { AppProviders } from "./providers";
+import { AppRoutes } from "./routes";
+
 export const App = () => {
-  return <div>Job Hunter</div>;
+  const { isDark, toggle } = useTheme();
+
+  return (
+    <AppProviders isDark={isDark}>
+      <AppRoutes isDark={isDark} onThemeToggle={toggle} />
+    </AppProviders>
+  );
 };

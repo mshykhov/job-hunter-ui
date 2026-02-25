@@ -12,6 +12,8 @@ const getConfig = (key: string, defaultValue = ""): string => {
 
 export const API_URL = getConfig("API_URL", "http://localhost:8095");
 
+export const AUTH0_ENABLED = getConfig("AUTH0_ENABLED", "true") === "true";
+
 export const AUTH0_CONFIG = {
   domain: getConfig("AUTH0_DOMAIN"),
   clientId: getConfig("AUTH0_CLIENT_ID"),
