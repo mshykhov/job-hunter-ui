@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Flex, Typography } from "antd";
+import { Button, Flex, Tooltip, Typography } from "antd";
+import { ReloadOutlined } from "@ant-design/icons";
 import type { Job, JobFilters as JobFiltersType, UserJobStatus } from "../types";
 import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
@@ -12,7 +13,7 @@ export const JobsPage = () => {
   const [filters, setFilters] = useState<JobFiltersType>({});
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const { data: jobs = [], isLoading } = useJobs(filters);
+  const { data: jobs = [], isLoading, isFetching, refetch, dataUpdatedAt } = useJobs(filters);
   const statusMutation = useJobStatus();
 
   const filteredJobs = filterJobsLocally(jobs, filters);
@@ -32,11 +33,29 @@ export const JobsPage = () => {
     );
   };
 
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
+
   return (
     <Flex vertical gap={16}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        Jobs
-      </Typography.Title>
+      <Flex justify="space-between" align="center">
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Jobs
+        </Typography.Title>
+        <Flex align="center" gap={8}>
+          {lastUpdated && (
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              Updated {lastUpdated}
+            </Typography.Text>
+          )}
+          <Tooltip title="Refresh">
+            <Button
+              type="text"
+              icon={<ReloadOutlined spin={isFetching} />}
+              onClick={() => refetch()}
+            />
+          </Tooltip>
+        </Flex>
+      </Flex>
       <StatCards jobs={filteredJobs} />
       <JobFilters filters={filters} onChange={setFilters} />
       <Flex gap={16}>

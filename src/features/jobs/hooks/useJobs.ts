@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { api, API_PATHS } from "@/lib/api";
 import type { Job, JobFilters, UserJobStatus } from "../types";
 
+const REFETCH_INTERVAL = 60_000;
+
 const fetchJobs = async (filters: JobFilters): Promise<Job[]> => {
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;
@@ -14,21 +16,30 @@ export const useJobs = (filters: JobFilters) => {
   return useQuery({
     queryKey: ["jobs", filters],
     queryFn: () => fetchJobs(filters),
+    refetchInterval: REFETCH_INTERVAL,
   });
 };
 
+const sortByPublishedDesc = (a: Job, b: Job): number => {
+  const dateA = a.publishedAt ?? a.matchedAt ?? "";
+  const dateB = b.publishedAt ?? b.matchedAt ?? "";
+  return dateB.localeCompare(dateA);
+};
+
 export const filterJobsLocally = (jobs: Job[], filters: JobFilters): Job[] => {
-  return jobs.filter((job) => {
-    if (filters.source && job.source !== filters.source) return false;
-    if (filters.remote && !job.remote) return false;
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      const matchesTitle = job.title.toLowerCase().includes(q);
-      const matchesCompany = job.company?.toLowerCase().includes(q) ?? false;
-      if (!matchesTitle && !matchesCompany) return false;
-    }
-    return true;
-  });
+  return jobs
+    .filter((job) => {
+      if (filters.source && job.source !== filters.source) return false;
+      if (filters.remote && !job.remote) return false;
+      if (filters.search) {
+        const q = filters.search.toLowerCase();
+        const matchesTitle = job.title.toLowerCase().includes(q);
+        const matchesCompany = job.company?.toLowerCase().includes(q) ?? false;
+        if (!matchesTitle && !matchesCompany) return false;
+      }
+      return true;
+    })
+    .sort(sortByPublishedDesc);
 };
 
 export const countByStatus = (jobs: Job[]): Partial<Record<UserJobStatus, number>> => {

@@ -73,9 +73,17 @@ const columns: ColumnsType<Job> = [
     ),
   },
   {
+    title: "Published",
+    dataIndex: "publishedAt",
+    width: 100,
+    sorter: (a, b) => (a.publishedAt ?? "").localeCompare(b.publishedAt ?? ""),
+    render: formatRelativeDate,
+  },
+  {
     title: "Matched",
     dataIndex: "matchedAt",
-    width: 90,
+    width: 100,
+    sorter: (a, b) => (a.matchedAt ?? "").localeCompare(b.matchedAt ?? ""),
     render: formatRelativeDate,
   },
 ];
