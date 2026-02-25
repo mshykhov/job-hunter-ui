@@ -111,16 +111,16 @@ export const JobTable = ({
   const columns = useMemo(
     () =>
       BASE_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey)).map(
-        (col, index, arr) => {
+        (col) => {
           const key = col.key as ColumnKey;
           const w = columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key];
-          const isLast = index === arr.length - 1;
+          const isFlex = !w;
           return {
             ...col,
-            width: isLast ? undefined : w,
+            width: isFlex ? undefined : w,
             onHeaderCell: () => ({
-              width: isLast ? 0 : w,
-              onResize: isLast ? undefined : (nw: number) => onColumnResize(key, nw),
+              width: isFlex ? 0 : w,
+              onResize: isFlex ? undefined : (nw: number) => onColumnResize(key, nw),
             }),
           };
         },
@@ -135,7 +135,6 @@ export const JobTable = ({
       loading={loading}
       rowKey="id"
       size={density}
-      scroll={{ x: "max-content" }}
       components={{ header: { cell: ResizableHeaderCell } }}
       pagination={{
         pageSize: 25,

@@ -28,15 +28,15 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
 };
 
 export const DEFAULT_COLUMN_WIDTHS: Record<ColumnKey, number> = {
-  title: 260,
-  company: 160,
-  source: 90,
-  salary: 120,
-  location: 120,
-  remote: 70,
-  status: 100,
-  publishedAt: 100,
-  matchedAt: 100,
+  title: 0,
+  company: 120,
+  source: 70,
+  salary: 90,
+  location: 100,
+  remote: 50,
+  status: 80,
+  publishedAt: 80,
+  matchedAt: 80,
 };
 
 const ALWAYS_VISIBLE: ColumnKey[] = ["title"];
@@ -65,7 +65,7 @@ const DEFAULT_SETTINGS: TableSettings = {
   density: "small",
 };
 
-const storage = createStorage<TableSettings>("job-hunter-table-settings", 2, DEFAULT_SETTINGS);
+const storage = createStorage<TableSettings>("job-hunter-table-settings", 3, DEFAULT_SETTINGS);
 
 export const useTableSettings = () => {
   const [settings, setSettings] = useState<TableSettings>(storage.load);
