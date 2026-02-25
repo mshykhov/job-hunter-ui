@@ -2,8 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { api, API_PATHS } from "@/lib/api";
 import type { Job, JobFilters, UserJobStatus } from "../types";
 
-const REFETCH_INTERVAL = 60_000;
-
 const fetchJobs = async (filters: JobFilters): Promise<Job[]> => {
   const params: Record<string, string> = {};
   if (filters.status) params.status = filters.status;
@@ -12,11 +10,11 @@ const fetchJobs = async (filters: JobFilters): Promise<Job[]> => {
   return data;
 };
 
-export const useJobs = (filters: JobFilters) => {
+export const useJobs = (filters: JobFilters, refreshInterval: number) => {
   return useQuery({
     queryKey: ["jobs", filters],
     queryFn: () => fetchJobs(filters),
-    refetchInterval: REFETCH_INTERVAL,
+    refetchInterval: refreshInterval || false,
   });
 };
 

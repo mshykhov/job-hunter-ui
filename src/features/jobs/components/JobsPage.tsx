@@ -4,18 +4,28 @@ import { ReloadOutlined } from "@ant-design/icons";
 import type { Job, JobFilters as JobFiltersType, UserJobStatus } from "../types";
 import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
+import { useTableSettings } from "../hooks/useTableSettings";
 import { StatCards } from "./StatCards";
 import { JobFilters } from "./JobFilters";
 import { JobTable } from "./JobTable";
 import { JobSidePanel } from "./JobSidePanel";
+import { TableSettings } from "./TableSettings";
 
 export const JobsPage = () => {
   const [filters, setFilters] = useState<JobFiltersType>({});
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const { data: jobs = [], isLoading, isFetching, refetch, dataUpdatedAt } = useJobs(filters);
-  const statusMutation = useJobStatus();
+  const { settings, toggleColumn, setRefreshInterval, setDensity } = useTableSettings();
 
+  const {
+    data: jobs = [],
+    isLoading,
+    isFetching,
+    refetch,
+    dataUpdatedAt,
+  } = useJobs(filters, settings.refreshInterval);
+
+  const statusMutation = useJobStatus();
   const filteredJobs = filterJobsLocally(jobs, filters);
 
   const handleSelect = (job: Job) => {
@@ -41,7 +51,7 @@ export const JobsPage = () => {
         <Typography.Title level={4} style={{ margin: 0 }}>
           Jobs
         </Typography.Title>
-        <Flex align="center" gap={8}>
+        <Flex align="center" gap={4}>
           {lastUpdated && (
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               Updated {lastUpdated}
@@ -50,10 +60,17 @@ export const JobsPage = () => {
           <Tooltip title="Refresh">
             <Button
               type="text"
+              size="small"
               icon={<ReloadOutlined spin={isFetching} />}
               onClick={() => refetch()}
             />
           </Tooltip>
+          <TableSettings
+            settings={settings}
+            onToggleColumn={toggleColumn}
+            onRefreshChange={setRefreshInterval}
+            onDensityChange={setDensity}
+          />
         </Flex>
       </Flex>
       <StatCards jobs={filteredJobs} />
@@ -65,6 +82,8 @@ export const JobsPage = () => {
             loading={isLoading}
             selectedJobId={selectedJob?.id ?? null}
             onSelect={handleSelect}
+            visibleColumns={settings.visibleColumns}
+            density={settings.density}
           />
         </div>
         {selectedJob && (

@@ -3,12 +3,15 @@ import type { ColumnsType } from "antd/es/table";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import type { Job } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS } from "../constants";
+import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 
 interface JobTableProps {
   jobs: Job[];
   loading: boolean;
   selectedJobId: string | null;
   onSelect: (job: Job) => void;
+  visibleColumns: ColumnKey[];
+  density: TableDensity;
 }
 
 const formatRelativeDate = (dateStr: string | null): string => {
@@ -22,8 +25,9 @@ const formatRelativeDate = (dateStr: string | null): string => {
   return new Date(dateStr).toLocaleDateString();
 };
 
-const columns: ColumnsType<Job> = [
+const ALL_COLUMNS: ColumnsType<Job> = [
   {
+    key: "title",
     title: "Title",
     dataIndex: "title",
     ellipsis: true,
@@ -31,6 +35,7 @@ const columns: ColumnsType<Job> = [
     render: (title: string) => <strong>{title}</strong>,
   },
   {
+    key: "company",
     title: "Company",
     dataIndex: "company",
     ellipsis: true,
@@ -38,18 +43,21 @@ const columns: ColumnsType<Job> = [
     render: (company: string | null) => company ?? "\u2014",
   },
   {
+    key: "source",
     title: "Source",
     dataIndex: "source",
     width: 90,
     render: (source: Job["source"]) => <Tag color={SOURCE_COLORS[source]}>{source}</Tag>,
   },
   {
+    key: "salary",
     title: "Salary",
     dataIndex: "salary",
     width: 120,
     render: (salary: string | null) => salary ?? "\u2014",
   },
   {
+    key: "location",
     title: "Location",
     dataIndex: "location",
     ellipsis: true,
@@ -57,6 +65,7 @@ const columns: ColumnsType<Job> = [
     render: (location: string | null) => location ?? "\u2014",
   },
   {
+    key: "remote",
     title: "Remote",
     dataIndex: "remote",
     width: 70,
@@ -65,6 +74,7 @@ const columns: ColumnsType<Job> = [
       remote ? <CheckCircleOutlined style={{ color: "#52c41a" }} /> : null,
   },
   {
+    key: "status",
     title: "Status",
     dataIndex: "status",
     width: 100,
@@ -73,6 +83,7 @@ const columns: ColumnsType<Job> = [
     ),
   },
   {
+    key: "publishedAt",
     title: "Published",
     dataIndex: "publishedAt",
     width: 100,
@@ -80,6 +91,7 @@ const columns: ColumnsType<Job> = [
     render: formatRelativeDate,
   },
   {
+    key: "matchedAt",
     title: "Matched",
     dataIndex: "matchedAt",
     width: 100,
@@ -88,14 +100,23 @@ const columns: ColumnsType<Job> = [
   },
 ];
 
-export const JobTable = ({ jobs, loading, selectedJobId, onSelect }: JobTableProps) => {
+export const JobTable = ({
+  jobs,
+  loading,
+  selectedJobId,
+  onSelect,
+  visibleColumns,
+  density,
+}: JobTableProps) => {
+  const columns = ALL_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey));
+
   return (
     <Table<Job>
       columns={columns}
       dataSource={jobs}
       loading={loading}
       rowKey="id"
-      size="small"
+      size={density}
       pagination={{
         pageSize: 25,
         showSizeChanger: true,
