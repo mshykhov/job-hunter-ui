@@ -110,17 +110,21 @@ export const JobTable = ({
 }: JobTableProps) => {
   const columns = useMemo(
     () =>
-      BASE_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey)).map((col) => {
-        const key = col.key as ColumnKey;
-        return {
-          ...col,
-          width: columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key],
-          onHeaderCell: () => ({
-            width: columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key],
-            onResize: (w: number) => onColumnResize(key, w),
-          }),
-        };
-      }),
+      BASE_COLUMNS.filter((col) => visibleColumns.includes(col.key as ColumnKey)).map(
+        (col, index, arr) => {
+          const key = col.key as ColumnKey;
+          const w = columnWidths[key] ?? DEFAULT_COLUMN_WIDTHS[key];
+          const isLast = index === arr.length - 1;
+          return {
+            ...col,
+            width: isLast ? undefined : w,
+            onHeaderCell: () => ({
+              width: isLast ? 0 : w,
+              onResize: isLast ? undefined : (nw: number) => onColumnResize(key, nw),
+            }),
+          };
+        },
+      ),
     [visibleColumns, columnWidths, onColumnResize],
   );
 
