@@ -1,15 +1,13 @@
 import { useState } from "react";
-import { Button, Flex, Tooltip, Typography } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
+import { Flex, Typography } from "antd";
 import type { Job, JobFilters as JobFiltersType, UserJobStatus } from "../types";
 import { useJobs, filterJobsLocally } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
 import { useTableSettings } from "../hooks/useTableSettings";
-import { StatCards } from "./StatCards";
 import { JobFilters } from "./JobFilters";
 import { JobTable } from "./JobTable";
 import { JobSidePanel } from "./JobSidePanel";
-import { TableSettings } from "./TableSettings";
+import { TableToolbar } from "./TableToolbar";
 
 export const JobsPage = () => {
   const [filters, setFilters] = useState<JobFiltersType>({});
@@ -43,40 +41,24 @@ export const JobsPage = () => {
     );
   };
 
-  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
-
   return (
     <Flex vertical gap={16}>
-      <Flex justify="space-between" align="center">
-        <Typography.Title level={4} style={{ margin: 0 }}>
-          Jobs
-        </Typography.Title>
-        <Flex align="center" gap={4}>
-          {lastUpdated && (
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              Updated {lastUpdated}
-            </Typography.Text>
-          )}
-          <Tooltip title="Refresh">
-            <Button
-              type="text"
-              size="small"
-              icon={<ReloadOutlined spin={isFetching} />}
-              onClick={() => refetch()}
-            />
-          </Tooltip>
-          <TableSettings
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        Jobs
+      </Typography.Title>
+      <JobFilters filters={filters} onChange={setFilters} />
+      <Flex gap={16}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <TableToolbar
+            total={filteredJobs.length}
+            isFetching={isFetching}
+            dataUpdatedAt={dataUpdatedAt}
+            onRefresh={() => refetch()}
             settings={settings}
             onToggleColumn={toggleColumn}
             onRefreshChange={setRefreshInterval}
             onDensityChange={setDensity}
           />
-        </Flex>
-      </Flex>
-      <StatCards jobs={filteredJobs} />
-      <JobFilters filters={filters} onChange={setFilters} />
-      <Flex gap={16}>
-        <div style={{ flex: 1, minWidth: 0 }}>
           <JobTable
             jobs={filteredJobs}
             loading={isLoading}
