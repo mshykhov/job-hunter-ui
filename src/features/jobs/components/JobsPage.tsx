@@ -15,7 +15,7 @@ import { TableToolbar } from "./TableToolbar";
 export const JobsPage = () => {
   const { filters, setFilters } = useJobFilters();
 
-  const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, FLEX_COLUMN } =
+  const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, reorderColumns } =
     useTableSettings();
 
   const {
@@ -99,10 +99,11 @@ export const JobsPage = () => {
         loading={isLoading}
         onSelect={handleEnterReview}
         visibleColumns={settings.visibleColumns}
+        columnOrder={settings.columnOrder}
         columnWidths={settings.columnWidths}
         onColumnResize={setColumnWidth}
+        onColumnReorder={reorderColumns}
         density={settings.density}
-        flexColumn={FLEX_COLUMN}
       />
     </Flex>
   );
