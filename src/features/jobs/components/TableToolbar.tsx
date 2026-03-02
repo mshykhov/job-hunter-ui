@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Flex, Popover, Radio, Tooltip, Typography } from "antd";
-import { ReloadOutlined, SyncOutlined } from "@ant-design/icons";
+import { ReadOutlined, ReloadOutlined, SyncOutlined } from "@ant-design/icons";
 import type {
   TableSettings as TableSettingsType,
   ColumnKey,
@@ -19,6 +19,8 @@ interface TableToolbarProps {
   onToggleColumn: (key: ColumnKey) => void;
   onRefreshChange: (interval: number) => void;
   onDensityChange: (density: TableDensity) => void;
+  onReview: () => void;
+  reviewDisabled: boolean;
 }
 
 type RematchPeriod = "24h" | "week" | "month";
@@ -46,6 +48,8 @@ export const TableToolbar = ({
   onToggleColumn,
   onRefreshChange,
   onDensityChange,
+  onReview,
+  reviewDisabled,
 }: TableToolbarProps) => {
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
   const [rematchOpen, setRematchOpen] = useState(false);
@@ -88,6 +92,15 @@ export const TableToolbar = ({
         {total} jobs {lastUpdated && `\u00B7 Updated ${lastUpdated}`}
       </Typography.Text>
       <Flex align="center" gap={2}>
+        <Tooltip title="Review jobs one by one">
+          <Button
+            type="text"
+            size="small"
+            icon={<ReadOutlined />}
+            onClick={onReview}
+            disabled={reviewDisabled}
+          />
+        </Tooltip>
         <Popover
           content={rematchContent}
           trigger="click"

@@ -1,70 +1,41 @@
 import { Button, Descriptions, Divider, Flex, Skeleton, Space, Tag, Typography } from "antd";
-import {
-  LinkOutlined,
-  CheckOutlined,
-  CloseOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
-import type { Job, UserJobStatus } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS } from "../constants";
+import { LinkOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import type { Job, JobDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
-import { useJobDetail } from "../hooks/useJobDetail";
+import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS, formatRelativeDate } from "../constants";
 
-interface JobDetailPanelProps {
+interface JobDetailContentProps {
   job: Job;
-  onClose: () => void;
+  detail: JobDetail | undefined;
+  detailLoading: boolean;
   onStatusChange: (jobId: string, status: UserJobStatus) => void;
   statusLoading: boolean;
+  onOpenOriginal: () => void;
 }
 
-const formatDate = (dateStr: string | null): string => {
-  if (!dateStr) return "\u2014";
-  const date = new Date(dateStr);
-  const diffMs = Date.now() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  if (diffHours < 1) return "Just now";
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
-};
-
-export const JobDetailPanel = ({
+export const JobDetailContent = ({
   job,
-  onClose,
+  detail,
+  detailLoading,
   onStatusChange,
   statusLoading,
-}: JobDetailPanelProps) => {
-  const { data: detail, isLoading } = useJobDetail(job.jobId);
-
+  onOpenOriginal,
+}: JobDetailContentProps) => {
   return (
     <Flex vertical style={{ height: "100%", overflow: "hidden" }}>
       <Flex
         vertical
         gap={12}
-        style={{
-          padding: "16px 16px 12px",
-          flexShrink: 0,
-          borderBottom: "1px solid var(--ant-color-border-secondary, #303030)",
-        }}
+        className="job-detail-header"
       >
-        <Flex justify="space-between" align="start">
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <Typography.Title level={5} style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
-              {job.title}
-            </Typography.Title>
-            {job.company && (
-              <Typography.Text type="secondary">{job.company}</Typography.Text>
-            )}
-          </div>
-          <Button
-            type="text"
-            size="small"
-            icon={<CloseCircleOutlined />}
-            onClick={onClose}
-            style={{ marginLeft: 8, flexShrink: 0 }}
-          />
-        </Flex>
+        <div>
+          <Typography.Title level={5} style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
+            {job.title}
+          </Typography.Title>
+          {job.company && (
+            <Typography.Text type="secondary">{job.company}</Typography.Text>
+          )}
+        </div>
 
         <Flex gap={8} wrap="wrap">
           <Tag color={SOURCE_COLORS[job.source]}>{job.source}</Tag>
@@ -95,8 +66,7 @@ export const JobDetailPanel = ({
           <Button
             type="link"
             size="small"
-            href={job.url}
-            target="_blank"
+            onClick={onOpenOriginal}
             icon={<LinkOutlined />}
           >
             Original
@@ -110,8 +80,8 @@ export const JobDetailPanel = ({
           {job.location && (
             <Descriptions.Item label="Location">{job.location}</Descriptions.Item>
           )}
-          <Descriptions.Item label="Published">{formatDate(job.publishedAt)}</Descriptions.Item>
-          <Descriptions.Item label="Matched">{formatDate(job.matchedAt)}</Descriptions.Item>
+          <Descriptions.Item label="Published">{formatRelativeDate(job.publishedAt)}</Descriptions.Item>
+          <Descriptions.Item label="Matched">{formatRelativeDate(job.matchedAt)}</Descriptions.Item>
           {job.aiRelevanceScore != null && (
             <Descriptions.Item label="AI Score">{job.aiRelevanceScore}%</Descriptions.Item>
           )}
@@ -119,7 +89,7 @@ export const JobDetailPanel = ({
 
         <Divider style={{ margin: "12px 0" }} />
 
-        {isLoading ? (
+        {detailLoading ? (
           <Skeleton active paragraph={{ rows: 8 }} />
         ) : detail?.description ? (
           <div

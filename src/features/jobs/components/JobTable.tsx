@@ -3,7 +3,7 @@ import { Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import type { Job } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS } from "../constants";
+import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS, formatRelativeDate } from "../constants";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
 import { ResizableHeaderCell } from "./ResizableHeaderCell";
@@ -11,7 +11,6 @@ import { ResizableHeaderCell } from "./ResizableHeaderCell";
 interface JobTableProps {
   jobs: Job[];
   loading: boolean;
-  selectedJobId: string | null;
   onSelect: (job: Job) => void;
   visibleColumns: ColumnKey[];
   columnWidths: Partial<Record<ColumnKey, number>>;
@@ -19,17 +18,6 @@ interface JobTableProps {
   density: TableDensity;
   flexColumn: ColumnKey;
 }
-
-const formatRelativeDate = (dateStr: string | null): string => {
-  if (!dateStr) return "\u2014";
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString();
-};
 
 const BASE_COLUMNS: ColumnsType<Job> = [
   {
@@ -102,7 +90,6 @@ const BASE_COLUMNS: ColumnsType<Job> = [
 export const JobTable = ({
   jobs,
   loading,
-  selectedJobId,
   onSelect,
   visibleColumns,
   columnWidths,
@@ -152,18 +139,10 @@ export const JobTable = ({
       size={density}
       scroll={{ x: scrollX }}
       components={{ header: { cell: ResizableHeaderCell } }}
-      pagination={{
-        pageSize: 25,
-        showSizeChanger: true,
-        pageSizeOptions: [10, 25, 50],
-      }}
+      pagination={false}
       onRow={(record) => ({
         onClick: () => onSelect(record),
-        style: {
-          cursor: "pointer",
-          borderLeft:
-            record.id === selectedJobId ? "3px solid #4F46E5" : "3px solid transparent",
-        },
+        style: { cursor: "pointer" },
       })}
     />
   );

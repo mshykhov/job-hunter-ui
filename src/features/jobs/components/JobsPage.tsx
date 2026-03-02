@@ -1,24 +1,22 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { Flex, Typography } from "antd";
 import type { Job, UserJobStatus } from "../types";
-import { useJobs, filterJobsLocally } from "../hooks/useJobs";
+import { useJobs, filterJobsLocally, countByStatus } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
 import { useRematch } from "../hooks/useRematch";
 import { useJobFilters } from "../hooks/useJobFilters";
 import { useTableSettings } from "../hooks/useTableSettings";
-import { useResizablePanel } from "../hooks/useResizablePanel";
+import { useReviewMode } from "../hooks/useReviewMode";
 import { JobFilters } from "./JobFilters";
 import { JobTable } from "./JobTable";
-import { JobDetailPanel } from "./JobDetailPanel";
+import { JobReviewCard } from "./JobReviewCard";
 import { TableToolbar } from "./TableToolbar";
 
 export const JobsPage = () => {
   const { filters, setFilters } = useJobFilters();
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, FLEX_COLUMN } =
     useTableSettings();
-  const { width: panelWidth, onDragStart } = useResizablePanel();
 
   const {
     data: jobs = [],
@@ -30,10 +28,17 @@ export const JobsPage = () => {
 
   const statusMutation = useJobStatus();
   const rematchMutation = useRematch();
-  const filteredJobs = filterJobsLocally(jobs, filters);
+  const reviewMode = useReviewMode();
 
-  const handleSelect = (job: Job) => {
-    setSelectedJob(job.id === selectedJob?.id ? null : job);
+  const filteredJobs = useMemo(
+    () => filterJobsLocally(jobs, filters),
+    [jobs, filters],
+  );
+
+  const statusCounts = useMemo(() => countByStatus(jobs), [jobs]);
+
+  const handleEnterReview = (job: Job) => {
+    if (filteredJobs.length > 0) reviewMode.enter(filteredJobs, job);
   };
 
   const handleStatusChange = (jobId: string, status: UserJobStatus) => {
@@ -41,67 +46,64 @@ export const JobsPage = () => {
       { jobId, status },
       {
         onSuccess: (updated) => {
-          if (selectedJob?.jobId === updated.jobId) setSelectedJob(updated);
+          if (reviewMode.isActive) reviewMode.advanceWithUpdate(updated);
         },
       },
     );
   };
+
+  if (reviewMode.isActive && reviewMode.currentJob) {
+    return (
+      <Flex vertical gap={16}>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Jobs
+        </Typography.Title>
+        <JobReviewCard
+          job={reviewMode.currentJob}
+          currentIndex={reviewMode.currentIndex}
+          total={reviewMode.total}
+          hasPrev={reviewMode.hasPrev}
+          hasNext={reviewMode.hasNext}
+          onPrev={reviewMode.goPrev}
+          onNext={reviewMode.goNext}
+          onClose={reviewMode.exit}
+          onStatusChange={handleStatusChange}
+          statusLoading={statusMutation.isPending}
+        />
+      </Flex>
+    );
+  }
 
   return (
     <Flex vertical gap={16}>
       <Typography.Title level={4} style={{ margin: 0 }}>
         Jobs
       </Typography.Title>
-      <JobFilters filters={filters} onChange={setFilters} />
-      <Flex>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <TableToolbar
-            total={filteredJobs.length}
-            isFetching={isFetching}
-            dataUpdatedAt={dataUpdatedAt}
-            onRefresh={() => refetch()}
-            onRematch={(since) => rematchMutation.mutate(since)}
-            rematchLoading={rematchMutation.isPending}
-            settings={settings}
-            onToggleColumn={toggleColumn}
-            onRefreshChange={setRefreshInterval}
-            onDensityChange={setDensity}
-          />
-          <JobTable
-            jobs={filteredJobs}
-            loading={isLoading}
-            selectedJobId={selectedJob?.id ?? null}
-            onSelect={handleSelect}
-            visibleColumns={settings.visibleColumns}
-            columnWidths={settings.columnWidths}
-            onColumnResize={setColumnWidth}
-            density={settings.density}
-            flexColumn={FLEX_COLUMN}
-          />
-        </div>
-        {selectedJob && (
-          <>
-            <div className="resize-handle" onMouseDown={onDragStart} />
-            <div
-              style={{
-                width: panelWidth,
-                flexShrink: 0,
-                height: "calc(100vh - 200px)",
-                position: "sticky",
-                top: 24,
-                alignSelf: "flex-start",
-              }}
-            >
-              <JobDetailPanel
-                job={selectedJob}
-                onClose={() => setSelectedJob(null)}
-                onStatusChange={handleStatusChange}
-                statusLoading={statusMutation.isPending}
-              />
-            </div>
-          </>
-        )}
-      </Flex>
+      <JobFilters filters={filters} onChange={setFilters} statusCounts={statusCounts} />
+      <TableToolbar
+        total={filteredJobs.length}
+        isFetching={isFetching}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => refetch()}
+        onRematch={(since) => rematchMutation.mutate(since)}
+        rematchLoading={rematchMutation.isPending}
+        settings={settings}
+        onToggleColumn={toggleColumn}
+        onRefreshChange={setRefreshInterval}
+        onDensityChange={setDensity}
+        onReview={() => handleEnterReview(filteredJobs[0])}
+        reviewDisabled={filteredJobs.length === 0}
+      />
+      <JobTable
+        jobs={filteredJobs}
+        loading={isLoading}
+        onSelect={handleEnterReview}
+        visibleColumns={settings.visibleColumns}
+        columnWidths={settings.columnWidths}
+        onColumnResize={setColumnWidth}
+        density={settings.density}
+        flexColumn={FLEX_COLUMN}
+      />
     </Flex>
   );
 };
