@@ -34,13 +34,19 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
         options={PERIOD_OPTIONS}
         size="small"
       />
-      <Select
-        value={filters.periodField ?? PERIOD_FIELD.MATCHED}
-        onChange={(val) => onChange({ ...filters, periodField: val as PeriodField })}
-        options={periodFieldOptions}
-        size="small"
-        style={{ width: 110 }}
-      />
+      <Flex align="center" gap={4}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          by
+        </Typography.Text>
+        <Select
+          value={filters.periodField ?? PERIOD_FIELD.MATCHED}
+          onChange={(val) => onChange({ ...filters, periodField: val as PeriodField })}
+          options={periodFieldOptions}
+          size="small"
+          variant="borderless"
+          style={{ width: 105 }}
+        />
+      </Flex>
       <Select
         mode="multiple"
         placeholder="Status"
