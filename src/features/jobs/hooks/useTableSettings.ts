@@ -9,8 +9,10 @@ export const COLUMN_KEYS = [
   "location",
   "remote",
   "status",
+  "score",
   "publishedAt",
   "matchedAt",
+  "updatedAt",
 ] as const;
 
 export type ColumnKey = (typeof COLUMN_KEYS)[number];
@@ -23,8 +25,10 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
   location: "Location",
   remote: "Remote",
   status: "Status",
+  score: "Score",
   publishedAt: "Published",
   matchedAt: "Matched",
+  updatedAt: "Scraped",
 };
 
 export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
@@ -35,8 +39,10 @@ export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
   location: 100,
   remote: 70,
   status: 80,
-  publishedAt: 100,
-  matchedAt: 95,
+  score: 60,
+  publishedAt: 110,
+  matchedAt: 110,
+  updatedAt: 110,
 };
 
 const FLEX_COLUMN: ColumnKey = "title";
@@ -55,6 +61,7 @@ export type TableDensity = "small" | "middle";
 
 export interface TableSettings {
   visibleColumns: ColumnKey[];
+  knownColumns: ColumnKey[];
   columnWidths: Partial<Record<ColumnKey, number>>;
   refreshInterval: number;
   density: TableDensity;
@@ -62,6 +69,7 @@ export interface TableSettings {
 
 const DEFAULT_SETTINGS: TableSettings = {
   visibleColumns: [...COLUMN_KEYS],
+  knownColumns: [],
   columnWidths: {},
   refreshInterval: 60_000,
   density: "small",
@@ -69,8 +77,19 @@ const DEFAULT_SETTINGS: TableSettings = {
 
 const storage = createStorage<TableSettings>("job-hunter-table-settings", 5, DEFAULT_SETTINGS);
 
+const loadWithNewColumns = (): TableSettings => {
+  const saved = storage.load();
+  const known = new Set(saved.knownColumns.length > 0 ? saved.knownColumns : saved.visibleColumns);
+  const newCols = COLUMN_KEYS.filter((k) => !known.has(k));
+  return {
+    ...saved,
+    visibleColumns: newCols.length > 0 ? [...saved.visibleColumns, ...newCols] : saved.visibleColumns,
+    knownColumns: [...COLUMN_KEYS],
+  };
+};
+
 export const useTableSettings = () => {
-  const [settings, setSettings] = useState<TableSettings>(storage.load);
+  const [settings, setSettings] = useState<TableSettings>(loadWithNewColumns);
 
   useEffect(() => {
     storage.save(settings);

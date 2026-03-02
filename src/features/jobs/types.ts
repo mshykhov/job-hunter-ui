@@ -28,6 +28,7 @@ export interface Job {
   aiRelevanceScore: number | null;
   publishedAt: string | null;
   matchedAt: string | null;
+  updatedAt: string | null;
 }
 
 export interface JobDetail extends Job {
@@ -35,10 +36,20 @@ export interface JobDetail extends Job {
   aiReasoning: string | null;
 }
 
+export const PERIOD_FIELD = {
+  MATCHED: "matched",
+  PUBLISHED: "published",
+  UPDATED: "updated",
+} as const;
+
+export type PeriodField = (typeof PERIOD_FIELD)[keyof typeof PERIOD_FIELD];
+
 export interface JobFilters {
-  status?: UserJobStatus;
-  source?: JobSource;
+  statuses?: UserJobStatus[];
+  sources?: JobSource[];
   search?: string;
   remote?: boolean;
   minScore?: number;
+  period?: string;
+  periodField?: PeriodField;
 }
