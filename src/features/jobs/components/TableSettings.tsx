@@ -5,7 +5,7 @@ import type {
   ColumnKey,
   TableDensity,
 } from "../hooks/useTableSettings";
-import { COLUMN_KEYS, COLUMN_LABELS, REFRESH_OPTIONS } from "../hooks/useTableSettings";
+import { COLUMN_LABELS, REFRESH_OPTIONS } from "../hooks/useTableSettings";
 
 interface TableSettingsProps {
   settings: TableSettingsType;
@@ -31,7 +31,7 @@ export const TableSettings = ({
           Columns
         </Typography.Text>
         <Flex vertical gap={4} style={{ marginTop: 6 }}>
-          {COLUMN_KEYS.map((key) => (
+          {settings.columnOrder.map((key) => (
             <Checkbox
               key={key}
               checked={settings.visibleColumns.includes(key)}

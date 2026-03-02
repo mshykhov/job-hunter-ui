@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { createStorage } from "@/lib/storage";
 
 export const COLUMN_KEYS = [
@@ -32,7 +32,7 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
 };
 
 export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
-  title: 150,
+  title: 200,
   company: 100,
   source: 80,
   salary: 80,
@@ -44,8 +44,6 @@ export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
   matchedAt: 110,
   updatedAt: 110,
 };
-
-const FLEX_COLUMN: ColumnKey = "title";
 
 const ALWAYS_VISIBLE: ColumnKey[] = ["title"];
 
@@ -62,6 +60,7 @@ export type TableDensity = "small" | "middle";
 export interface TableSettings {
   visibleColumns: ColumnKey[];
   knownColumns: ColumnKey[];
+  columnOrder: ColumnKey[];
   columnWidths: Partial<Record<ColumnKey, number>>;
   refreshInterval: number;
   density: TableDensity;
@@ -70,6 +69,7 @@ export interface TableSettings {
 const DEFAULT_SETTINGS: TableSettings = {
   visibleColumns: [...COLUMN_KEYS],
   knownColumns: [],
+  columnOrder: [...COLUMN_KEYS],
   columnWidths: {},
   refreshInterval: 60_000,
   density: "small",
@@ -81,18 +81,28 @@ const loadWithNewColumns = (): TableSettings => {
   const saved = storage.load();
   const known = new Set(saved.knownColumns.length > 0 ? saved.knownColumns : saved.visibleColumns);
   const newCols = COLUMN_KEYS.filter((k) => !known.has(k));
+
+  const savedOrder = saved.columnOrder?.length ? saved.columnOrder : [...COLUMN_KEYS];
+  const orderSet = new Set(savedOrder);
+  const missingFromOrder = COLUMN_KEYS.filter((k) => !orderSet.has(k));
+  const columnOrder = [...savedOrder, ...missingFromOrder];
+
   return {
     ...saved,
     visibleColumns: newCols.length > 0 ? [...saved.visibleColumns, ...newCols] : saved.visibleColumns,
     knownColumns: [...COLUMN_KEYS],
+    columnOrder,
   };
 };
 
 export const useTableSettings = () => {
   const [settings, setSettings] = useState<TableSettings>(loadWithNewColumns);
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
-    storage.save(settings);
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => storage.save(settings), 300);
+    return () => clearTimeout(saveTimer.current);
   }, [settings]);
 
   const toggleColumn = useCallback((key: ColumnKey) => {
@@ -120,5 +130,17 @@ export const useTableSettings = () => {
     setSettings((prev) => ({ ...prev, density }));
   }, []);
 
-  return { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, FLEX_COLUMN };
+  const reorderColumns = useCallback((fromKey: ColumnKey, toKey: ColumnKey) => {
+    setSettings((prev) => {
+      const order = [...prev.columnOrder];
+      const fromIdx = order.indexOf(fromKey);
+      const toIdx = order.indexOf(toKey);
+      if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return prev;
+      order.splice(fromIdx, 1);
+      order.splice(toIdx, 0, fromKey);
+      return { ...prev, columnOrder: order };
+    });
+  }, []);
+
+  return { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, reorderColumns };
 };
