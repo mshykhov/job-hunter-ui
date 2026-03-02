@@ -40,28 +40,31 @@ body {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Resize handle for detail panel */
-.resize-handle {
-  width: 4px;
-  cursor: col-resize;
+/* Review card */
+.review-card {
+  height: calc(100vh - 130px);
+}
+
+.review-card-header {
+  padding: 8px 0;
   flex-shrink: 0;
-  background: transparent;
-  transition: background 0.15s;
-  position: relative;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #303030);
+  margin-bottom: 8px;
 }
 
-.resize-handle::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -3px;
-  right: -3px;
-  bottom: 0;
+.review-card-body {
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid var(--ant-color-border-secondary, #303030);
+  border-radius: 8px;
+  max-width: 960px;
 }
 
-.resize-handle:hover,
-.resize-handle:active {
-  background: var(--ant-color-primary, #4f46e5);
+/* Job detail header */
+.job-detail-header {
+  padding: 16px 16px 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #303030);
 }
 
 /* Column resize handle */
