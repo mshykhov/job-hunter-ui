@@ -130,7 +130,7 @@ export const Sidebar = ({
           >
             {!collapsed && (isDark ? "Light" : "Dark")}
           </Button>
-          <AppVersion />
+          {!collapsed && <AppVersion />}
         </Flex>
       </Flex>
     </Layout.Sider>

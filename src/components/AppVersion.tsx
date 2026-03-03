@@ -1,8 +1,12 @@
-import { Typography } from "antd";
+import { theme } from "antd";
 import { APP_VERSION } from "@/config/constants";
 
-export const AppVersion = () => (
-  <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-    v{APP_VERSION}
-  </Typography.Text>
-);
+export const AppVersion = () => {
+  const { token } = theme.useToken();
+
+  return (
+    <span style={{ fontSize: 11, color: token.colorTextTertiary, whiteSpace: "nowrap" }}>
+      v{APP_VERSION}
+    </span>
+  );
+};
