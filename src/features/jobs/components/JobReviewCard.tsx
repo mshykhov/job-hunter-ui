@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from "react";
-import { Button, Flex, Popover, Typography } from "antd";
+import { Button, Flex, Popover, Spin, Typography } from "antd";
 import {
   LeftOutlined,
   RightOutlined,
@@ -22,6 +22,7 @@ interface JobReviewCardProps {
   onClose: () => void;
   onStatusChange: (jobId: string, status: UserJobStatus) => void;
   statusLoading: boolean;
+  loading?: boolean;
 }
 
 const SHORTCUTS = [
@@ -62,6 +63,7 @@ export const JobReviewCard = ({
   onClose,
   onStatusChange,
   statusLoading,
+  loading,
 }: JobReviewCardProps) => {
   const { data: detail, isLoading: detailLoading } = useJobDetail(job.jobId);
 
@@ -159,6 +161,7 @@ export const JobReviewCard = ({
         </Flex>
       </Flex>
 
+      <Spin spinning={!!loading}>
       <div className="review-card-body">
         <JobDetailContent
           job={job}
@@ -169,6 +172,7 @@ export const JobReviewCard = ({
           onOpenOriginal={handleOpen}
         />
       </div>
+      </Spin>
     </Flex>
   );
 };

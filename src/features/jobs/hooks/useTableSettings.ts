@@ -75,7 +75,7 @@ const DEFAULT_SETTINGS: TableSettings = {
   density: "small",
 };
 
-const storage = createStorage<TableSettings>("job-hunter-table-settings", 5, DEFAULT_SETTINGS);
+const storage = createStorage<TableSettings>("job-hunter-table-settings", 6, DEFAULT_SETTINGS);
 
 const loadWithNewColumns = (): TableSettings => {
   const saved = storage.load();

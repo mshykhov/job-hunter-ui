@@ -1,12 +1,12 @@
-import { useMemo } from "react";
 import { Flex, Typography } from "antd";
 import type { Job, UserJobStatus } from "../types";
-import { useJobs, filterJobsLocally, countByStatus } from "../hooks/useJobs";
+import { useJobs } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
 import { useRematch } from "../hooks/useRematch";
 import { useJobFilters } from "../hooks/useJobFilters";
 import { useTableSettings } from "../hooks/useTableSettings";
 import { useReviewMode } from "../hooks/useReviewMode";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { JobFilters } from "./JobFilters";
 import { JobTable } from "./JobTable";
 import { JobReviewCard } from "./JobReviewCard";
@@ -18,27 +18,30 @@ export const JobsPage = () => {
   const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, reorderColumns } =
     useTableSettings();
 
+  const debouncedFilters = useDebouncedValue(filters, 300);
+
   const {
-    data: jobs = [],
+    jobs,
+    statusCounts,
+    totalElements,
     isLoading,
     isFetching,
+    isPlaceholderData,
     refetch,
     dataUpdatedAt,
-  } = useJobs(filters, settings.refreshInterval);
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useJobs(debouncedFilters, settings.refreshInterval);
 
   const statusMutation = useJobStatus();
   const rematchMutation = useRematch();
   const reviewMode = useReviewMode();
 
-  const filteredJobs = useMemo(
-    () => filterJobsLocally(jobs, filters),
-    [jobs, filters],
-  );
-
-  const statusCounts = useMemo(() => countByStatus(jobs), [jobs]);
-
   const handleEnterReview = (job: Job) => {
-    if (filteredJobs.length > 0) reviewMode.enter(filteredJobs, job);
+    if (jobs.length > 0) {
+      reviewMode.enter(jobs, job, totalElements, debouncedFilters, !!hasNextPage);
+    }
   };
 
   const handleStatusChange = (jobId: string, status: UserJobStatus) => {
@@ -69,6 +72,7 @@ export const JobsPage = () => {
           onClose={reviewMode.exit}
           onStatusChange={handleStatusChange}
           statusLoading={statusMutation.isPending}
+          loading={reviewMode.isPageLoading}
         />
       </Flex>
     );
@@ -81,7 +85,7 @@ export const JobsPage = () => {
       </Typography.Title>
       <JobFilters filters={filters} onChange={setFilters} statusCounts={statusCounts} />
       <TableToolbar
-        total={filteredJobs.length}
+        total={totalElements}
         isFetching={isFetching}
         dataUpdatedAt={dataUpdatedAt}
         onRefresh={() => refetch()}
@@ -91,20 +95,25 @@ export const JobsPage = () => {
         onToggleColumn={toggleColumn}
         onRefreshChange={setRefreshInterval}
         onDensityChange={setDensity}
-        onReview={() => handleEnterReview(filteredJobs[0])}
-        reviewDisabled={filteredJobs.length === 0}
+        onReview={() => handleEnterReview(jobs[0])}
+        reviewDisabled={jobs.length === 0}
       />
-      <JobTable
-        jobs={filteredJobs}
-        loading={isLoading}
-        onSelect={handleEnterReview}
-        visibleColumns={settings.visibleColumns}
-        columnOrder={settings.columnOrder}
-        columnWidths={settings.columnWidths}
-        onColumnResize={setColumnWidth}
-        onColumnReorder={reorderColumns}
-        density={settings.density}
-      />
+      <div style={{ opacity: isPlaceholderData ? 0.6 : 1, transition: "opacity 0.2s" }}>
+        <JobTable
+          jobs={jobs}
+          loading={isLoading}
+          onSelect={handleEnterReview}
+          visibleColumns={settings.visibleColumns}
+          columnOrder={settings.columnOrder}
+          columnWidths={settings.columnWidths}
+          onColumnResize={setColumnWidth}
+          onColumnReorder={reorderColumns}
+          density={settings.density}
+          hasNextPage={!!hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          onLoadMore={() => fetchNextPage()}
+        />
+      </div>
     </Flex>
   );
 };

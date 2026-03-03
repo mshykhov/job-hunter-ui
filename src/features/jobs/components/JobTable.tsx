@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Table, Tag } from "antd";
 import type { ColumnsType, ColumnType } from "antd/es/table";
 import { CheckCircleOutlined } from "@ant-design/icons";
@@ -27,6 +27,9 @@ interface JobTableProps {
   onColumnResize: (key: ColumnKey, width: number) => void;
   onColumnReorder: (fromKey: ColumnKey, toKey: ColumnKey) => void;
   density: TableDensity;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
 }
 
 const BASE_COLUMNS: ColumnsType<Job> = [
@@ -84,32 +87,24 @@ const BASE_COLUMNS: ColumnsType<Job> = [
     title: "Score",
     dataIndex: "aiRelevanceScore",
     align: "center",
-    sorter: (a, b) => (a.aiRelevanceScore ?? 0) - (b.aiRelevanceScore ?? 0),
-    showSorterTooltip: false,
     render: (score: number | null) => score != null ? `${score}%` : "\u2014",
   },
   {
     key: "publishedAt",
     title: "Published",
     dataIndex: "publishedAt",
-    sorter: (a, b) => (a.publishedAt ?? "").localeCompare(b.publishedAt ?? ""),
-    showSorterTooltip: false,
     render: formatRelativeDate,
   },
   {
     key: "matchedAt",
     title: "Matched",
     dataIndex: "matchedAt",
-    sorter: (a, b) => (a.matchedAt ?? "").localeCompare(b.matchedAt ?? ""),
-    showSorterTooltip: false,
     render: formatRelativeDate,
   },
   {
     key: "updatedAt",
     title: "Scraped",
     dataIndex: "updatedAt",
-    sorter: (a, b) => (a.updatedAt ?? "").localeCompare(b.updatedAt ?? ""),
-    showSorterTooltip: false,
     render: formatRelativeDate,
   },
 ];
@@ -117,6 +112,8 @@ const BASE_COLUMNS: ColumnsType<Job> = [
 const BASE_COLUMNS_MAP = new Map<string, ColumnType<Job>>(
   BASE_COLUMNS.map((col) => [col.key as string, col]),
 );
+
+const SCROLL_THRESHOLD = 200;
 
 export const JobTable = ({
   jobs,
@@ -128,8 +125,12 @@ export const JobTable = ({
   onColumnResize,
   onColumnReorder,
   density,
+  hasNextPage,
+  isFetchingNextPage,
+  onLoadMore,
 }: JobTableProps) => {
   const [dragIndex, setDragIndex] = useState<DragIndexState>({ active: "", over: "" });
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -171,6 +172,23 @@ export const JobTable = ({
     [orderedKeys, columnWidths],
   );
 
+  const handleScroll = useCallback(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    const el = tableRef.current?.querySelector(".ant-table-body");
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    if (scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD) {
+      onLoadMore();
+    }
+  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+
+  useEffect(() => {
+    const el = tableRef.current?.querySelector(".ant-table-body");
+    if (!el) return;
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       onColumnReorder(active.id as ColumnKey, over!.id as ColumnKey);
@@ -192,23 +210,25 @@ export const JobTable = ({
     >
       <SortableContext items={orderedKeys} strategy={horizontalListSortingStrategy}>
         <DragIndexContext.Provider value={dragIndex}>
-          <Table<Job>
-            columns={columns as ColumnsType<Job>}
-            dataSource={jobs}
-            loading={loading}
-            rowKey="id"
-            size={density}
-            scroll={{ x: scrollX }}
-            components={{
-              header: { cell: ResizableHeaderCell },
-              body: { cell: DraggableBodyCell },
-            }}
-            pagination={false}
-            onRow={(record) => ({
-              onClick: () => onSelect(record),
-              style: { cursor: "pointer" },
-            })}
-          />
+          <div ref={tableRef}>
+            <Table<Job>
+              columns={columns as ColumnsType<Job>}
+              dataSource={jobs}
+              loading={loading}
+              rowKey="id"
+              size={density}
+              scroll={{ x: scrollX, y: "calc(100vh - 280px)" }}
+              components={{
+                header: { cell: ResizableHeaderCell },
+                body: { cell: DraggableBodyCell },
+              }}
+              pagination={false}
+              onRow={(record) => ({
+                onClick: () => onSelect(record),
+                style: { cursor: "pointer" },
+              })}
+            />
+          </div>
         </DragIndexContext.Provider>
       </SortableContext>
     </DndContext>

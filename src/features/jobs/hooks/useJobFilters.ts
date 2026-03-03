@@ -3,7 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import type { JobFilters, JobSource, PeriodField, UserJobStatus } from "../types";
 import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
 
-const PARAM_KEYS = ["sources", "statuses", "search", "remote", "minScore", "period", "periodField"] as const;
+const PARAM_KEYS = [
+  "sources", "statuses", "search", "remote", "minScore", "period", "periodField",
+] as const;
 
 const SOURCE_VALUES = new Set<string>(Object.values(JOB_SOURCE));
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));

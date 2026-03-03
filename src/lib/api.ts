@@ -41,7 +41,7 @@ api.interceptors.response.use(
 );
 
 export const API_PATHS = {
-  JOBS: "/jobs",
+  JOBS_SEARCH: "/jobs/search",
   JOB_DETAIL: (jobId: string) => `/jobs/${jobId}`,
   JOB_STATUS: (jobId: string) => `/jobs/${jobId}/status`,
   CRITERIA: "/criteria",

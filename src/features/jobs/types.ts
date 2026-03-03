@@ -52,4 +52,13 @@ export interface JobFilters {
   minScore?: number;
   period?: string;
   periodField?: PeriodField;
+  size?: number;
+}
+
+export interface PaginatedJobsResponse {
+  content: Job[];
+  totalElements: number;
+  hasMore: boolean;
+  size: number;
+  statusCounts: Partial<Record<UserJobStatus, number>>;
 }

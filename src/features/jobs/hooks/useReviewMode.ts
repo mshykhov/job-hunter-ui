@@ -1,48 +1,113 @@
-import { useState, useCallback, useEffect } from "react";
-import type { Job } from "../types";
+import { useState, useCallback, useEffect, useRef } from "react";
+import type { Job, JobFilters } from "../types";
+import { fetchJobsPage } from "./jobSearchApi";
 
-interface ReviewModeState {
-  snapshot: Job[];
+interface ReviewState {
+  jobs: Job[];
   index: number;
+  totalElements: number;
+  hasMore: boolean;
+  filters: JobFilters;
 }
+
+const PREFETCH_THRESHOLD = 10;
 
 export interface UseReviewModeReturn {
   isActive: boolean;
   currentJob: Job | null;
   currentIndex: number;
   total: number;
-  enter: (jobs: Job[], startJob: Job) => void;
+  enter: (jobs: Job[], startJob: Job, totalElements: number, filters: JobFilters, hasMore: boolean) => void;
   exit: () => void;
   goNext: () => void;
   goPrev: () => void;
   advanceWithUpdate: (updated: Job) => void;
   hasPrev: boolean;
   hasNext: boolean;
+  isPageLoading: boolean;
 }
 
 export const useReviewMode = (): UseReviewModeReturn => {
-  const [state, setState] = useState<ReviewModeState | null>(null);
+  const [state, setState] = useState<ReviewState | null>(null);
+  const [isPageLoading, setIsPageLoading] = useState(false);
+  const stateRef = useRef(state);
+  const loadingRef = useRef(false);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   const isActive = state !== null;
-  const currentJob = state ? (state.snapshot[state.index] ?? null) : null;
-  const total = state?.snapshot.length ?? 0;
+  const currentJob = state ? (state.jobs[state.index] ?? null) : null;
+  const total = state?.totalElements ?? 0;
   const hasPrev = (state?.index ?? 0) > 0;
-  const hasNext = state !== null && state.index < state.snapshot.length - 1;
+  const hasNext = state !== null && (state.index < state.jobs.length - 1 || state.hasMore);
 
-  const enter = useCallback((jobs: Job[], startJob: Job) => {
-    if (jobs.length === 0) return;
-    const index = jobs.findIndex((j) => j.id === startJob.id);
-    setState({ snapshot: [...jobs], index: Math.max(0, index) });
+  const loadMore = useCallback(async () => {
+    const s = stateRef.current;
+    if (!s || !s.hasMore || loadingRef.current) return;
+
+    const lastJob = s.jobs[s.jobs.length - 1];
+    if (!lastJob?.matchedAt) return;
+
+    loadingRef.current = true;
+    setIsPageLoading(true);
+    const response = await fetchJobsPage(s.filters, {
+      createdAt: lastJob.matchedAt,
+      id: lastJob.id,
+    });
+    setIsPageLoading(false);
+    loadingRef.current = false;
+
+    setState((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        jobs: [...prev.jobs, ...response.content],
+        hasMore: response.hasMore,
+      };
+    });
   }, []);
+
+  const enter = useCallback(
+    (jobs: Job[], startJob: Job, totalElements: number, filters: JobFilters, hasMore: boolean) => {
+      if (jobs.length === 0) return;
+      const index = jobs.findIndex((j) => j.id === startJob.id);
+      setState({
+        jobs: [...jobs],
+        index: Math.max(0, index),
+        totalElements,
+        hasMore,
+        filters,
+      });
+    },
+    [],
+  );
 
   const exit = useCallback(() => setState(null), []);
 
-  const goNext = useCallback(() => {
+  const goNext = useCallback(async () => {
+    const s = stateRef.current;
+    if (!s) return;
+
+    if (s.index < s.jobs.length - 1) {
+      const nextIndex = s.index + 1;
+      setState((prev) => prev ? { ...prev, index: nextIndex } : prev);
+
+      if (nextIndex >= s.jobs.length - PREFETCH_THRESHOLD && s.hasMore) {
+        loadMore();
+      }
+      return;
+    }
+
+    if (!s.hasMore) return;
+
+    await loadMore();
     setState((prev) => {
-      if (!prev || prev.index >= prev.snapshot.length - 1) return prev;
+      if (!prev || prev.index >= prev.jobs.length - 1) return prev;
       return { ...prev, index: prev.index + 1 };
     });
-  }, []);
+  }, [loadMore]);
 
   const goPrev = useCallback(() => {
     setState((prev) => {
@@ -54,12 +119,9 @@ export const useReviewMode = (): UseReviewModeReturn => {
   const advanceWithUpdate = useCallback((updated: Job) => {
     setState((prev) => {
       if (!prev) return prev;
-      const snapshot = prev.snapshot.map((j) =>
-        j.id === updated.id ? updated : j,
-      );
-      const nextIndex =
-        prev.index < snapshot.length - 1 ? prev.index + 1 : prev.index;
-      return { snapshot, index: nextIndex };
+      const jobs = prev.jobs.map((j) => (j.id === updated.id ? updated : j));
+      const nextIndex = prev.index < jobs.length - 1 ? prev.index + 1 : prev.index;
+      return { ...prev, jobs, index: nextIndex };
     });
   }, []);
 
@@ -98,5 +160,6 @@ export const useReviewMode = (): UseReviewModeReturn => {
     advanceWithUpdate,
     hasPrev,
     hasNext,
+    isPageLoading,
   };
 };

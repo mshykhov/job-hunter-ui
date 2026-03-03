@@ -1,21 +1,20 @@
 import { Card, Flex, Statistic } from "antd";
 import { ArrowUpOutlined } from "@ant-design/icons";
-import type { Job } from "../types";
+import type { UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
-import { countByStatus } from "../hooks/useJobs";
 
 interface StatCardsProps {
-  jobs: Job[];
+  statusCounts: Partial<Record<UserJobStatus, number>>;
+  total: number;
 }
 
-export const StatCards = ({ jobs }: StatCardsProps) => {
-  const counts = countByStatus(jobs);
-  const newCount = counts[USER_JOB_STATUS.NEW] ?? 0;
+export const StatCards = ({ statusCounts, total }: StatCardsProps) => {
+  const newCount = statusCounts[USER_JOB_STATUS.NEW] ?? 0;
 
   return (
     <Flex gap={16} wrap="wrap">
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>
-        <Statistic title="Total Jobs" value={jobs.length} />
+        <Statistic title="Total Jobs" value={total} />
       </Card>
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>
         <Statistic
@@ -28,12 +27,12 @@ export const StatCards = ({ jobs }: StatCardsProps) => {
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>
         <Statistic
           title="Applied"
-          value={counts[USER_JOB_STATUS.APPLIED] ?? 0}
+          value={statusCounts[USER_JOB_STATUS.APPLIED] ?? 0}
           valueStyle={{ color: "#52c41a" }}
         />
       </Card>
       <Card size="small" style={{ flex: 1, minWidth: 140 }}>
-        <Statistic title="Irrelevant" value={counts[USER_JOB_STATUS.IRRELEVANT] ?? 0} />
+        <Statistic title="Irrelevant" value={statusCounts[USER_JOB_STATUS.IRRELEVANT] ?? 0} />
       </Card>
     </Flex>
   );
