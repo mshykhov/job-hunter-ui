@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppVersion } from "@/components/AppVersion";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, PERMISSIONS } from "@/hooks/useAuth";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -22,15 +22,6 @@ interface SidebarProps {
   onThemeToggle: () => void;
   newJobsCount: number;
 }
-
-const PUBLIC_NAV_ITEMS = [
-  { key: "/statistics", icon: <BarChartOutlined />, label: "Statistics" },
-];
-
-const PROTECTED_NAV_ITEMS = [
-  { key: "/jobs", icon: <FileSearchOutlined />, label: "Jobs" },
-  { key: "/settings", icon: <SettingOutlined />, label: "Settings" },
-];
 
 export const Sidebar = ({
   collapsed,
@@ -42,25 +33,29 @@ export const Sidebar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { token } = theme.useToken();
-  const { isAuthenticated, isConfigured, user, loginWithRedirect, logout } = useAuth();
+  const { isAuthenticated, isConfigured, permissions, user, loginWithRedirect, logout } = useAuth();
 
-  const showProtected = !isConfigured || isAuthenticated;
+  const canReadJobs = !isConfigured || permissions.includes(PERMISSIONS.READ_JOBS);
+  const canReadPreferences = !isConfigured || permissions.includes(PERMISSIONS.READ_PREFERENCES);
 
   const navItems = [
-    ...(showProtected
-      ? PROTECTED_NAV_ITEMS.map((item) => ({
-          ...item,
-          icon:
-            item.key === "/jobs" ? (
+    ...(canReadJobs
+      ? [
+          {
+            key: "/jobs",
+            icon: (
               <Badge count={newJobsCount} size="small" offset={[6, 0]}>
-                {item.icon}
+                <FileSearchOutlined />
               </Badge>
-            ) : (
-              item.icon
             ),
-        }))
+            label: "Jobs",
+          },
+        ]
       : []),
-    ...PUBLIC_NAV_ITEMS,
+    ...(canReadPreferences
+      ? [{ key: "/settings", icon: <SettingOutlined />, label: "Settings" }]
+      : []),
+    { key: "/statistics", icon: <BarChartOutlined />, label: "Statistics" },
   ];
 
   return (
