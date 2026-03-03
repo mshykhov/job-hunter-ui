@@ -75,16 +75,15 @@ const hasFilterParams = (params: URLSearchParams): boolean =>
 
 export const useJobFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const restoredRef = useRef(false);
+  const restoredRef = useRef<boolean | null>(null);
 
-  if (!restoredRef.current) {
+  if (restoredRef.current == null) {
     restoredRef.current = true;
     if (!hasFilterParams(searchParams)) {
       const saved = storage.load();
       const params = filtersToParams(saved, new URLSearchParams(searchParams));
       if (hasFilterParams(params)) {
         setSearchParams(params, { replace: true });
-        return { filters: saved, setFilters: () => {} };
       }
     }
   }

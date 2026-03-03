@@ -1,14 +1,8 @@
-import { createContext, useContext } from "react";
+import { useContext } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { Resizable } from "react-resizable";
 import type { ResizeCallbackData } from "react-resizable";
-
-export interface DragIndexState {
-  active: string | number;
-  over: string | number | undefined;
-}
-
-export const DragIndexContext = createContext<DragIndexState>({ active: "", over: "" });
+import { DragIndexContext, type DragIndexState } from "./DragIndexContext";
 
 interface HeaderCellProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   id?: string;

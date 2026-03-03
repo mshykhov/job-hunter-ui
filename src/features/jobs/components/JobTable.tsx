@@ -10,12 +10,8 @@ import type { Job } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS, formatRelativeDate } from "../constants";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
-import {
-  ResizableHeaderCell,
-  DraggableBodyCell,
-  DragIndexContext,
-  type DragIndexState,
-} from "./ResizableHeaderCell";
+import { ResizableHeaderCell, DraggableBodyCell } from "./ResizableHeaderCell";
+import { DragIndexContext, type DragIndexState } from "./DragIndexContext";
 
 interface JobTableProps {
   jobs: Job[];
