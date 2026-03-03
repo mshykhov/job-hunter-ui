@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import { Flex, Spin } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -7,22 +8,20 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, isConfigured, loginWithRedirect } = useAuth();
-
-  useEffect(() => {
-    if (isConfigured && !isLoading && !isAuthenticated) {
-      loginWithRedirect();
-    }
-  }, [isConfigured, isLoading, isAuthenticated, loginWithRedirect]);
+  const { isAuthenticated, isLoading, isConfigured } = useAuth();
 
   if (!isConfigured) return <>{children}</>;
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
       <Flex justify="center" align="center" style={{ minHeight: "100vh" }}>
         <Spin size="large" />
       </Flex>
     );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/statistics" replace />;
   }
 
   return <>{children}</>;

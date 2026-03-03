@@ -64,7 +64,8 @@ const formatError = (error: AxiosError<ApiError>): { title: string; detail: stri
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiError>) => {
-    if (error.response?.status === 401 && authErrorHandler) {
+    const hadToken = !!error.config?.headers?.Authorization;
+    if (error.response?.status === 401 && hadToken && authErrorHandler) {
       authErrorHandler();
       return Promise.reject(error);
     }
