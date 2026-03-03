@@ -114,17 +114,6 @@ export const Sidebar = ({
             )}
           </Flex>
 
-          {collapsed && (
-            <Flex justify="center" style={{ marginBottom: 12 }}>
-              <Button
-                type="text"
-                size="small"
-                icon={<MenuUnfoldOutlined />}
-                onClick={() => onCollapse(false)}
-              />
-            </Flex>
-          )}
-
           <Menu
             mode="inline"
             theme={isDark ? "dark" : "light"}
@@ -170,6 +159,14 @@ export const Sidebar = ({
                 {!collapsed && "Sign In"}
               </Button>
             ))}
+          {collapsed && (
+            <Button
+              type="text"
+              size="small"
+              icon={<MenuUnfoldOutlined />}
+              onClick={() => onCollapse(false)}
+            />
+          )}
           <Button
             type="text"
             size="small"
