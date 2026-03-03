@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { JobFilters, JobSource, PeriodField, UserJobStatus } from "../types";
 import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
+import { createStorage } from "@/lib/storage";
 
 const PARAM_KEYS = [
   "sources", "statuses", "search", "remote", "minScore", "period", "periodField",
@@ -13,6 +14,25 @@ const PERIOD_FIELD_VALUES = new Set<string>(Object.values(PERIOD_FIELD));
 
 const DEFAULT_PERIOD = "24h";
 const DEFAULT_PERIOD_FIELD = PERIOD_FIELD.MATCHED;
+const DEFAULT_FILTERS: JobFilters = { period: DEFAULT_PERIOD, periodField: DEFAULT_PERIOD_FIELD };
+
+const storage = createStorage<JobFilters>("job-hunter-filters", 1, DEFAULT_FILTERS);
+
+const filtersToParams = (filters: JobFilters, params: URLSearchParams): URLSearchParams => {
+  for (const key of PARAM_KEYS) params.delete(key);
+
+  if (filters.sources?.length) params.set("sources", filters.sources.join(","));
+  if (filters.statuses?.length) params.set("statuses", filters.statuses.join(","));
+  if (filters.search) params.set("search", filters.search);
+  if (filters.remote) params.set("remote", "true");
+  if (filters.minScore != null) params.set("minScore", String(filters.minScore));
+  if (filters.period !== undefined) params.set("period", filters.period);
+  if (filters.periodField && filters.periodField !== DEFAULT_PERIOD_FIELD) {
+    params.set("periodField", filters.periodField);
+  }
+
+  return params;
+};
 
 const parseFilters = (params: URLSearchParams): JobFilters => {
   const filters: JobFilters = {};
@@ -50,29 +70,32 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
   return filters;
 };
 
+const hasFilterParams = (params: URLSearchParams): boolean =>
+  PARAM_KEYS.some((key) => params.has(key));
+
 export const useJobFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const restoredRef = useRef(false);
+
+  if (!restoredRef.current) {
+    restoredRef.current = true;
+    if (!hasFilterParams(searchParams)) {
+      const saved = storage.load();
+      const params = filtersToParams(saved, new URLSearchParams(searchParams));
+      if (hasFilterParams(params)) {
+        setSearchParams(params, { replace: true });
+        return { filters: saved, setFilters: () => {} };
+      }
+    }
+  }
+
   const filters = parseFilters(searchParams);
 
   const setFilters = useCallback(
     (next: JobFilters) => {
+      storage.save(next);
       setSearchParams(
-        (prev) => {
-          const params = new URLSearchParams(prev);
-          for (const key of PARAM_KEYS) params.delete(key);
-
-          if (next.sources?.length) params.set("sources", next.sources.join(","));
-          if (next.statuses?.length) params.set("statuses", next.statuses.join(","));
-          if (next.search) params.set("search", next.search);
-          if (next.remote) params.set("remote", "true");
-          if (next.minScore != null) params.set("minScore", String(next.minScore));
-          if (next.period !== undefined) params.set("period", next.period);
-          if (next.periodField && next.periodField !== DEFAULT_PERIOD_FIELD) {
-            params.set("periodField", next.periodField);
-          }
-
-          return params;
-        },
+        (prev) => filtersToParams(next, new URLSearchParams(prev)),
         { replace: true },
       );
     },
