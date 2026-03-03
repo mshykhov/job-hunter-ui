@@ -8,12 +8,42 @@ export const api = axios.create({
 });
 
 type ErrorHandler = (title: string, detail: string) => void;
+type TokenGetter = () => Promise<string>;
+type AuthErrorHandler = () => void;
 
 let errorHandler: ErrorHandler | null = null;
+let tokenGetter: TokenGetter | null = null;
+let authErrorHandler: AuthErrorHandler | null = null;
 
 export const registerErrorHandler = (handler: ErrorHandler) => {
   errorHandler = handler;
 };
+
+export const registerTokenGetter = (getter: TokenGetter) => {
+  tokenGetter = getter;
+  return () => {
+    tokenGetter = null;
+  };
+};
+
+export const registerAuthErrorHandler = (handler: AuthErrorHandler) => {
+  authErrorHandler = handler;
+  return () => {
+    authErrorHandler = null;
+  };
+};
+
+api.interceptors.request.use(async (config) => {
+  if (tokenGetter) {
+    try {
+      const token = await tokenGetter();
+      config.headers.Authorization = `Bearer ${token}`;
+    } catch {
+      // Token unavailable — send request without auth
+    }
+  }
+  return config;
+});
 
 const formatError = (error: AxiosError<ApiError>): { title: string; detail: string } => {
   if (!error.response) {
@@ -34,6 +64,10 @@ const formatError = (error: AxiosError<ApiError>): { title: string; detail: stri
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiError>) => {
+    if (error.response?.status === 401 && authErrorHandler) {
+      authErrorHandler();
+      return Promise.reject(error);
+    }
     const { title, detail } = formatError(error);
     errorHandler?.(title, detail);
     return Promise.reject(error);

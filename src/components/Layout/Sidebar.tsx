@@ -1,4 +1,4 @@
-import { Layout, Menu, Button, Badge, Flex, theme } from "antd";
+import { Layout, Menu, Button, Badge, Flex, Typography, theme } from "antd";
 import {
   FileSearchOutlined,
   BarChartOutlined,
@@ -8,9 +8,12 @@ import {
   SunOutlined,
   MoonOutlined,
   AimOutlined,
+  LoginOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppVersion } from "@/components/AppVersion";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -20,9 +23,12 @@ interface SidebarProps {
   newJobsCount: number;
 }
 
-const NAV_ITEMS = [
-  { key: "/", icon: <FileSearchOutlined />, label: "Jobs" },
+const PUBLIC_NAV_ITEMS = [
   { key: "/statistics", icon: <BarChartOutlined />, label: "Statistics" },
+];
+
+const PROTECTED_NAV_ITEMS = [
+  { key: "/jobs", icon: <FileSearchOutlined />, label: "Jobs" },
   { key: "/settings", icon: <SettingOutlined />, label: "Settings" },
 ];
 
@@ -36,18 +42,26 @@ export const Sidebar = ({
   const location = useLocation();
   const navigate = useNavigate();
   const { token } = theme.useToken();
+  const { isAuthenticated, isConfigured, user, loginWithRedirect, logout } = useAuth();
 
-  const menuItems = NAV_ITEMS.map((item) => ({
-    ...item,
-    icon:
-      item.key === "/" ? (
-        <Badge count={newJobsCount} size="small" offset={[6, 0]}>
-          {item.icon}
-        </Badge>
-      ) : (
-        item.icon
-      ),
-  }));
+  const showProtected = !isConfigured || isAuthenticated;
+
+  const navItems = [
+    ...(showProtected
+      ? PROTECTED_NAV_ITEMS.map((item) => ({
+          ...item,
+          icon:
+            item.key === "/jobs" ? (
+              <Badge count={newJobsCount} size="small" offset={[6, 0]}>
+                {item.icon}
+              </Badge>
+            ) : (
+              item.icon
+            ),
+        }))
+      : []),
+    ...PUBLIC_NAV_ITEMS,
+  ];
 
   return (
     <Layout.Sider
@@ -115,13 +129,47 @@ export const Sidebar = ({
             mode="inline"
             theme={isDark ? "dark" : "light"}
             selectedKeys={[location.pathname]}
-            items={menuItems}
+            items={navItems}
             onClick={({ key }) => navigate(key)}
             style={{ borderInlineEnd: "none" }}
           />
         </div>
 
-        <Flex vertical align={collapsed ? "center" : "start"} gap={8} style={{ padding: "0 16px" }}>
+        <Flex
+          vertical
+          align={collapsed ? "center" : "start"}
+          gap={8}
+          style={{ padding: "0 16px" }}
+        >
+          {isConfigured && isAuthenticated && !collapsed && user?.email && (
+            <Typography.Text
+              type="secondary"
+              ellipsis
+              style={{ fontSize: 12, maxWidth: "100%" }}
+            >
+              {user.email}
+            </Typography.Text>
+          )}
+          {isConfigured &&
+            (isAuthenticated ? (
+              <Button
+                type="text"
+                size="small"
+                icon={<LogoutOutlined />}
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+              >
+                {!collapsed && "Logout"}
+              </Button>
+            ) : (
+              <Button
+                type="text"
+                size="small"
+                icon={<LoginOutlined />}
+                onClick={() => loginWithRedirect()}
+              >
+                {!collapsed && "Sign In"}
+              </Button>
+            ))}
           <Button
             type="text"
             size="small"
