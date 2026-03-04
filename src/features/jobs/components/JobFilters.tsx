@@ -1,4 +1,4 @@
-import { DatePicker, Flex, Input, InputNumber, Select, Switch, Typography } from "antd";
+import { DatePicker, Flex, Input, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
@@ -95,20 +95,6 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           Remote
         </Typography.Text>
-      </Flex>
-      <Flex align="center" gap={6}>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Min score
-        </Typography.Text>
-        <InputNumber
-          size="small"
-          min={0}
-          max={100}
-          step={5}
-          style={{ width: 65 }}
-          value={filters.minScore}
-          onChange={(v) => onChange({ ...filters, minScore: v ?? undefined })}
-        />
       </Flex>
     </Flex>
   );

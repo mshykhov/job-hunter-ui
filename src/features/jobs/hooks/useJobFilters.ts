@@ -5,7 +5,7 @@ import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
 import { createStorage } from "@/lib/storage";
 
 const PARAM_KEYS = [
-  "sources", "statuses", "search", "remote", "minScore", "since", "periodField",
+  "sources", "statuses", "search", "remote", "since", "periodField",
 ] as const;
 
 const SOURCE_VALUES = new Set<string>(Object.values(JOB_SOURCE));
@@ -25,7 +25,6 @@ const filtersToParams = (filters: JobFilters, params: URLSearchParams): URLSearc
   if (filters.statuses?.length) params.set("statuses", filters.statuses.join(","));
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
-  if (filters.minScore != null) params.set("minScore", String(filters.minScore));
   if (filters.since) params.set("since", filters.since);
   if (filters.periodField && filters.periodField !== DEFAULT_PERIOD_FIELD) {
     params.set("periodField", filters.periodField);
@@ -53,12 +52,6 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
   if (search) filters.search = search;
 
   if (params.get("remote") === "true") filters.remote = true;
-
-  const minScore = params.get("minScore");
-  if (minScore) {
-    const parsed = Number(minScore);
-    if (!Number.isNaN(parsed)) filters.minScore = parsed;
-  }
 
   const since = params.get("since");
   filters.since = since || defaultSince();

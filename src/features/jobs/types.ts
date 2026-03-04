@@ -49,7 +49,6 @@ export interface JobFilters {
   sources?: JobSource[];
   search?: string;
   remote?: boolean;
-  minScore?: number;
   since?: string;
   periodField?: PeriodField;
   size?: number;

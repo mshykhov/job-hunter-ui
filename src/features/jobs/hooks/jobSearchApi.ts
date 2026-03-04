@@ -11,7 +11,6 @@ export interface Cursor {
 const buildRequestBody = (filters: JobFilters, cursor?: Cursor) => {
   const body: Record<string, unknown> = {};
 
-  if (filters.minScore != null) body.minScore = filters.minScore;
   if (filters.sources?.length) body.sources = filters.sources;
   if (filters.statuses?.length) body.statuses = filters.statuses;
   if (filters.search) body.search = filters.search;

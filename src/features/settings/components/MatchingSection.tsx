@@ -1,4 +1,4 @@
-import { Card, Col, Flex, Input, Row, Slider, Switch, Tag, Typography, theme } from "antd";
+import { Card, Col, Flex, Input, Row, Switch, Tag, Typography, theme } from "antd";
 import { RobotOutlined } from "@ant-design/icons";
 import { TagListInput } from "./TagListInput";
 import type { MatchingPreferences } from "../types";
@@ -104,21 +104,6 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
                   onChange={(v) => onChange("keywords", v)}
                   placeholder="e.g. spring"
                   color="green"
-                />
-              </Flex>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Flex vertical gap={4}>
-                <Typography.Text strong style={{ fontSize: 13 }}>
-                  Minimum Score: {form.minScore}
-                </Typography.Text>
-                <Slider
-                  min={0}
-                  max={100}
-                  step={5}
-                  value={form.minScore}
-                  onChange={(v) => onChange("minScore", v)}
-                  disabled={!form.matchWithAi}
                 />
               </Flex>
             </Col>
