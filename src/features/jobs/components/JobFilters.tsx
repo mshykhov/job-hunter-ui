@@ -1,8 +1,9 @@
-import { Flex, Input, InputNumber, Segmented, Select, Switch, Typography } from "antd";
+import { DatePicker, Flex, Input, InputNumber, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
 import type { JobFilters as JobFiltersType, JobSource, PeriodField, UserJobStatus } from "../types";
-import { STATUS_LABELS, PERIOD_OPTIONS, PERIOD_FIELD_LABELS } from "../constants";
+import { STATUS_LABELS, PERIOD_FIELD_LABELS } from "../constants";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -28,11 +29,14 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
 
   return (
     <Flex gap={12} wrap="wrap" align="center">
-      <Segmented
-        value={filters.period ?? "24h"}
-        onChange={(val) => onChange({ ...filters, period: val as string })}
-        options={PERIOD_OPTIONS}
+      <DatePicker
+        showTime
         size="small"
+        placeholder="Since..."
+        allowClear
+        value={filters.since ? dayjs(filters.since) : null}
+        onChange={(date) => onChange({ ...filters, since: date?.toISOString() })}
+        style={{ width: 180 }}
       />
       <Flex align="center" gap={4}>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>

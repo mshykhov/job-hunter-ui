@@ -2,18 +2,6 @@ import { api, API_PATHS } from "@/lib/api";
 import type { JobFilters, PaginatedJobsResponse, PublicJobPageResponse } from "../types";
 import { PERIOD_FIELD } from "../types";
 
-const PERIOD_MS: Record<string, number> = {
-  "12h": 12 * 3_600_000,
-  "24h": 24 * 3_600_000,
-  "3d": 3 * 24 * 3_600_000,
-};
-
-const periodToInstant = (period?: string): string | undefined => {
-  if (!period) return undefined;
-  const ms = PERIOD_MS[period];
-  if (!ms) return undefined;
-  return new Date(Date.now() - ms).toISOString();
-};
 
 export interface Cursor {
   createdAt: string;
@@ -29,13 +17,12 @@ const buildRequestBody = (filters: JobFilters, cursor?: Cursor) => {
   if (filters.search) body.search = filters.search;
   if (filters.remote) body.remote = true;
 
-  const dateValue = periodToInstant(filters.period);
-  if (dateValue) {
+  if (filters.since) {
     const field = filters.periodField || PERIOD_FIELD.MATCHED;
     const paramName =
       field === PERIOD_FIELD.MATCHED ? "matchedAfter" :
       field === PERIOD_FIELD.PUBLISHED ? "publishedAfter" : "updatedAfter";
-    body[paramName] = dateValue;
+    body[paramName] = filters.since;
   }
 
   body.size = filters.size ?? 50;

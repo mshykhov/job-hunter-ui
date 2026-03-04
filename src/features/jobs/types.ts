@@ -50,7 +50,7 @@ export interface JobFilters {
   search?: string;
   remote?: boolean;
   minScore?: number;
-  period?: string;
+  since?: string;
   periodField?: PeriodField;
   size?: number;
 }

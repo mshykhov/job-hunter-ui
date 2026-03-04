@@ -18,13 +18,6 @@ export const SOURCE_COLORS: Record<JobSource, string> = {
   linkedin: "cyan",
 };
 
-export const PERIOD_OPTIONS = [
-  { label: "12h", value: "12h" },
-  { label: "24h", value: "24h" },
-  { label: "3d", value: "3d" },
-  { label: "All", value: "" },
-];
-
 export const PERIOD_FIELD_LABELS: Record<PeriodField, string> = {
   matched: "Matched",
   published: "Published",
