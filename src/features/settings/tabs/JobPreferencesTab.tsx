@@ -108,8 +108,8 @@ export const JobPreferencesTab = () => {
     return () => clearTimeout(t);
   }, [matchingSaved]);
 
-  const weightsTotal = matchingForm.form.weightTechnology + matchingForm.form.weightSeniority
-    + matchingForm.form.weightSkills;
+  const weightsTotal = matchingForm.form.weightKeywords + matchingForm.form.weightSeniority
+    + matchingForm.form.weightCategories;
   const weightsInvalid = matchingForm.form.matchWithAi && weightsTotal !== 100;
 
   const normalizing = normalizeMutation.isPending || normalizeFileMutation.isPending;

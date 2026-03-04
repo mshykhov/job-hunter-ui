@@ -10,7 +10,7 @@ interface MatchingSectionProps {
 
 export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
   const { token } = theme.useToken();
-  const weightsTotal = form.weightTechnology + form.weightSeniority + form.weightSkills;
+  const weightsTotal = form.weightKeywords + form.weightSeniority + form.weightCategories;
 
   return (
     <Flex vertical gap={16}>
@@ -124,10 +124,10 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
                 <Row gutter={[16, 8]}>
                   <Col xs={24} sm={12}>
                     <Flex align="center" justify="space-between">
-                      <Typography.Text style={{ fontSize: 12 }}>Technology</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightTechnology}%</Typography.Text>
+                      <Typography.Text style={{ fontSize: 12 }}>Keywords</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightKeywords}%</Typography.Text>
                     </Flex>
-                    <Slider min={0} max={100} step={5} value={form.weightTechnology} onChange={(v) => onChange("weightTechnology", v)} />
+                    <Slider min={0} max={100} step={5} value={form.weightKeywords} onChange={(v) => onChange("weightKeywords", v)} />
                   </Col>
                   <Col xs={24} sm={12}>
                     <Flex align="center" justify="space-between">
@@ -138,10 +138,10 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
                   </Col>
                   <Col xs={24} sm={12}>
                     <Flex align="center" justify="space-between">
-                      <Typography.Text style={{ fontSize: 12 }}>Skills</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightSkills}%</Typography.Text>
+                      <Typography.Text style={{ fontSize: 12 }}>Categories</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightCategories}%</Typography.Text>
                     </Flex>
-                    <Slider min={0} max={100} step={5} value={form.weightSkills} onChange={(v) => onChange("weightSkills", v)} />
+                    <Slider min={0} max={100} step={5} value={form.weightCategories} onChange={(v) => onChange("weightCategories", v)} />
                   </Col>
                 </Row>
               </Flex>

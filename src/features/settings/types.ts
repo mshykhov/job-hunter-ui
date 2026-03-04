@@ -16,9 +16,9 @@ export interface MatchingPreferences {
   excludedCompanies: string[];
   matchWithAi: boolean;
   customPrompt: string | null;
-  weightTechnology: number;
+  weightKeywords: number;
   weightSeniority: number;
-  weightSkills: number;
+  weightCategories: number;
 }
 
 export interface TelegramPreferences {
@@ -50,9 +50,9 @@ export const EMPTY_PREFERENCES: Preferences = {
     excludedCompanies: [],
     matchWithAi: true,
     customPrompt: null,
-    weightTechnology: 40,
+    weightKeywords: 45,
     weightSeniority: 30,
-    weightSkills: 30,
+    weightCategories: 25,
   },
   telegram: {
     chatId: null,
