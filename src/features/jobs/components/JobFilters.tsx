@@ -26,8 +26,8 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
   }));
 
   const sourceOptions = sources.map((s) => ({
-    label: s,
-    value: s,
+    label: s.displayName,
+    value: s.id,
   }));
 
   return (
@@ -37,9 +37,16 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
         size="small"
         placeholder="Since..."
         allowClear
+        format="YYYY-MM-DD HH:mm"
         value={filters.since ? dayjs(filters.since) : null}
         onChange={(date) => onChange({ ...filters, since: date?.toISOString() })}
-        style={{ width: 180 }}
+        presets={[
+          { label: "12h", value: dayjs().subtract(12, "hour") },
+          { label: "24h", value: dayjs().subtract(24, "hour") },
+          { label: "3 days", value: dayjs().subtract(3, "day") },
+          { label: "7 days", value: dayjs().subtract(7, "day") },
+        ]}
+        style={{ width: 190 }}
       />
       <Flex align="center" gap={4}>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>

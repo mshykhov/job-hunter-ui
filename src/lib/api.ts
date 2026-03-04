@@ -85,6 +85,7 @@ api.interceptors.response.use(
 
 export const API_PATHS = {
   PUBLIC_JOBS: "/public/jobs",
+  PUBLIC_VERSION: "/public/version",
   PUBLIC_JOB_SOURCES: "/public/jobs/sources",
   JOBS_SEARCH: "/jobs/search",
   JOB_DETAIL: (jobId: string) => `/jobs/${jobId}`,

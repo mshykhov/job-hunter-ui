@@ -1,5 +1,6 @@
-import { Flex, Input, Select, Switch, Typography } from "antd";
+import { DatePicker, Flex, Input, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import type { JobFilters, JobSource } from "@/features/jobs/types";
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 
@@ -12,11 +13,27 @@ export const ExploreFilters = ({ filters, onChange }: ExploreFiltersProps) => {
   const { data: sources = [] } = useJobSources();
 
   const sourceOptions = sources.map((s) => ({
-    label: s,
-    value: s,
+    label: s.displayName,
+    value: s.id,
   }));
   return (
     <Flex gap={12} wrap="wrap" align="center">
+      <DatePicker
+        showTime
+        size="small"
+        placeholder="Published after..."
+        allowClear
+        format="YYYY-MM-DD HH:mm"
+        value={filters.since ? dayjs(filters.since) : null}
+        onChange={(date) => onChange({ ...filters, since: date?.toISOString() })}
+        presets={[
+          { label: "12h", value: dayjs().subtract(12, "hour") },
+          { label: "24h", value: dayjs().subtract(24, "hour") },
+          { label: "3 days", value: dayjs().subtract(3, "day") },
+          { label: "7 days", value: dayjs().subtract(7, "day") },
+        ]}
+        style={{ width: 190 }}
+      />
       <Select
         mode="multiple"
         placeholder="Source"

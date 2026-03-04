@@ -53,7 +53,7 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
   if (params.get("remote") === "true") filters.remote = true;
 
   const since = params.get("since");
-  filters.since = since || defaultSince();
+  if (since) filters.since = since;
 
   const periodField = params.get("periodField");
   filters.periodField = periodField && PERIOD_FIELD_VALUES.has(periodField)

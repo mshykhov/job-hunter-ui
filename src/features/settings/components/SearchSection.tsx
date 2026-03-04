@@ -13,8 +13,8 @@ export const SearchSection = ({ form, onChange }: SearchSectionProps) => {
   const { data: sources = [] } = useJobSources();
 
   const sourceOptions = sources.map((s) => ({
-    label: s,
-    value: s,
+    label: s.displayName,
+    value: s.id,
   }));
 
   return (

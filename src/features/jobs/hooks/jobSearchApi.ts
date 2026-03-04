@@ -52,6 +52,7 @@ export const fetchPublicJobsPage = async (
   params.set("size", String(filters.size ?? 20));
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
+  if (filters.since) params.set("publishedAfter", filters.since);
   filters.sources?.forEach((s) => params.append("source", s));
 
   const { data } = await api.get<PublicJobPageResponse>(

@@ -77,7 +77,7 @@ export const TelegramTab = () => {
               <Checkbox.Group
                 value={form.notificationSources}
                 onChange={(v) => update("notificationSources", v as string[])}
-                options={sources.map((s) => ({ label: s, value: s }))}
+                options={sources.map((s) => ({ label: s.displayName, value: s.id }))}
               />
             </Flex>
           )}
