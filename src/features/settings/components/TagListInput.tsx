@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Tag, Input, Flex } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { ClearOutlined, PlusOutlined } from "@ant-design/icons";
 import type { InputRef } from "antd";
 
 interface TagListInputProps {
@@ -52,12 +52,22 @@ export const TagListInput = ({ value, onChange, placeholder, color }: TagListInp
           placeholder={placeholder}
         />
       ) : (
-        <Tag
-          onClick={showInput}
-          style={{ borderStyle: "dashed", cursor: "pointer" }}
-        >
-          <PlusOutlined /> Add
-        </Tag>
+        <>
+          <Tag
+            onClick={showInput}
+            style={{ borderStyle: "dashed", cursor: "pointer" }}
+          >
+            <PlusOutlined /> Add
+          </Tag>
+          {value.length >= 2 && (
+            <Tag
+              onClick={() => onChange([])}
+              style={{ cursor: "pointer" }}
+            >
+              <ClearOutlined /> Clear
+            </Tag>
+          )}
+        </>
       )}
     </Flex>
   );
