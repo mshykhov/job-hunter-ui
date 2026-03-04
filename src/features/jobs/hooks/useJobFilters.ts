@@ -1,14 +1,13 @@
 import { useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { JobFilters, JobSource, PeriodField, UserJobStatus } from "../types";
-import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
+import { USER_JOB_STATUS, PERIOD_FIELD } from "../types";
 import { createStorage } from "@/lib/storage";
 
 const PARAM_KEYS = [
   "sources", "statuses", "search", "remote", "since", "periodField",
 ] as const;
 
-const SOURCE_VALUES = new Set<string>(Object.values(JOB_SOURCE));
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
 const PERIOD_FIELD_VALUES = new Set<string>(Object.values(PERIOD_FIELD));
 
@@ -38,7 +37,7 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
 
   const sources = params.get("sources");
   if (sources) {
-    const parsed = sources.split(",").filter((s) => SOURCE_VALUES.has(s)) as JobSource[];
+    const parsed = sources.split(",").filter(Boolean) as JobSource[];
     if (parsed.length) filters.sources = parsed;
   }
 

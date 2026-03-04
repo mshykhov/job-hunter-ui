@@ -1,9 +1,10 @@
 import { DatePicker, Flex, Input, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { JOB_SOURCE, USER_JOB_STATUS, PERIOD_FIELD } from "../types";
+import { USER_JOB_STATUS, PERIOD_FIELD } from "../types";
 import type { JobFilters as JobFiltersType, JobSource, PeriodField, UserJobStatus } from "../types";
 import { STATUS_LABELS, PERIOD_FIELD_LABELS } from "../constants";
+import { useJobSources } from "../hooks/useJobSources";
 
 interface JobFiltersProps {
   filters: JobFiltersType;
@@ -17,13 +18,15 @@ const periodFieldOptions = Object.values(PERIOD_FIELD).map((f) => ({
 }));
 
 export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps) => {
+  const { data: sources = [] } = useJobSources();
+
   const statusOptions = Object.values(USER_JOB_STATUS).map((s) => ({
     label: `${STATUS_LABELS[s]} (${statusCounts[s] ?? 0})`,
     value: s,
   }));
 
-  const sourceOptions = Object.values(JOB_SOURCE).map((s) => ({
-    label: s.toUpperCase(),
+  const sourceOptions = sources.map((s) => ({
+    label: s,
     value: s,
   }));
 

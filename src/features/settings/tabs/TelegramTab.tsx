@@ -4,16 +4,12 @@ import { usePreferences, useSaveTelegramPreferences } from "../hooks/usePreferen
 import { useDirtyForm } from "../hooks/useDirtyForm";
 import { SaveBar } from "../components/SaveBar";
 import { EMPTY_PREFERENCES } from "../types";
-import { JOB_SOURCE } from "@/features/jobs/types";
+import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 import type { TelegramPreferences } from "../types";
-
-const SOURCE_OPTIONS = Object.entries(JOB_SOURCE).map(([label, value]) => ({
-  label,
-  value,
-}));
 
 export const TelegramTab = () => {
   const { data: preferences, isLoading } = usePreferences();
+  const { data: sources = [] } = useJobSources();
   const saveMutation = useSaveTelegramPreferences();
   const [saved, setSaved] = useState(false);
 
@@ -81,7 +77,7 @@ export const TelegramTab = () => {
               <Checkbox.Group
                 value={form.notificationSources}
                 onChange={(v) => update("notificationSources", v as string[])}
-                options={SOURCE_OPTIONS}
+                options={sources.map((s) => ({ label: s, value: s }))}
               />
             </Flex>
           )}

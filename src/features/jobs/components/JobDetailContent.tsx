@@ -2,7 +2,7 @@ import { Button, Descriptions, Divider, Flex, Skeleton, Space, Tag, Typography }
 import { LinkOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import type { Job, JobDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS, formatRelativeDate } from "../constants";
+import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
 
 interface JobDetailContentProps {
   job: Job;
@@ -38,7 +38,7 @@ export const JobDetailContent = ({
         </div>
 
         <Flex gap={8} wrap="wrap">
-          <Tag color={SOURCE_COLORS[job.source]}>{job.source}</Tag>
+          <Tag color={getSourceColor(job.source)}>{job.source}</Tag>
           <Tag color={STATUS_COLORS[job.status]}>{STATUS_LABELS[job.status]}</Tag>
           {job.remote && <Tag color="geekblue">Remote</Tag>}
         </Flex>

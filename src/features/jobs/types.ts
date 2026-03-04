@@ -1,10 +1,4 @@
-export const JOB_SOURCE = {
-  DOU: "dou",
-  DJINNI: "djinni",
-  LINKEDIN: "linkedin",
-} as const;
-
-export type JobSource = (typeof JOB_SOURCE)[keyof typeof JOB_SOURCE];
+export type JobSource = string;
 
 export const USER_JOB_STATUS = {
   NEW: "new",

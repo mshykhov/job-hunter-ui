@@ -7,7 +7,7 @@ import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Job } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, SOURCE_COLORS, formatRelativeDate } from "../constants";
+import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
 import { ResizableHeaderCell, DraggableBodyCell } from "./ResizableHeaderCell";
@@ -53,7 +53,7 @@ const BASE_COLUMNS: ColumnsType<Job> = [
     key: "source",
     title: "Source",
     dataIndex: "source",
-    render: (source: Job["source"]) => <Tag color={SOURCE_COLORS[source]}>{source}</Tag>,
+    render: (source: Job["source"]) => <Tag color={getSourceColor(source)}>{source}</Tag>,
   },
   {
     key: "salary",

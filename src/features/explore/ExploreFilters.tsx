@@ -1,19 +1,20 @@
 import { Flex, Input, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { JOB_SOURCE } from "@/features/jobs/types";
 import type { JobFilters, JobSource } from "@/features/jobs/types";
+import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 
 interface ExploreFiltersProps {
   filters: JobFilters;
   onChange: (filters: JobFilters) => void;
 }
 
-const sourceOptions = Object.values(JOB_SOURCE).map((s) => ({
-  label: s.toUpperCase(),
-  value: s,
-}));
-
 export const ExploreFilters = ({ filters, onChange }: ExploreFiltersProps) => {
+  const { data: sources = [] } = useJobSources();
+
+  const sourceOptions = sources.map((s) => ({
+    label: s,
+    value: s,
+  }));
   return (
     <Flex gap={12} wrap="wrap" align="center">
       <Select

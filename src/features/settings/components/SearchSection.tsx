@@ -1,6 +1,6 @@
 import { Checkbox, Col, Flex, Row, Switch, Typography } from "antd";
-import { JOB_SOURCE } from "@/features/jobs/types";
 import type { JobSource } from "@/features/jobs/types";
+import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 import { TagListInput } from "./TagListInput";
 import type { SearchPreferences } from "../types";
 
@@ -9,12 +9,15 @@ interface SearchSectionProps {
   onChange: <K extends keyof SearchPreferences>(key: K, value: SearchPreferences[K]) => void;
 }
 
-const SOURCE_OPTIONS = Object.entries(JOB_SOURCE).map(([label, value]) => ({
-  label,
-  value: value as JobSource,
-}));
+export const SearchSection = ({ form, onChange }: SearchSectionProps) => {
+  const { data: sources = [] } = useJobSources();
 
-export const SearchSection = ({ form, onChange }: SearchSectionProps) => (
+  const sourceOptions = sources.map((s) => ({
+    label: s,
+    value: s,
+  }));
+
+  return (
   <Row gutter={[16, 16]}>
     <Col xs={24} lg={12}>
       <Flex vertical gap={4}>
@@ -53,7 +56,7 @@ export const SearchSection = ({ form, onChange }: SearchSectionProps) => (
         <Checkbox.Group
           value={form.disabledSources}
           onChange={(v) => onChange("disabledSources", v as JobSource[])}
-          options={SOURCE_OPTIONS}
+          options={sourceOptions}
         />
       </Flex>
     </Col>
@@ -67,4 +70,5 @@ export const SearchSection = ({ form, onChange }: SearchSectionProps) => (
       </Flex>
     </Col>
   </Row>
-);
+  );
+};
