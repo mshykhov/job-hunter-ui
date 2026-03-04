@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, API_PATHS } from "@/lib/api";
-import { EMPTY_PREFERENCES } from "../types";
 import type {
   Preferences,
   SearchPreferences,
@@ -8,60 +7,15 @@ import type {
   TelegramPreferences,
   NormalizeResponse,
 } from "../types";
-import type { JobSource } from "@/features/jobs/types";
 
 const QUERY_KEY = ["preferences"];
-
-interface LegacyPreferences {
-  rawInput: string | null;
-  categories: string[];
-  seniorityLevels: string[];
-  keywords: string[];
-  excludedKeywords: string[];
-  locations: string[];
-  languages: string[];
-  remoteOnly: boolean;
-  disabledSources: JobSource[];
-  minScore: number;
-  notificationsEnabled: boolean;
-}
-
-type ApiResponse = Preferences | LegacyPreferences;
-
-const isNested = (data: ApiResponse): data is Preferences =>
-  "search" in data && typeof data.search === "object" && data.search !== null;
-
-const mapResponse = (data: ApiResponse): Preferences => {
-  if (isNested(data)) return data;
-
-  return {
-    search: {
-      rawInput: data.rawInput,
-      categories: data.categories,
-      locations: data.locations,
-      disabledSources: data.disabledSources,
-      remoteOnly: data.remoteOnly,
-    },
-    matching: {
-      ...EMPTY_PREFERENCES.matching,
-      seniorityLevels: data.seniorityLevels,
-      keywords: data.keywords,
-      excludedKeywords: data.excludedKeywords,
-      minScore: data.minScore,
-    },
-    telegram: {
-      ...EMPTY_PREFERENCES.telegram,
-      notificationsEnabled: data.notificationsEnabled,
-    },
-  };
-};
 
 export const usePreferences = () => {
   return useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
-      const { data } = await api.get<ApiResponse>(API_PATHS.PREFERENCES);
-      return mapResponse(data);
+      const { data } = await api.get<Preferences>(API_PATHS.PREFERENCES);
+      return data;
     },
   });
 };
