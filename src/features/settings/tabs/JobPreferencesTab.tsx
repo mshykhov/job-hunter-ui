@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Collapse, Flex, Modal, Skeleton } from "antd";
-import { FilterOutlined, RobotOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
+import { App, Collapse, Flex, Skeleton } from "antd";
+import { FilterOutlined, RobotOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   usePreferences,
   useSaveSearchPreferences,
@@ -18,6 +18,7 @@ import { EMPTY_PREFERENCES } from "../types";
 import type { SearchPreferences, MatchingPreferences } from "../types";
 
 export const JobPreferencesTab = () => {
+  const { modal } = App.useApp();
   const { data: preferences, isLoading } = usePreferences();
   const saveSearchMutation = useSaveSearchPreferences();
   const saveMatchingMutation = useSaveMatchingPreferences();
@@ -26,18 +27,36 @@ export const JobPreferencesTab = () => {
   const rematchMutation = useRematch();
 
   const suggestRematch = useCallback(() => {
-    Modal.confirm({
+    let hours = 12;
+    modal.confirm({
       title: "Re-match jobs?",
-      icon: <SyncOutlined style={{ color: "#1677ff" }} />,
-      content: "Your preferences have changed. Would you like to re-match jobs from the last 24 hours with the updated settings?",
+      content: (
+        <Flex vertical gap={8}>
+          <span>Your preferences have changed. Re-match jobs with the updated settings?</span>
+          <Flex align="center" gap={8}>
+            <span>Period:</span>
+            <select
+              defaultValue="12"
+              onChange={(e) => { hours = Number(e.target.value); }}
+              style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #d9d9d9" }}
+            >
+              <option value="6">Last 6 hours</option>
+              <option value="12">Last 12 hours</option>
+              <option value="24">Last 24 hours</option>
+              <option value="48">Last 2 days</option>
+              <option value="72">Last 3 days</option>
+            </select>
+          </Flex>
+        </Flex>
+      ),
       okText: "Rematch",
       cancelText: "Skip",
       onOk: () => {
-        const since = new Date(Date.now() - 24 * 3_600_000).toISOString();
+        const since = new Date(Date.now() - hours * 3_600_000).toISOString();
         rematchMutation.mutate(since);
       },
     });
-  }, [rematchMutation]);
+  }, [modal, rematchMutation]);
 
   const initial = preferences ?? EMPTY_PREFERENCES;
   const searchForm = useDirtyForm<SearchPreferences>(initial.search);
