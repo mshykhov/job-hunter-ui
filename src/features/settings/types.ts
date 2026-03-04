@@ -3,17 +3,17 @@ import type { JobSource } from "@/features/jobs/types";
 export interface SearchPreferences {
   rawInput: string | null;
   categories: string[];
-  seniorityLevels: string[];
   locations: string[];
+  disabledSources: JobSource[];
   remoteOnly: boolean;
 }
 
 export interface MatchingPreferences {
+  seniorityLevels: string[];
   keywords: string[];
   excludedKeywords: string[];
   excludedTitleKeywords: string[];
   excludedCompanies: string[];
-  disabledSources: JobSource[];
   minScore: number;
   matchWithAi: boolean;
   customPrompt: string | null;
@@ -36,16 +36,16 @@ export const EMPTY_PREFERENCES: Preferences = {
   search: {
     rawInput: null,
     categories: [],
-    seniorityLevels: [],
     locations: [],
+    disabledSources: [],
     remoteOnly: false,
   },
   matching: {
+    seniorityLevels: [],
     keywords: [],
     excludedKeywords: [],
     excludedTitleKeywords: [],
     excludedCompanies: [],
-    disabledSources: [],
     minScore: 50,
     matchWithAi: true,
     customPrompt: null,
@@ -61,12 +61,12 @@ export const EMPTY_PREFERENCES: Preferences = {
 export interface NormalizeResponse {
   rawInput: string;
   categories: string[];
+  locations: string[];
+  disabledSources: JobSource[];
+  remoteOnly: boolean;
   seniorityLevels: string[];
   keywords: string[];
   excludedKeywords: string[];
-  locations: string[];
-  remoteOnly: boolean;
-  disabledSources: JobSource[];
 }
 
 export interface AiConfigForm {

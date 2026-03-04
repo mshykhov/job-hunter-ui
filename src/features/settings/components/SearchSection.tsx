@@ -1,4 +1,6 @@
-import { Col, Flex, Row, Switch, Typography } from "antd";
+import { Checkbox, Col, Flex, Row, Switch, Typography } from "antd";
+import { JOB_SOURCE } from "@/features/jobs/types";
+import type { JobSource } from "@/features/jobs/types";
 import { TagListInput } from "./TagListInput";
 import type { SearchPreferences } from "../types";
 
@@ -6,6 +8,11 @@ interface SearchSectionProps {
   form: SearchPreferences;
   onChange: <K extends keyof SearchPreferences>(key: K, value: SearchPreferences[K]) => void;
 }
+
+const SOURCE_OPTIONS = Object.entries(JOB_SOURCE).map(([label, value]) => ({
+  label,
+  value: value as JobSource,
+}));
 
 export const SearchSection = ({ form, onChange }: SearchSectionProps) => (
   <Row gutter={[16, 16]}>
@@ -25,17 +32,6 @@ export const SearchSection = ({ form, onChange }: SearchSectionProps) => (
     </Col>
     <Col xs={24} lg={12}>
       <Flex vertical gap={4}>
-        <Typography.Text strong style={{ fontSize: 13 }}>Seniority Levels</Typography.Text>
-        <TagListInput
-          value={form.seniorityLevels}
-          onChange={(v) => onChange("seniorityLevels", v)}
-          placeholder="e.g. senior"
-          color="purple"
-        />
-      </Flex>
-    </Col>
-    <Col xs={24} lg={12}>
-      <Flex vertical gap={4}>
         <Typography.Text strong style={{ fontSize: 13 }}>Locations</Typography.Text>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           Preferred job locations
@@ -45,6 +41,19 @@ export const SearchSection = ({ form, onChange }: SearchSectionProps) => (
           onChange={(v) => onChange("locations", v)}
           placeholder="e.g. Ukraine"
           color="cyan"
+        />
+      </Flex>
+    </Col>
+    <Col xs={24} lg={12}>
+      <Flex vertical gap={4}>
+        <Typography.Text strong style={{ fontSize: 13 }}>Sources</Typography.Text>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          Disable sources to exclude from job search
+        </Typography.Text>
+        <Checkbox.Group
+          value={form.disabledSources}
+          onChange={(v) => onChange("disabledSources", v as JobSource[])}
+          options={SOURCE_OPTIONS}
         />
       </Flex>
     </Col>

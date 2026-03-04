@@ -49,15 +49,15 @@ export const JobPreferencesTab = () => {
       ...prev,
       rawInput: normalizeResult.rawInput,
       categories: normalizeResult.categories,
-      seniorityLevels: normalizeResult.seniorityLevels,
       locations: normalizeResult.locations,
+      disabledSources: normalizeResult.disabledSources,
       remoteOnly: normalizeResult.remoteOnly,
     }));
     matchingForm.setForm((prev) => ({
       ...prev,
+      seniorityLevels: normalizeResult.seniorityLevels,
       keywords: normalizeResult.keywords,
       excludedKeywords: normalizeResult.excludedKeywords,
-      disabledSources: normalizeResult.disabledSources,
     }));
   }, [normalizeResult, searchForm.setForm, matchingForm.setForm]);
 

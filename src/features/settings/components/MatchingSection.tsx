@@ -1,7 +1,5 @@
-import { Card, Checkbox, Col, Flex, Input, Row, Slider, Switch, Tag, Typography, theme } from "antd";
+import { Card, Col, Flex, Input, Row, Slider, Switch, Tag, Typography, theme } from "antd";
 import { RobotOutlined } from "@ant-design/icons";
-import { JOB_SOURCE } from "@/features/jobs/types";
-import type { JobSource } from "@/features/jobs/types";
 import { TagListInput } from "./TagListInput";
 import type { MatchingPreferences } from "../types";
 
@@ -9,11 +7,6 @@ interface MatchingSectionProps {
   form: MatchingPreferences;
   onChange: <K extends keyof MatchingPreferences>(key: K, value: MatchingPreferences[K]) => void;
 }
-
-const SOURCE_OPTIONS = Object.entries(JOB_SOURCE).map(([label, value]) => ({
-  label,
-  value: value as JobSource,
-}));
 
 export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
   const { token } = theme.useToken();
@@ -63,19 +56,6 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
             />
           </Flex>
         </Col>
-        <Col xs={24} lg={12}>
-          <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Disabled Sources</Typography.Text>
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              Sources to exclude from job search
-            </Typography.Text>
-            <Checkbox.Group
-              value={form.disabledSources}
-              onChange={(v) => onChange("disabledSources", v as JobSource[])}
-              options={SOURCE_OPTIONS}
-            />
-          </Flex>
-        </Col>
       </Row>
 
       <Card
@@ -102,6 +82,17 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
       >
         <Flex vertical gap={16} style={{ opacity: form.matchWithAi ? 1 : 0.5 }}>
           <Row gutter={[16, 16]}>
+            <Col xs={24} lg={12}>
+              <Flex vertical gap={4}>
+                <Typography.Text strong style={{ fontSize: 13 }}>Seniority Levels</Typography.Text>
+                <TagListInput
+                  value={form.seniorityLevels}
+                  onChange={(v) => onChange("seniorityLevels", v)}
+                  placeholder="e.g. senior"
+                  color="purple"
+                />
+              </Flex>
+            </Col>
             <Col xs={24} lg={12}>
               <Flex vertical gap={4}>
                 <Typography.Text strong style={{ fontSize: 13 }}>Keywords</Typography.Text>

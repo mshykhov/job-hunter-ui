@@ -38,15 +38,15 @@ const mapResponse = (data: ApiResponse): Preferences => {
     search: {
       rawInput: data.rawInput,
       categories: data.categories,
-      seniorityLevels: data.seniorityLevels,
       locations: data.locations,
+      disabledSources: data.disabledSources,
       remoteOnly: data.remoteOnly,
     },
     matching: {
       ...EMPTY_PREFERENCES.matching,
+      seniorityLevels: data.seniorityLevels,
       keywords: data.keywords,
       excludedKeywords: data.excludedKeywords,
-      disabledSources: data.disabledSources,
       minScore: data.minScore,
     },
     telegram: {
