@@ -1,16 +1,99 @@
-import { Card, Flex, Typography } from "antd";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { useState, useEffect, useCallback } from "react";
+import { Card, Checkbox, Flex, Input, Skeleton, Switch, Typography } from "antd";
+import { usePreferences, useSaveTelegramPreferences } from "../hooks/usePreferences";
+import { useDirtyForm } from "../hooks/useDirtyForm";
+import { SaveBar } from "../components/SaveBar";
+import { EMPTY_PREFERENCES } from "../types";
+import { JOB_SOURCE } from "@/features/jobs/types";
+import type { TelegramPreferences } from "../types";
 
-export const TelegramTab = () => (
-  <Card size="small">
-    <Flex vertical align="center" gap={12} style={{ padding: "40px 0" }}>
-      <ClockCircleOutlined style={{ fontSize: 32, opacity: 0.4 }} />
-      <Typography.Title level={5} style={{ margin: 0, opacity: 0.6 }}>
-        Coming Soon
-      </Typography.Title>
-      <Typography.Text type="secondary" style={{ textAlign: "center", maxWidth: 320 }}>
-        Telegram bot integration and notification settings will be available here.
-      </Typography.Text>
+const SOURCE_OPTIONS = Object.entries(JOB_SOURCE).map(([label, value]) => ({
+  label,
+  value,
+}));
+
+export const TelegramTab = () => {
+  const { data: preferences, isLoading } = usePreferences();
+  const saveMutation = useSaveTelegramPreferences();
+  const [saved, setSaved] = useState(false);
+
+  const initial = preferences?.telegram ?? EMPTY_PREFERENCES.telegram;
+  const { form, setForm, isDirty, reset } = useDirtyForm<TelegramPreferences>(initial);
+
+  const update = useCallback(
+    <K extends keyof TelegramPreferences>(key: K, value: TelegramPreferences[K]) =>
+      setForm((prev) => ({ ...prev, [key]: value })),
+    [setForm],
+  );
+
+  useEffect(() => {
+    if (!saved) return;
+    const t = setTimeout(() => setSaved(false), 2500);
+    return () => clearTimeout(t);
+  }, [saved]);
+
+  if (isLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
+
+  return (
+    <Flex vertical gap={16}>
+      <Card size="small" title="Bot Connection">
+        <Flex vertical gap={12}>
+          <Flex vertical gap={4}>
+            <Typography.Text strong style={{ fontSize: 13 }}>Chat ID</Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              Your Telegram chat ID for receiving notifications
+            </Typography.Text>
+            <Input
+              placeholder="e.g. 123456789"
+              value={form.chatId ?? ""}
+              onChange={(e) => update("chatId", e.target.value || null)}
+              style={{ maxWidth: 280 }}
+            />
+          </Flex>
+          <Flex vertical gap={4}>
+            <Typography.Text strong style={{ fontSize: 13 }}>Username</Typography.Text>
+            <Input
+              placeholder="e.g. myuser"
+              value={form.username ?? ""}
+              onChange={(e) => update("username", e.target.value || null)}
+              style={{ maxWidth: 280 }}
+            />
+          </Flex>
+        </Flex>
+      </Card>
+      <Card size="small" title="Notifications">
+        <Flex vertical gap={12}>
+          <Flex align="center" gap={8}>
+            <Switch
+              checked={form.notificationsEnabled}
+              onChange={(v) => update("notificationsEnabled", v)}
+            />
+            <Typography.Text>Enable notifications</Typography.Text>
+          </Flex>
+          {form.notificationsEnabled && (
+            <Flex vertical gap={4}>
+              <Typography.Text strong style={{ fontSize: 13 }}>
+                Notification Sources
+              </Typography.Text>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                Receive notifications only from selected sources. Leave empty for all.
+              </Typography.Text>
+              <Checkbox.Group
+                value={form.notificationSources}
+                onChange={(v) => update("notificationSources", v as string[])}
+                options={SOURCE_OPTIONS}
+              />
+            </Flex>
+          )}
+        </Flex>
+      </Card>
+      <SaveBar
+        isDirty={isDirty}
+        saved={saved}
+        saving={saveMutation.isPending}
+        onSave={() => saveMutation.mutate(form, { onSuccess: () => setSaved(true) })}
+        onDiscard={reset}
+      />
     </Flex>
-  </Card>
-);
+  );
+};
