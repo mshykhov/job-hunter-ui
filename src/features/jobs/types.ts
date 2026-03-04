@@ -42,6 +42,7 @@ export const USER_JOB_SORT = {
   SCORE: "SCORE",
   PUBLISHED: "PUBLISHED",
   MATCHED: "MATCHED",
+  SCRAPED: "SCRAPED",
 } as const;
 
 export type UserJobSort = (typeof USER_JOB_SORT)[keyof typeof USER_JOB_SORT];

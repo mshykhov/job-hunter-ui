@@ -33,6 +33,7 @@ export const USER_JOB_SORT_LABELS: Record<UserJobSort, string> = {
   SCORE: "Score",
   PUBLISHED: "Published",
   MATCHED: "Matched",
+  SCRAPED: "Scraped",
 };
 
 export const PUBLIC_JOB_SORT_LABELS: Record<PublicJobSort, string> = {
