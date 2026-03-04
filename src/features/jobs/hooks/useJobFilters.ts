@@ -5,7 +5,7 @@ import { USER_JOB_STATUS, PERIOD_FIELD } from "../types";
 import { createStorage } from "@/lib/storage";
 
 const PARAM_KEYS = [
-  "sources", "statuses", "search", "remote", "since", "periodField",
+  "sources", "statuses", "search", "remote", "minScore", "since", "periodField", "sortBy",
 ] as const;
 
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
@@ -24,10 +24,12 @@ const filtersToParams = (filters: JobFilters, params: URLSearchParams): URLSearc
   if (filters.statuses?.length) params.set("statuses", filters.statuses.join(","));
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
+  if (filters.minScore != null) params.set("minScore", String(filters.minScore));
   if (filters.since) params.set("since", filters.since);
   if (filters.periodField && filters.periodField !== DEFAULT_PERIOD_FIELD) {
     params.set("periodField", filters.periodField);
   }
+  if (filters.sortBy) params.set("sortBy", filters.sortBy);
 
   return params;
 };
@@ -52,6 +54,9 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
 
   if (params.get("remote") === "true") filters.remote = true;
 
+  const minScore = params.get("minScore");
+  if (minScore) filters.minScore = Number(minScore);
+
   const since = params.get("since");
   if (since) filters.since = since;
 
@@ -59,6 +64,9 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
   filters.periodField = periodField && PERIOD_FIELD_VALUES.has(periodField)
     ? periodField as PeriodField
     : DEFAULT_PERIOD_FIELD;
+
+  const sortBy = params.get("sortBy");
+  if (sortBy) filters.sortBy = sortBy;
 
   return filters;
 };

@@ -1,4 +1,4 @@
-import type { PeriodField, UserJobStatus } from "./types";
+import type { PeriodField, PublicJobSort, UserJobSort, UserJobStatus } from "./types";
 
 export const STATUS_COLORS: Record<UserJobStatus, string> = {
   new: "blue",
@@ -27,6 +27,17 @@ export const PERIOD_FIELD_LABELS: Record<PeriodField, string> = {
   matched: "Matched",
   published: "Published",
   updated: "Scraped",
+};
+
+export const USER_JOB_SORT_LABELS: Record<UserJobSort, string> = {
+  SCORE: "Score",
+  PUBLISHED: "Published",
+  MATCHED: "Matched",
+};
+
+export const PUBLIC_JOB_SORT_LABELS: Record<PublicJobSort, string> = {
+  PUBLISHED: "Published",
+  SCRAPED: "Scraped",
 };
 
 export const formatRelativeDate = (dateStr: string | null): string => {

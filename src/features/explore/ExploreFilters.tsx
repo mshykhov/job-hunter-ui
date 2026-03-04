@@ -1,13 +1,20 @@
 import { DatePicker, Flex, Input, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import type { JobFilters, JobSource } from "@/features/jobs/types";
+import { PUBLIC_JOB_SORT } from "@/features/jobs/types";
+import type { JobFilters, JobSource, PublicJobSort } from "@/features/jobs/types";
+import { PUBLIC_JOB_SORT_LABELS } from "@/features/jobs/constants";
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 
 interface ExploreFiltersProps {
   filters: JobFilters;
   onChange: (filters: JobFilters) => void;
 }
+
+const sortOptions = Object.values(PUBLIC_JOB_SORT).map((s) => ({
+  label: PUBLIC_JOB_SORT_LABELS[s],
+  value: s,
+}));
 
 export const ExploreFilters = ({ filters, onChange }: ExploreFiltersProps) => {
   const { data: sources = [] } = useJobSources();
@@ -16,24 +23,43 @@ export const ExploreFilters = ({ filters, onChange }: ExploreFiltersProps) => {
     label: s.displayName,
     value: s.id,
   }));
+
   return (
     <Flex gap={12} wrap="wrap" align="center">
-      <DatePicker
-        showTime
-        size="small"
-        placeholder="Published after..."
-        allowClear
-        format="YYYY-MM-DD HH:mm"
-        value={filters.since ? dayjs(filters.since) : null}
-        onChange={(date) => onChange({ ...filters, since: date?.toISOString() })}
-        presets={[
-          { label: "12h", value: dayjs().subtract(12, "hour") },
-          { label: "24h", value: dayjs().subtract(24, "hour") },
-          { label: "3 days", value: dayjs().subtract(3, "day") },
-          { label: "7 days", value: dayjs().subtract(7, "day") },
-        ]}
-        style={{ width: 190 }}
-      />
+      <Flex align="center" gap={4}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          sort
+        </Typography.Text>
+        <Select
+          value={filters.sortBy ?? PUBLIC_JOB_SORT.PUBLISHED}
+          onChange={(val) => onChange({ ...filters, sortBy: val as PublicJobSort })}
+          options={sortOptions}
+          size="small"
+          variant="borderless"
+          style={{ width: 110 }}
+        />
+      </Flex>
+      <Flex align="center" gap={4}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          from
+        </Typography.Text>
+        <DatePicker
+          showTime
+          size="small"
+          placeholder="any time"
+          allowClear
+          format="YYYY-MM-DD HH:mm"
+          value={filters.since ? dayjs(filters.since) : null}
+          onChange={(date) => onChange({ ...filters, since: date?.toISOString() })}
+          presets={[
+            { label: "12h", value: dayjs().subtract(12, "hour") },
+            { label: "24h", value: dayjs().subtract(24, "hour") },
+            { label: "3 days", value: dayjs().subtract(3, "day") },
+            { label: "7 days", value: dayjs().subtract(7, "day") },
+          ]}
+          style={{ width: 190 }}
+        />
+      </Flex>
       <Select
         mode="multiple"
         placeholder="Source"

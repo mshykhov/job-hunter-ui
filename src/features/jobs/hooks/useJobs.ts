@@ -1,17 +1,16 @@
 import { useMemo } from "react";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { JobFilters, UserJobStatus } from "../types";
-import { fetchJobsPage, type Cursor } from "./jobSearchApi";
+import { fetchJobsPage } from "./jobSearchApi";
 
 export const useJobs = (filters: JobFilters, refreshInterval: number) => {
   const query = useInfiniteQuery({
     queryKey: ["jobs", filters],
-    queryFn: ({ pageParam }) => fetchJobsPage(filters, pageParam),
-    initialPageParam: undefined as Cursor | undefined,
+    queryFn: ({ pageParam }) => fetchJobsPage(filters, (pageParam as number) ?? 0),
+    initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => {
-      if (!lastPage.hasMore || lastPage.content.length === 0) return undefined;
-      const lastJob = lastPage.content[lastPage.content.length - 1];
-      return { createdAt: lastJob.matchedAt!, id: lastJob.id };
+      if (lastPage.page + 1 >= lastPage.totalPages) return undefined;
+      return lastPage.page + 1;
     },
     refetchInterval: refreshInterval || false,
     placeholderData: keepPreviousData,

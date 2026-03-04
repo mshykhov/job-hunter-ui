@@ -40,7 +40,8 @@ export const JobsPage = () => {
 
   const handleEnterReview = (job: Job) => {
     if (jobs.length > 0) {
-      reviewMode.enter(jobs, job, totalElements, debouncedFilters, !!hasNextPage);
+      const pagesLoaded = Math.ceil(jobs.length / (debouncedFilters.size ?? 50));
+      reviewMode.enter(jobs, job, totalElements, debouncedFilters, !!hasNextPage, pagesLoaded);
     }
   };
 

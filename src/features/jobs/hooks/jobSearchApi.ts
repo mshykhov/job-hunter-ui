@@ -1,14 +1,8 @@
 import { api, API_PATHS } from "@/lib/api";
 import type { JobFilters, PaginatedJobsResponse, PublicJobPageResponse } from "../types";
-import { PERIOD_FIELD } from "../types";
+import { PERIOD_FIELD, USER_JOB_SORT, PUBLIC_JOB_SORT } from "../types";
 
-
-export interface Cursor {
-  createdAt: string;
-  id: string;
-}
-
-const buildRequestBody = (filters: JobFilters, cursor?: Cursor) => {
+const buildRequestBody = (filters: JobFilters, page: number) => {
   const body: Record<string, unknown> = {};
 
   if (filters.sources?.length) body.sources = filters.sources;
@@ -24,21 +18,20 @@ const buildRequestBody = (filters: JobFilters, cursor?: Cursor) => {
     body[paramName] = filters.since;
   }
 
-  body.size = filters.size ?? 50;
+  if (filters.minScore != null) body.minScore = filters.minScore;
 
-  if (cursor) {
-    body.cursorCreatedAt = cursor.createdAt;
-    body.cursorId = cursor.id;
-  }
+  body.page = page;
+  body.size = filters.size ?? 50;
+  body.sortBy = filters.sortBy ?? USER_JOB_SORT.SCORE;
 
   return body;
 };
 
 export const fetchJobsPage = async (
   filters: JobFilters,
-  cursor?: Cursor,
+  page: number,
 ): Promise<PaginatedJobsResponse> => {
-  const body = buildRequestBody(filters, cursor);
+  const body = buildRequestBody(filters, page);
   const { data } = await api.post<PaginatedJobsResponse>(API_PATHS.JOBS_SEARCH, body);
   return data;
 };
@@ -53,6 +46,7 @@ export const fetchPublicJobsPage = async (
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
   if (filters.since) params.set("publishedAfter", filters.since);
+  params.set("sortBy", filters.sortBy ?? PUBLIC_JOB_SORT.PUBLISHED);
   filters.sources?.forEach((s) => params.append("source", s));
 
   const { data } = await api.get<PublicJobPageResponse>(

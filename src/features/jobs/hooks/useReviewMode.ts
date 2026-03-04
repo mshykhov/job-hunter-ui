@@ -7,6 +7,7 @@ interface ReviewState {
   index: number;
   totalElements: number;
   hasMore: boolean;
+  nextPage: number;
   filters: JobFilters;
 }
 
@@ -17,7 +18,7 @@ export interface UseReviewModeReturn {
   currentJob: Job | null;
   currentIndex: number;
   total: number;
-  enter: (jobs: Job[], startJob: Job, totalElements: number, filters: JobFilters, hasMore: boolean) => void;
+  enter: (jobs: Job[], startJob: Job, totalElements: number, filters: JobFilters, hasMore: boolean, nextPage: number) => void;
   exit: () => void;
   goNext: () => void;
   goPrev: () => void;
@@ -47,15 +48,9 @@ export const useReviewMode = (): UseReviewModeReturn => {
     const s = stateRef.current;
     if (!s || !s.hasMore || loadingRef.current) return;
 
-    const lastJob = s.jobs[s.jobs.length - 1];
-    if (!lastJob?.matchedAt) return;
-
     loadingRef.current = true;
     setIsPageLoading(true);
-    const response = await fetchJobsPage(s.filters, {
-      createdAt: lastJob.matchedAt,
-      id: lastJob.id,
-    });
+    const response = await fetchJobsPage(s.filters, s.nextPage);
     setIsPageLoading(false);
     loadingRef.current = false;
 
@@ -64,13 +59,14 @@ export const useReviewMode = (): UseReviewModeReturn => {
       return {
         ...prev,
         jobs: [...prev.jobs, ...response.content],
-        hasMore: response.hasMore,
+        hasMore: response.page + 1 < response.totalPages,
+        nextPage: response.page + 1,
       };
     });
   }, []);
 
   const enter = useCallback(
-    (jobs: Job[], startJob: Job, totalElements: number, filters: JobFilters, hasMore: boolean) => {
+    (jobs: Job[], startJob: Job, totalElements: number, filters: JobFilters, hasMore: boolean, nextPage: number) => {
       if (jobs.length === 0) return;
       const index = jobs.findIndex((j) => j.id === startJob.id);
       setState({
@@ -78,6 +74,7 @@ export const useReviewMode = (): UseReviewModeReturn => {
         index: Math.max(0, index),
         totalElements,
         hasMore,
+        nextPage,
         filters,
       });
     },

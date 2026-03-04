@@ -38,21 +38,39 @@ export const PERIOD_FIELD = {
 
 export type PeriodField = (typeof PERIOD_FIELD)[keyof typeof PERIOD_FIELD];
 
+export const USER_JOB_SORT = {
+  SCORE: "SCORE",
+  PUBLISHED: "PUBLISHED",
+  MATCHED: "MATCHED",
+} as const;
+
+export type UserJobSort = (typeof USER_JOB_SORT)[keyof typeof USER_JOB_SORT];
+
+export const PUBLIC_JOB_SORT = {
+  PUBLISHED: "PUBLISHED",
+  SCRAPED: "SCRAPED",
+} as const;
+
+export type PublicJobSort = (typeof PUBLIC_JOB_SORT)[keyof typeof PUBLIC_JOB_SORT];
+
 export interface JobFilters {
   statuses?: UserJobStatus[];
   sources?: JobSource[];
   search?: string;
   remote?: boolean;
+  minScore?: number;
   since?: string;
   periodField?: PeriodField;
+  sortBy?: string;
   size?: number;
 }
 
 export interface PaginatedJobsResponse {
   content: Job[];
-  totalElements: number;
-  hasMore: boolean;
+  page: number;
   size: number;
+  totalElements: number;
+  totalPages: number;
   statusCounts: Partial<Record<UserJobStatus, number>>;
 }
 
@@ -67,6 +85,7 @@ export interface PublicJob {
   location: string | null;
   remote: boolean | null;
   publishedAt: string | null;
+  scrapedAt: string | null;
 }
 
 export interface PublicJobPageResponse {
