@@ -36,9 +36,6 @@ export const NormalizeCard = ({
 
   return (
     <Flex vertical gap={12}>
-      <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-        Describe your ideal job in free text, or upload your CV. AI will extract structured preferences.
-      </Typography.Text>
       <Input.TextArea
         rows={3}
         placeholder="e.g. Senior Kotlin developer, remote, Spring Boot, no frontend work..."

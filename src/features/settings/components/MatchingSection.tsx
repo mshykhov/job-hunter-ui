@@ -110,7 +110,7 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => (
         <Flex vertical gap={4}>
           <Typography.Text strong style={{ fontSize: 13 }}>Custom AI Prompt</Typography.Text>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            Override the default matching prompt. Leave empty to use the standard one.
+            Additional instructions for AI matching, appended to the default prompt.
           </Typography.Text>
           <Input.TextArea
             rows={3}
