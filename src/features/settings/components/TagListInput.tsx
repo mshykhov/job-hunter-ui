@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Tag, Input, Flex } from "antd";
-import { ClearOutlined, PlusOutlined } from "@ant-design/icons";
+import { ClearOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { InputRef } from "antd";
 
 interface TagListInputProps {
@@ -10,9 +10,21 @@ interface TagListInputProps {
   color?: string;
 }
 
+const parseText = (text: string): string[] => {
+  const separator = text.includes("\n") ? /[\n,]+/ : /,+/;
+  return [...new Set(
+    text
+      .split(separator)
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean),
+  )];
+};
+
 export const TagListInput = ({ value, onChange, placeholder, color }: TagListInputProps) => {
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [editMode, setEditMode] = useState(false);
+  const [editText, setEditText] = useState("");
   const inputRef = useRef<InputRef>(null);
 
   const handleClose = (removed: string) => {
@@ -32,6 +44,38 @@ export const TagListInput = ({ value, onChange, placeholder, color }: TagListInp
     setInputVisible(true);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
+
+  const enterEditMode = () => {
+    setEditText(value.join(", "));
+    setEditMode(true);
+  };
+
+  const confirmEdit = () => {
+    onChange(parseText(editText));
+    setEditMode(false);
+  };
+
+  if (editMode) {
+    return (
+      <Flex vertical gap={4}>
+        <Input.TextArea
+          autoFocus
+          rows={3}
+          value={editText}
+          onChange={(e) => setEditText(e.target.value)}
+          placeholder="Comma or newline separated values..."
+        />
+        <Flex gap={4}>
+          <Tag onClick={confirmEdit} style={{ cursor: "pointer" }} color="blue">
+            Apply
+          </Tag>
+          <Tag onClick={() => setEditMode(false)} style={{ cursor: "pointer" }}>
+            Cancel
+          </Tag>
+        </Flex>
+      </Flex>
+    );
+  }
 
   return (
     <Flex gap={4} wrap="wrap" align="center">
@@ -60,12 +104,20 @@ export const TagListInput = ({ value, onChange, placeholder, color }: TagListInp
             <PlusOutlined /> Add
           </Tag>
           {value.length >= 2 && (
-            <Tag
-              onClick={() => onChange([])}
-              style={{ cursor: "pointer" }}
-            >
-              <ClearOutlined /> Clear
-            </Tag>
+            <>
+              <Tag
+                onClick={enterEditMode}
+                style={{ cursor: "pointer" }}
+              >
+                <EditOutlined /> Edit
+              </Tag>
+              <Tag
+                onClick={() => onChange([])}
+                style={{ cursor: "pointer" }}
+              >
+                <ClearOutlined /> Clear
+              </Tag>
+            </>
           )}
         </>
       )}
