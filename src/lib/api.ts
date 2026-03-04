@@ -76,12 +76,16 @@ api.interceptors.response.use(
 );
 
 export const API_PATHS = {
+  PUBLIC_JOBS: "/public/jobs",
   JOBS_SEARCH: "/jobs/search",
   JOB_DETAIL: (jobId: string) => `/jobs/${jobId}`,
   JOB_STATUS: (jobId: string) => `/jobs/${jobId}/status`,
   CRITERIA: "/criteria",
   PREFERENCES: "/preferences",
   PREFERENCES_NORMALIZE: "/preferences/normalize",
+  PREFERENCES_NORMALIZE_FILE: "/preferences/normalize/file",
+  AI_PROVIDERS: "/settings/ai-providers",
+  AI_CONFIG: "/settings/ai-config",
   JOBS_REMATCH: "/jobs/rematch",
   HEALTH: "/actuator/health",
 } as const;

@@ -35,3 +35,18 @@ export const useNormalizePreferences = () => {
     },
   });
 };
+
+export const useNormalizeWithFile = () => {
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await api.post<Preferences>(
+        API_PATHS.PREFERENCES_NORMALIZE_FILE,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
+      );
+      return data;
+    },
+  });
+};
