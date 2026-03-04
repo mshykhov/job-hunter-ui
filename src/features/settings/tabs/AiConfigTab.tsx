@@ -3,7 +3,7 @@ import { Card, Flex, Input, Select, Skeleton, Typography } from "antd";
 import { useAiConfig, useAiProviders } from "../hooks/useAiConfig";
 import { useDirtyForm } from "../hooks/useDirtyForm";
 import { SaveBar } from "../components/SaveBar";
-import type { AiConfig, AiModel } from "../types";
+import type { AiConfigForm, AiModel } from "../types";
 
 const formatCost = (cost: number) => `$${cost.toFixed(2)}`;
 
@@ -12,13 +12,19 @@ const formatContextWindow = (tokens: number) => {
   return `${(tokens / 1_000).toFixed(0)}K`;
 };
 
-const buildModelLabel = (m: AiModel) =>
-  `${m.name} — ${formatCost(m.inputCostPer1M)}/${formatCost(m.outputCostPer1M)} per 1M tokens, ${formatContextWindow(m.contextWindow)} ctx`;
+const RECOMMENDED_SUFFIX = " ★ Recommended";
+
+const buildModelLabel = (m: AiModel) => {
+  const cost = `${formatCost(m.inputCostPer1M)}/${formatCost(m.outputCostPer1M)} per 1M tokens`;
+  const ctx = `${formatContextWindow(m.contextWindow)} ctx`;
+  const rec = m.recommended ? RECOMMENDED_SUFFIX : "";
+  return `${m.name} — ${cost}, ${ctx}${rec}`;
+};
 
 export const AiConfigTab = () => {
-  const { initial, save } = useAiConfig();
   const { data: providers, isLoading: providersLoading } = useAiProviders();
-  const { form, update, isDirty, reset } = useDirtyForm<AiConfig>(initial);
+  const { initial, apiKeyHint, settingsLoading, save } = useAiConfig(providers);
+  const { form, update, isDirty, reset } = useDirtyForm<AiConfigForm>(initial);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -28,7 +34,11 @@ export const AiConfigTab = () => {
   }, [saved]);
 
   const providerOptions = useMemo(
-    () => (providers ?? []).map((p) => ({ value: p.id, label: p.name })),
+    () =>
+      (providers ?? []).map((p) => ({
+        value: p.id,
+        label: p.recommended ? `${p.name}${RECOMMENDED_SUFFIX}` : p.name,
+      })),
     [providers],
   );
 
@@ -42,12 +52,27 @@ export const AiConfigTab = () => {
     update("model", null);
   };
 
-  const handleSave = () => {
-    save(form);
+  const hasModel = !!form.model;
+  const hasApiKey = !!form.apiKey.trim();
+  const isConfigured = !!apiKeyHint;
+  const needsApiKey = !isConfigured && !hasApiKey;
+
+  let saveDisabled = false;
+  let saveDisabledReason: string | undefined;
+  if (!hasModel) {
+    saveDisabled = true;
+    saveDisabledReason = "Select a model to save";
+  } else if (needsApiKey) {
+    saveDisabled = true;
+    saveDisabledReason = "API key is required";
+  }
+
+  const handleSave = async () => {
+    await save.mutateAsync(form);
     setSaved(true);
   };
 
-  if (providersLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
+  if (providersLoading || settingsLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
   return (
     <Flex vertical gap={16}>
@@ -83,20 +108,32 @@ export const AiConfigTab = () => {
           <Flex vertical gap={4}>
             <Typography.Text style={{ fontSize: 13 }}>API Key</Typography.Text>
             <Input.Password
-              placeholder="sk-..."
+              placeholder={apiKeyHint ?? "sk-..."}
               value={form.apiKey}
               onChange={(e) => update("apiKey", e.target.value)}
               style={{ maxWidth: 400 }}
             />
+            {isConfigured && !hasApiKey && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                Key is set ({apiKeyHint}). Leave empty to keep current key.
+              </Typography.Text>
+            )}
+            {!isConfigured && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                Required for AI-powered features.
+              </Typography.Text>
+            )}
           </Flex>
         </Flex>
       </Card>
       <SaveBar
         isDirty={isDirty}
         saved={saved}
-        saving={false}
+        saving={save.isPending}
         onSave={handleSave}
         onDiscard={reset}
+        saveDisabled={saveDisabled}
+        saveDisabledReason={saveDisabledReason}
       />
     </Flex>
   );
