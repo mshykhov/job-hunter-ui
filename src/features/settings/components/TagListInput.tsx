@@ -103,21 +103,19 @@ export const TagListInput = ({ value, onChange, placeholder, color }: TagListInp
           >
             <PlusOutlined /> Add
           </Tag>
+          <Tag
+            onClick={enterEditMode}
+            style={{ cursor: "pointer" }}
+          >
+            <EditOutlined /> Edit
+          </Tag>
           {value.length >= 2 && (
-            <>
-              <Tag
-                onClick={enterEditMode}
-                style={{ cursor: "pointer" }}
-              >
-                <EditOutlined /> Edit
-              </Tag>
-              <Tag
-                onClick={() => onChange([])}
-                style={{ cursor: "pointer" }}
-              >
-                <ClearOutlined /> Clear
-              </Tag>
-            </>
+            <Tag
+              onClick={() => onChange([])}
+              style={{ cursor: "pointer" }}
+            >
+              <ClearOutlined /> Clear
+            </Tag>
           )}
         </>
       )}
