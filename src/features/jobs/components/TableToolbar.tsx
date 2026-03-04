@@ -23,19 +23,22 @@ interface TableToolbarProps {
   reviewDisabled: boolean;
 }
 
-type RematchPeriod = "24h" | "week" | "month";
+type RematchPeriod = "12h" | "24h" | "3d";
 
 const PERIOD_LABELS: Record<RematchPeriod, string> = {
+  "12h": "Last 12 hours",
   "24h": "Last 24 hours",
-  week: "Last week",
-  month: "Last month",
+  "3d": "Last 3 days",
 };
 
-const periodToSince = (period: RematchPeriod): string => {
-  const now = new Date();
-  const ms = { "24h": 86400000, week: 604800000, month: 2592000000 }[period];
-  return new Date(now.getTime() - ms).toISOString();
+const PERIOD_MS: Record<RematchPeriod, number> = {
+  "12h": 12 * 3_600_000,
+  "24h": 24 * 3_600_000,
+  "3d": 3 * 24 * 3_600_000,
 };
+
+const periodToSince = (period: RematchPeriod): string =>
+  new Date(Date.now() - PERIOD_MS[period]).toISOString();
 
 export const TableToolbar = ({
   total,
@@ -53,7 +56,7 @@ export const TableToolbar = ({
 }: TableToolbarProps) => {
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
   const [rematchOpen, setRematchOpen] = useState(false);
-  const [period, setPeriod] = useState<RematchPeriod>("week");
+  const [period, setPeriod] = useState<RematchPeriod>("24h");
 
   const handleRematch = () => {
     setRematchOpen(false);
