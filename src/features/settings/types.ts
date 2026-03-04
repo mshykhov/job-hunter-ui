@@ -19,7 +19,6 @@ export interface MatchingPreferences {
   weightTechnology: number;
   weightSeniority: number;
   weightSkills: number;
-  weightLocation: number;
 }
 
 export interface TelegramPreferences {
@@ -52,9 +51,8 @@ export const EMPTY_PREFERENCES: Preferences = {
     matchWithAi: true,
     customPrompt: null,
     weightTechnology: 40,
-    weightSeniority: 25,
-    weightSkills: 20,
-    weightLocation: 15,
+    weightSeniority: 30,
+    weightSkills: 30,
   },
   telegram: {
     chatId: null,

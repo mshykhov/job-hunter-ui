@@ -109,7 +109,7 @@ export const JobPreferencesTab = () => {
   }, [matchingSaved]);
 
   const weightsTotal = matchingForm.form.weightTechnology + matchingForm.form.weightSeniority
-    + matchingForm.form.weightSkills + matchingForm.form.weightLocation;
+    + matchingForm.form.weightSkills;
   const weightsInvalid = matchingForm.form.matchWithAi && weightsTotal !== 100;
 
   const normalizing = normalizeMutation.isPending || normalizeFileMutation.isPending;

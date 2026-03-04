@@ -10,7 +10,7 @@ interface MatchingSectionProps {
 
 export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
   const { token } = theme.useToken();
-  const weightsTotal = form.weightTechnology + form.weightSeniority + form.weightSkills + form.weightLocation;
+  const weightsTotal = form.weightTechnology + form.weightSeniority + form.weightSkills;
 
   return (
     <Flex vertical gap={16}>
@@ -142,13 +142,6 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
                       <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightSkills}%</Typography.Text>
                     </Flex>
                     <Slider min={0} max={100} step={5} value={form.weightSkills} onChange={(v) => onChange("weightSkills", v)} />
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Flex align="center" justify="space-between">
-                      <Typography.Text style={{ fontSize: 12 }}>Location</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightLocation}%</Typography.Text>
-                    </Flex>
-                    <Slider min={0} max={100} step={5} value={form.weightLocation} onChange={(v) => onChange("weightLocation", v)} />
                   </Col>
                 </Row>
               </Flex>
