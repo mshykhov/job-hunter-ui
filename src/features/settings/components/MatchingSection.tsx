@@ -1,4 +1,4 @@
-import { Card, Col, Flex, Input, Row, Switch, Tag, Typography, theme } from "antd";
+import { Card, Col, Flex, Input, Row, Slider, Switch, Tag, Typography, theme } from "antd";
 import { RobotOutlined } from "@ant-design/icons";
 import { TagListInput } from "./TagListInput";
 import type { MatchingPreferences } from "../types";
@@ -10,6 +10,7 @@ interface MatchingSectionProps {
 
 export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
   const { token } = theme.useToken();
+  const weightsTotal = form.weightTechnology + form.weightSeniority + form.weightSkills + form.weightLocation;
 
   return (
     <Flex vertical gap={16}>
@@ -109,8 +110,50 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
             </Col>
           </Row>
           {form.matchWithAi && (
-            <Flex vertical gap={4}>
-              <Typography.Text strong style={{ fontSize: 13 }}>Custom Prompt</Typography.Text>
+            <>
+              <Flex vertical gap={8}>
+                <Flex align="center" justify="space-between">
+                  <Typography.Text strong style={{ fontSize: 13 }}>Matching Weights</Typography.Text>
+                  <Typography.Text
+                    type={weightsTotal === 100 ? "secondary" : "danger"}
+                    style={{ fontSize: 12 }}
+                  >
+                    Total: {weightsTotal}%{weightsTotal !== 100 && " (should be 100%)"}
+                  </Typography.Text>
+                </Flex>
+                <Row gutter={[16, 8]}>
+                  <Col xs={24} sm={12}>
+                    <Flex align="center" justify="space-between">
+                      <Typography.Text style={{ fontSize: 12 }}>Technology</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightTechnology}%</Typography.Text>
+                    </Flex>
+                    <Slider min={0} max={100} step={5} value={form.weightTechnology} onChange={(v) => onChange("weightTechnology", v)} />
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Flex align="center" justify="space-between">
+                      <Typography.Text style={{ fontSize: 12 }}>Seniority</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightSeniority}%</Typography.Text>
+                    </Flex>
+                    <Slider min={0} max={100} step={5} value={form.weightSeniority} onChange={(v) => onChange("weightSeniority", v)} />
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Flex align="center" justify="space-between">
+                      <Typography.Text style={{ fontSize: 12 }}>Skills</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightSkills}%</Typography.Text>
+                    </Flex>
+                    <Slider min={0} max={100} step={5} value={form.weightSkills} onChange={(v) => onChange("weightSkills", v)} />
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Flex align="center" justify="space-between">
+                      <Typography.Text style={{ fontSize: 12 }}>Location</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightLocation}%</Typography.Text>
+                    </Flex>
+                    <Slider min={0} max={100} step={5} value={form.weightLocation} onChange={(v) => onChange("weightLocation", v)} />
+                  </Col>
+                </Row>
+              </Flex>
+              <Flex vertical gap={4}>
+                <Typography.Text strong style={{ fontSize: 13 }}>Custom Prompt</Typography.Text>
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                 Additional instructions for AI matching, appended to the default prompt.
               </Typography.Text>
@@ -121,6 +164,7 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
                 onChange={(e) => onChange("customPrompt", e.target.value || null)}
               />
             </Flex>
+            </>
           )}
         </Flex>
       </Card>
