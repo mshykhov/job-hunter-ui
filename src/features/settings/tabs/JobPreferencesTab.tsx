@@ -47,6 +47,7 @@ export const JobPreferencesTab = () => {
     if (!normalizeResult) return;
     searchForm.setForm((prev) => ({
       ...prev,
+      rawInput: normalizeResult.rawInput,
       categories: normalizeResult.categories,
       seniorityLevels: normalizeResult.seniorityLevels,
       locations: normalizeResult.locations,
