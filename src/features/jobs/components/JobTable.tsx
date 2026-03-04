@@ -139,9 +139,21 @@ export const JobTable = ({
     [columnOrder, visibleSet],
   );
 
+  const rowNumberCol: ColumnType<Job> = useMemo(
+    () => ({
+      key: "#",
+      title: "#",
+      width: 50,
+      align: "center",
+      render: (_: unknown, __: Job, index: number) => index + 1,
+    }),
+    [],
+  );
+
   const columns = useMemo(
-    () =>
-      orderedKeys
+    () => [
+      rowNumberCol,
+      ...orderedKeys
         .map((key) => {
           const col = BASE_COLUMNS_MAP.get(key);
           if (!col) return null;
@@ -160,7 +172,8 @@ export const JobTable = ({
           };
         })
         .filter(Boolean),
-    [orderedKeys, columnWidths, onColumnResize],
+    ],
+    [rowNumberCol, orderedKeys, columnWidths, onColumnResize],
   );
 
   const scrollX = useMemo(
