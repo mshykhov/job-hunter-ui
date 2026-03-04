@@ -78,9 +78,10 @@ const DEFAULT_SETTINGS: TableSettings = {
   density: "small",
 };
 
-const storage = createStorage<TableSettings>("job-hunter-table-settings", 7, DEFAULT_SETTINGS);
+const STORAGE_VERSION = 7;
 
-const loadWithNewColumns = (): TableSettings => {
+const loadWithNewColumns = (storageKey: string): TableSettings => {
+  const storage = createStorage<TableSettings>(storageKey, STORAGE_VERSION, DEFAULT_SETTINGS);
   const saved = storage.load();
   const known = new Set(saved.knownColumns.length > 0 ? saved.knownColumns : saved.visibleColumns);
   const newCols = COLUMN_KEYS.filter((k) => !known.has(k));
@@ -98,15 +99,16 @@ const loadWithNewColumns = (): TableSettings => {
   };
 };
 
-export const useTableSettings = () => {
-  const [settings, setSettings] = useState<TableSettings>(loadWithNewColumns);
+export const useTableSettings = (storageKey = "job-hunter-table-settings") => {
+  const [settings, setSettings] = useState<TableSettings>(() => loadWithNewColumns(storageKey));
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
+    const storage = createStorage<TableSettings>(storageKey, STORAGE_VERSION, DEFAULT_SETTINGS);
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => storage.save(settings), 300);
     return () => clearTimeout(saveTimer.current);
-  }, [settings]);
+  }, [settings, storageKey]);
 
   const toggleColumn = useCallback((key: ColumnKey) => {
     if (ALWAYS_VISIBLE.includes(key)) return;

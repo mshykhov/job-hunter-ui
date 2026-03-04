@@ -10,14 +10,14 @@ import { ExploreFilters } from "./ExploreFilters";
 import { useExploreFilters } from "./useExploreFilters";
 
 const EXPLORE_COLUMNS: Set<ColumnKey> = new Set([
-  "title", "company", "source", "salary", "location", "remote", "publishedAt",
+  "rowNum", "title", "company", "source", "salary", "location", "remote", "publishedAt",
 ]);
 
 export const ExplorePage = () => {
   const { filters, setFilters } = useExploreFilters();
 
   const { settings, toggleColumn, setColumnWidth, setDensity, reorderColumns } =
-    useTableSettings();
+    useTableSettings("job-hunter-explore-table");
 
   const debouncedFilters = useDebouncedValue(filters, 300);
 
