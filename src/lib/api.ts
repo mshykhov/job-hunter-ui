@@ -2,6 +2,12 @@ import axios, { type AxiosError } from "axios";
 import { API_URL } from "@/config/constants";
 import type { ApiError } from "@/types";
 
+declare module "axios" {
+  interface AxiosRequestConfig {
+    skipErrorHandler?: boolean;
+  }
+}
+
 export const api = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
@@ -69,8 +75,10 @@ api.interceptors.response.use(
       authErrorHandler();
       return Promise.reject(error);
     }
-    const { title, detail } = formatError(error);
-    errorHandler?.(title, detail);
+    if (!error.config?.skipErrorHandler) {
+      const { title, detail } = formatError(error);
+      errorHandler?.(title, detail);
+    }
     return Promise.reject(error);
   }
 );
@@ -82,10 +90,13 @@ export const API_PATHS = {
   JOB_STATUS: (jobId: string) => `/jobs/${jobId}/status`,
   CRITERIA: "/criteria",
   PREFERENCES: "/preferences",
+  PREFERENCES_SEARCH: "/preferences/search",
+  PREFERENCES_MATCHING: "/preferences/matching",
+  PREFERENCES_TELEGRAM: "/preferences/telegram",
   PREFERENCES_NORMALIZE: "/preferences/normalize",
   PREFERENCES_NORMALIZE_FILE: "/preferences/normalize/file",
   AI_PROVIDERS: "/settings/ai-providers",
-  AI_CONFIG: "/settings/ai-config",
+  AI_SETTINGS: "/settings/ai",
   JOBS_REMATCH: "/jobs/rematch",
   HEALTH: "/actuator/health",
 } as const;

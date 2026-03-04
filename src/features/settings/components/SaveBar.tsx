@@ -7,9 +7,11 @@ interface SaveBarProps {
   saving: boolean;
   onSave: () => void;
   onDiscard: () => void;
+  saveDisabled?: boolean;
+  saveDisabledReason?: string;
 }
 
-export const SaveBar = ({ isDirty, saved, saving, onSave, onDiscard }: SaveBarProps) => {
+export const SaveBar = ({ isDirty, saved, saving, onSave, onDiscard, saveDisabled, saveDisabledReason }: SaveBarProps) => {
   const { token } = theme.useToken();
 
   return (
@@ -21,12 +23,17 @@ export const SaveBar = ({ isDirty, saved, saving, onSave, onDiscard }: SaveBarPr
         </Flex>
       ) : (
         <Flex align="center" justify="space-between">
-          <Typography.Text type="secondary">Unsaved changes</Typography.Text>
+          <Flex vertical gap={2}>
+            <Typography.Text type="secondary">Unsaved changes</Typography.Text>
+            {saveDisabled && saveDisabledReason && (
+              <Typography.Text type="danger" style={{ fontSize: 12 }}>{saveDisabledReason}</Typography.Text>
+            )}
+          </Flex>
           <Flex gap={8}>
             <Button icon={<UndoOutlined />} onClick={onDiscard}>
               Discard
             </Button>
-            <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={onSave}>
+            <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={onSave} disabled={saveDisabled}>
               Save
             </Button>
           </Flex>
