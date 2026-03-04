@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { createStorage } from "@/lib/storage";
 
 export const COLUMN_KEYS = [
+  "rowNum",
   "title",
   "company",
   "source",
@@ -18,6 +19,7 @@ export const COLUMN_KEYS = [
 export type ColumnKey = (typeof COLUMN_KEYS)[number];
 
 export const COLUMN_LABELS: Record<ColumnKey, string> = {
+  rowNum: "#",
   title: "Title",
   company: "Company",
   source: "Source",
@@ -32,6 +34,7 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
 };
 
 export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
+  rowNum: 50,
   title: 200,
   company: 100,
   source: 80,
@@ -75,7 +78,7 @@ const DEFAULT_SETTINGS: TableSettings = {
   density: "small",
 };
 
-const storage = createStorage<TableSettings>("job-hunter-table-settings", 6, DEFAULT_SETTINGS);
+const storage = createStorage<TableSettings>("job-hunter-table-settings", 7, DEFAULT_SETTINGS);
 
 const loadWithNewColumns = (): TableSettings => {
   const saved = storage.load();

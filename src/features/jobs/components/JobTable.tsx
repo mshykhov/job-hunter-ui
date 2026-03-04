@@ -30,6 +30,12 @@ interface JobTableProps {
 
 const BASE_COLUMNS: ColumnsType<Job> = [
   {
+    key: "rowNum",
+    title: "#",
+    align: "center",
+    render: (_: unknown, __: Job, index: number) => index + 1,
+  },
+  {
     key: "title",
     title: "Title",
     dataIndex: "title",
@@ -139,21 +145,9 @@ export const JobTable = ({
     [columnOrder, visibleSet],
   );
 
-  const rowNumberCol: ColumnType<Job> = useMemo(
-    () => ({
-      key: "#",
-      title: "#",
-      width: 50,
-      align: "center",
-      render: (_: unknown, __: Job, index: number) => index + 1,
-    }),
-    [],
-  );
-
   const columns = useMemo(
-    () => [
-      rowNumberCol,
-      ...orderedKeys
+    () =>
+      orderedKeys
         .map((key) => {
           const col = BASE_COLUMNS_MAP.get(key);
           if (!col) return null;
@@ -172,8 +166,7 @@ export const JobTable = ({
           };
         })
         .filter(Boolean),
-    ],
-    [rowNumberCol, orderedKeys, columnWidths, onColumnResize],
+    [orderedKeys, columnWidths, onColumnResize],
   );
 
   const scrollX = useMemo(
