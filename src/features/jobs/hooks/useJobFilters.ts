@@ -88,7 +88,9 @@ export const useJobFilters = () => {
     }
   }
 
-  const filters = parseFilters(searchParams);
+  const filters = hasFilterParams(searchParams)
+    ? parseFilters(searchParams)
+    : storage.load();
 
   const setFilters = useCallback(
     (next: JobFilters) => {
