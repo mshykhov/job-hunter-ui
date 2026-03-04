@@ -1,5 +1,5 @@
 import { api, API_PATHS } from "@/lib/api";
-import type { JobFilters, PaginatedJobsResponse } from "../types";
+import type { JobFilters, PaginatedJobsResponse, PublicJobPageResponse } from "../types";
 import { PERIOD_FIELD } from "../types";
 
 const PERIOD_MS: Record<string, number> = {
@@ -55,5 +55,22 @@ export const fetchJobsPage = async (
 ): Promise<PaginatedJobsResponse> => {
   const body = buildRequestBody(filters, cursor);
   const { data } = await api.post<PaginatedJobsResponse>(API_PATHS.JOBS_SEARCH, body);
+  return data;
+};
+
+export const fetchPublicJobsPage = async (
+  filters: JobFilters,
+  page: number,
+): Promise<PublicJobPageResponse> => {
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+  params.set("size", String(filters.size ?? 20));
+  if (filters.search) params.set("search", filters.search);
+  if (filters.remote) params.set("remote", "true");
+  filters.sources?.forEach((s) => params.append("source", s));
+
+  const { data } = await api.get<PublicJobPageResponse>(
+    `${API_PATHS.PUBLIC_JOBS}?${params.toString()}`,
+  );
   return data;
 };

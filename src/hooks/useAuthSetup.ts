@@ -3,10 +3,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { registerTokenGetter, registerAuthErrorHandler } from "@/lib/api";
 
 export const useAuthSetup = () => {
-  const { isConfigured, isLoading, getAccessTokenSilently, loginWithRedirect } = useAuth();
+  const { isConfigured, isLoading, isAuthenticated, getAccessTokenSilently, loginWithRedirect } =
+    useAuth();
 
   useEffect(() => {
-    if (!isConfigured) return;
+    if (!isConfigured || !isAuthenticated) return;
 
     const cleanupToken = registerTokenGetter(() => getAccessTokenSilently());
     const cleanupAuth = registerAuthErrorHandler(() => {
@@ -17,7 +18,7 @@ export const useAuthSetup = () => {
       cleanupToken();
       cleanupAuth();
     };
-  }, [isConfigured, getAccessTokenSilently, loginWithRedirect]);
+  }, [isConfigured, isAuthenticated, getAccessTokenSilently, loginWithRedirect]);
 
   return { isLoading, isConfigured };
 };

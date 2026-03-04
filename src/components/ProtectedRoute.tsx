@@ -21,7 +21,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/statistics" replace />;
+    return <Navigate to="/explore" replace />;
   }
 
   return <>{children}</>;

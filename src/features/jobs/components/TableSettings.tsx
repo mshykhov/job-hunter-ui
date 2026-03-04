@@ -12,6 +12,7 @@ interface TableSettingsProps {
   onToggleColumn: (key: ColumnKey) => void;
   onRefreshChange: (interval: number) => void;
   onDensityChange: (density: TableDensity) => void;
+  availableColumns?: Set<ColumnKey>;
 }
 
 const ALWAYS_VISIBLE: ColumnKey[] = ["title"];
@@ -23,7 +24,12 @@ export const TableSettings = ({
   onToggleColumn,
   onRefreshChange,
   onDensityChange,
+  availableColumns,
 }: TableSettingsProps) => {
+  const columns = availableColumns
+    ? settings.columnOrder.filter((k) => availableColumns.has(k))
+    : settings.columnOrder;
+
   const content = (
     <Flex vertical gap={12} style={{ width: 200 }}>
       <div>
@@ -31,7 +37,7 @@ export const TableSettings = ({
           Columns
         </Typography.Text>
         <Flex vertical gap={4} style={{ marginTop: 6 }}>
-          {settings.columnOrder.map((key) => (
+          {columns.map((key) => (
             <Checkbox
               key={key}
               checked={settings.visibleColumns.includes(key)}

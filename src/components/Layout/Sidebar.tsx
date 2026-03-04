@@ -1,7 +1,7 @@
 import { Layout, Menu, Button, Badge, Flex, Typography, theme } from "antd";
 import {
   FileSearchOutlined,
-  BarChartOutlined,
+  CompassOutlined,
   SettingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -39,6 +39,7 @@ export const Sidebar = ({
   const canReadPreferences = !isConfigured || permissions.includes(PERMISSIONS.READ_PREFERENCES);
 
   const navItems = [
+    { key: "/explore", icon: <CompassOutlined />, label: "Explore" },
     ...(canReadJobs
       ? [
           {
@@ -55,7 +56,6 @@ export const Sidebar = ({
     ...(canReadPreferences
       ? [{ key: "/settings", icon: <SettingOutlined />, label: "Settings" }]
       : []),
-    { key: "/statistics", icon: <BarChartOutlined />, label: "Statistics" },
   ];
 
   return (

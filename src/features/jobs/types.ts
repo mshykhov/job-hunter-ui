@@ -62,3 +62,24 @@ export interface PaginatedJobsResponse {
   size: number;
   statusCounts: Partial<Record<UserJobStatus, number>>;
 }
+
+export interface PublicJob {
+  id: string;
+  title: string;
+  company: string | null;
+  url: string;
+  description: string;
+  source: JobSource;
+  salary: string | null;
+  location: string | null;
+  remote: boolean | null;
+  publishedAt: string | null;
+}
+
+export interface PublicJobPageResponse {
+  content: PublicJob[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}

@@ -2,8 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { JobsPage } from "@/features/jobs/components/JobsPage";
-import { StatisticsPage } from "@/features/statistics/StatisticsPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
+import { ExplorePage } from "@/features/explore/ExplorePage";
 import { useAuth } from "@/hooks/useAuth";
 
 interface AppRoutesProps {
@@ -13,7 +13,7 @@ interface AppRoutesProps {
 
 const RootRedirect = () => {
   const { isAuthenticated, isConfigured } = useAuth();
-  const target = !isConfigured || isAuthenticated ? "/jobs" : "/statistics";
+  const target = !isConfigured || isAuthenticated ? "/jobs" : "/explore";
   return <Navigate to={target} replace />;
 };
 
@@ -22,7 +22,7 @@ export const AppRoutes = ({ isDark, onThemeToggle }: AppRoutesProps) => {
     <Routes>
       <Route element={<AppLayout isDark={isDark} onThemeToggle={onThemeToggle} />}>
         <Route index element={<RootRedirect />} />
-        <Route path="statistics" element={<StatisticsPage />} />
+        <Route path="explore" element={<ExplorePage />} />
         <Route
           path="jobs"
           element={
