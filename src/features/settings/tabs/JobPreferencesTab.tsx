@@ -1,74 +1,134 @@
-import { useState, useEffect } from "react";
-import { Flex, Skeleton } from "antd";
+import { useState, useEffect, useCallback } from "react";
+import { Collapse, Flex, Skeleton } from "antd";
+import { FilterOutlined, RobotOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   usePreferences,
-  useSavePreferences,
+  useSaveSearchPreferences,
+  useSaveMatchingPreferences,
   useNormalizePreferences,
   useNormalizeWithFile,
 } from "../hooks/usePreferences";
 import { useDirtyForm } from "../hooks/useDirtyForm";
 import { NormalizeCard } from "../components/NormalizeCard";
-import { PreferencesForm } from "../components/PreferencesForm";
+import { SearchSection } from "../components/SearchSection";
+import { MatchingSection } from "../components/MatchingSection";
 import { SaveBar } from "../components/SaveBar";
 import { EMPTY_PREFERENCES } from "../types";
-import type { Preferences } from "../types";
+import type { SearchPreferences, MatchingPreferences } from "../types";
 
 export const JobPreferencesTab = () => {
   const { data: preferences, isLoading } = usePreferences();
-  const saveMutation = useSavePreferences();
+  const saveSearchMutation = useSaveSearchPreferences();
+  const saveMatchingMutation = useSaveMatchingPreferences();
   const normalizeMutation = useNormalizePreferences();
   const normalizeFileMutation = useNormalizeWithFile();
-  const [saved, setSaved] = useState(false);
 
   const initial = preferences ?? EMPTY_PREFERENCES;
-  const { form, setForm, update, isDirty, reset } = useDirtyForm<Preferences>(initial);
+  const searchForm = useDirtyForm<SearchPreferences>(initial.search);
+  const matchingForm = useDirtyForm<MatchingPreferences>(initial.matching);
 
+  const [searchSaved, setSearchSaved] = useState(false);
+  const [matchingSaved, setMatchingSaved] = useState(false);
+
+  const updateSearch = useCallback(
+    <K extends keyof SearchPreferences>(key: K, value: SearchPreferences[K]) =>
+      searchForm.setForm((prev) => ({ ...prev, [key]: value })),
+    [searchForm.setForm],
+  );
+
+  const updateMatching = useCallback(
+    <K extends keyof MatchingPreferences>(key: K, value: MatchingPreferences[K]) =>
+      matchingForm.setForm((prev) => ({ ...prev, [key]: value })),
+    [matchingForm.setForm],
+  );
+
+  const normalizeResult = normalizeMutation.data ?? normalizeFileMutation.data;
   useEffect(() => {
-    const result = normalizeMutation.data ?? normalizeFileMutation.data;
-    if (!result) return;
-    setForm((prev) => ({
+    if (!normalizeResult) return;
+    searchForm.setForm((prev) => ({
       ...prev,
-      categories: result.categories,
-      seniorityLevels: result.seniorityLevels,
-      keywords: result.keywords,
-      excludedKeywords: result.excludedKeywords,
-      locations: result.locations,
-      languages: result.languages,
-      remoteOnly: result.remoteOnly,
+      categories: normalizeResult.categories,
+      seniorityLevels: normalizeResult.seniorityLevels,
+      locations: normalizeResult.locations,
+      remoteOnly: normalizeResult.remoteOnly,
     }));
-  }, [normalizeMutation.data, normalizeFileMutation.data, setForm]);
+    matchingForm.setForm((prev) => ({
+      ...prev,
+      keywords: normalizeResult.keywords,
+      excludedKeywords: normalizeResult.excludedKeywords,
+      disabledSources: normalizeResult.disabledSources,
+    }));
+  }, [normalizeResult, searchForm.setForm, matchingForm.setForm]);
 
   useEffect(() => {
-    if (!saved) return;
-    const timer = setTimeout(() => setSaved(false), 2500);
-    return () => clearTimeout(timer);
-  }, [saved]);
+    if (!searchSaved) return;
+    const t = setTimeout(() => setSearchSaved(false), 2500);
+    return () => clearTimeout(t);
+  }, [searchSaved]);
 
-  const handleSave = () => {
-    saveMutation.mutate(form, { onSuccess: () => setSaved(true) });
-  };
+  useEffect(() => {
+    if (!matchingSaved) return;
+    const t = setTimeout(() => setMatchingSaved(false), 2500);
+    return () => clearTimeout(t);
+  }, [matchingSaved]);
 
   const normalizing = normalizeMutation.isPending || normalizeFileMutation.isPending;
 
   if (isLoading) return <Skeleton active paragraph={{ rows: 14 }} />;
 
   return (
-    <Flex vertical gap={16}>
-      <NormalizeCard
-        rawInput={form.rawInput}
-        onRawInputChange={(v) => update("rawInput", v)}
-        onNormalizeText={(raw) => normalizeMutation.mutate(raw)}
-        onNormalizeFile={(file) => normalizeFileMutation.mutate(file)}
-        normalizing={normalizing}
-      />
-      <PreferencesForm form={form} onChange={update} />
-      <SaveBar
-        isDirty={isDirty}
-        saved={saved}
-        saving={saveMutation.isPending}
-        onSave={handleSave}
-        onDiscard={reset}
-      />
-    </Flex>
+    <Collapse
+      defaultActiveKey={["search", "matching"]}
+      items={[
+        {
+          key: "normalize",
+          label: "AI Normalization",
+          extra: <RobotOutlined />,
+          children: (
+            <NormalizeCard
+              rawInput={searchForm.form.rawInput}
+              onRawInputChange={(v) => updateSearch("rawInput", v)}
+              onNormalizeText={(raw) => normalizeMutation.mutate(raw)}
+              onNormalizeFile={(file) => normalizeFileMutation.mutate(file)}
+              normalizing={normalizing}
+            />
+          ),
+        },
+        {
+          key: "search",
+          label: "Search Criteria",
+          extra: <SearchOutlined />,
+          children: (
+            <Flex vertical gap={16}>
+              <SearchSection form={searchForm.form} onChange={updateSearch} />
+              <SaveBar
+                isDirty={searchForm.isDirty}
+                saved={searchSaved}
+                saving={saveSearchMutation.isPending}
+                onSave={() => saveSearchMutation.mutate(searchForm.form, { onSuccess: () => setSearchSaved(true) })}
+                onDiscard={searchForm.reset}
+              />
+            </Flex>
+          ),
+        },
+        {
+          key: "matching",
+          label: "Matching & Filtering",
+          extra: <FilterOutlined />,
+          children: (
+            <Flex vertical gap={16}>
+              <MatchingSection form={matchingForm.form} onChange={updateMatching} />
+              <SaveBar
+                isDirty={matchingForm.isDirty}
+                saved={matchingSaved}
+                saving={saveMatchingMutation.isPending}
+                onSave={() => saveMatchingMutation.mutate(matchingForm.form, { onSuccess: () => setMatchingSaved(true) })}
+                onDiscard={matchingForm.reset}
+              />
+            </Flex>
+          ),
+        },
+      ]}
+    />
   );
 };
