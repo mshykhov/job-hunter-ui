@@ -108,6 +108,10 @@ export const JobPreferencesTab = () => {
     return () => clearTimeout(t);
   }, [matchingSaved]);
 
+  const weightsTotal = matchingForm.form.weightTechnology + matchingForm.form.weightSeniority
+    + matchingForm.form.weightSkills + matchingForm.form.weightLocation;
+  const weightsInvalid = matchingForm.form.matchWithAi && weightsTotal !== 100;
+
   const normalizing = normalizeMutation.isPending || normalizeFileMutation.isPending;
 
   if (isLoading) return <Skeleton active paragraph={{ rows: 14 }} />;
@@ -160,6 +164,8 @@ export const JobPreferencesTab = () => {
                 saving={saveMatchingMutation.isPending}
                 onSave={() => saveMatchingMutation.mutate(matchingForm.form, { onSuccess: () => { setMatchingSaved(true); suggestRematch(); } })}
                 onDiscard={matchingForm.reset}
+                saveDisabled={weightsInvalid}
+                saveDisabledReason={weightsInvalid ? `Matching weights must total 100% (currently ${weightsTotal}%)` : undefined}
               />
             </Flex>
           ),
