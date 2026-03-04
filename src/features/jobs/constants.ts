@@ -19,10 +19,9 @@ export const SOURCE_COLORS: Record<JobSource, string> = {
 };
 
 export const PERIOD_OPTIONS = [
+  { label: "12h", value: "12h" },
   { label: "24h", value: "24h" },
   { label: "3d", value: "3d" },
-  { label: "Week", value: "7d" },
-  { label: "Month", value: "30d" },
   { label: "All", value: "" },
 ];
 

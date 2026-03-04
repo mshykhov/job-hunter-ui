@@ -3,10 +3,9 @@ import type { JobFilters, PaginatedJobsResponse, PublicJobPageResponse } from ".
 import { PERIOD_FIELD } from "../types";
 
 const PERIOD_MS: Record<string, number> = {
-  "24h": 24 * 60 * 60 * 1000,
-  "3d": 3 * 24 * 60 * 60 * 1000,
-  "7d": 7 * 24 * 60 * 60 * 1000,
-  "30d": 30 * 24 * 60 * 60 * 1000,
+  "12h": 12 * 3_600_000,
+  "24h": 24 * 3_600_000,
+  "3d": 3 * 24 * 3_600_000,
 };
 
 const periodToInstant = (period?: string): string | undefined => {
