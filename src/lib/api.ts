@@ -99,6 +99,11 @@ export const API_PATHS = {
   PREFERENCES_NORMALIZE_FILE: "/preferences/normalize/file",
   AI_PROVIDERS: "/settings/ai-providers",
   AI_SETTINGS: "/settings/ai",
+  OUTREACH_SETTINGS: "/settings/outreach",
+  OUTREACH_TEST_COVER_LETTER: "/settings/outreach/test/cover-letter",
+  OUTREACH_TEST_RECRUITER_MESSAGE: "/settings/outreach/test/recruiter-message",
+  JOB_COVER_LETTER: (jobId: string) => `/jobs/${jobId}/outreach/cover-letter`,
+  JOB_RECRUITER_MESSAGE: (jobId: string) => `/jobs/${jobId}/outreach/recruiter-message`,
   JOBS_REMATCH: "/jobs/rematch",
   HEALTH: "/actuator/health",
 } as const;

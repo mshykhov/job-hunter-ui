@@ -3,6 +3,7 @@ import { LinkOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import type { Job, JobDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
+import { OutreachSection } from "./OutreachSection";
 
 interface JobDetailContentProps {
   job: Job;
@@ -86,6 +87,8 @@ export const JobDetailContent = ({
             <Descriptions.Item label="AI Score">{job.aiRelevanceScore}%</Descriptions.Item>
           )}
         </Descriptions>
+
+        {detail && <OutreachSection job={job} detail={detail} />}
 
         <Divider style={{ margin: "12px 0" }} />
 

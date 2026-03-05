@@ -112,6 +112,7 @@ src/
 - **Collocate with feature** — `features/jobs/hooks/useJobs.ts`
 
 ### API Layer
+- **API spec** available at `http://localhost:8095/api-docs` (Swagger/OpenAPI)
 - **Single Axios instance** in `lib/api.ts` with auth interceptor
 - **Never call axios directly in components or hooks** — use the instance
 - **API paths as constants** — `API_PATHS.JOBS`, not `"/jobs"`

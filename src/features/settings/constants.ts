@@ -1,6 +1,7 @@
 export const SETTINGS_TABS = {
   JOB_PREFERENCES: "job-preferences",
   AI_CONFIG: "ai-config",
+  OUTREACH: "outreach",
   TELEGRAM: "telegram",
 } as const;
 

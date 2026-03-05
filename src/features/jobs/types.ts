@@ -28,6 +28,8 @@ export interface Job {
 export interface JobDetail extends Job {
   description: string;
   aiReasoning: string | null;
+  coverLetter: string | null;
+  recruiterMessage: string | null;
 }
 
 export const PERIOD_FIELD = {
