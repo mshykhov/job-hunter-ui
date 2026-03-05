@@ -47,7 +47,7 @@ export const fetchPublicJobsPage = async (
   if (filters.remote) params.set("remote", "true");
   if (filters.since) params.set("publishedAfter", filters.since);
   params.set("sortBy", filters.sortBy ?? PUBLIC_JOB_SORT.PUBLISHED);
-  filters.sources?.forEach((s) => params.append("source", s));
+  filters.sources?.forEach((s) => params.append("sources", s));
 
   const { data } = await api.get<PublicJobPageResponse>(
     `${API_PATHS.PUBLIC_JOBS}?${params.toString()}`,
