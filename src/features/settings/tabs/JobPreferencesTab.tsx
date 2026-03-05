@@ -1,30 +1,37 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { App, Collapse, Flex, Skeleton } from "antd";
-import { FilterOutlined, RobotOutlined, SearchOutlined } from "@ant-design/icons";
-import {
-  usePreferences,
-  useSaveSearchPreferences,
-  useSaveMatchingPreferences,
-  useNormalizePreferences,
-  useNormalizeWithFile,
-} from "../hooks/usePreferences";
+import { FilterOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { createStorage } from "@/lib/storage";
+import { usePreferences, useSaveSearchPreferences, useSaveMatchingPreferences } from "../hooks/usePreferences";
 import { useRematch } from "@/features/jobs/hooks/useRematch";
 import { useDirtyForm } from "../hooks/useDirtyForm";
-import { NormalizeCard } from "../components/NormalizeCard";
+import { useAboutForm } from "../hooks/useAboutForm";
+import { useSavedFlash } from "../hooks/useSavedFlash";
+import { AboutCard } from "../components/AboutCard";
 import { SearchSection } from "../components/SearchSection";
 import { MatchingSection } from "../components/MatchingSection";
 import { SaveBar } from "../components/SaveBar";
 import { EMPTY_PREFERENCES } from "../types";
 import type { SearchPreferences, MatchingPreferences } from "../types";
 
+const DEFAULT_ACTIVE_KEYS = ["about", "search", "matching"];
+const collapseStorage = createStorage<string[]>("job-prefs-collapse", 1, DEFAULT_ACTIVE_KEYS);
+
 export const JobPreferencesTab = () => {
   const { modal } = App.useApp();
   const { data: preferences, isLoading } = usePreferences();
   const saveSearchMutation = useSaveSearchPreferences();
   const saveMatchingMutation = useSaveMatchingPreferences();
-  const normalizeMutation = useNormalizePreferences();
-  const normalizeFileMutation = useNormalizeWithFile();
   const rematchMutation = useRematch();
+
+  const initial = preferences ?? EMPTY_PREFERENCES;
+  const aboutForm = useAboutForm(preferences);
+  const searchForm = useDirtyForm<SearchPreferences>(initial.search);
+  const matchingForm = useDirtyForm<MatchingPreferences>(initial.matching);
+  const searchSaved = useSavedFlash();
+  const matchingSaved = useSavedFlash();
+
+  const [activeKeys, setActiveKeys] = usePersistedKeys();
 
   const suggestRematch = useCallback(() => {
     let hours = 12;
@@ -58,12 +65,25 @@ export const JobPreferencesTab = () => {
     });
   }, [modal, rematchMutation]);
 
-  const initial = preferences ?? EMPTY_PREFERENCES;
-  const searchForm = useDirtyForm<SearchPreferences>(initial.search);
-  const matchingForm = useDirtyForm<MatchingPreferences>(initial.matching);
-
-  const [searchSaved, setSearchSaved] = useState(false);
-  const [matchingSaved, setMatchingSaved] = useState(false);
+  const handleGenerate = useCallback(() => {
+    aboutForm.generateMutation.mutate(undefined, {
+      onSuccess: (result) => {
+        searchForm.setForm((prev) => ({
+          ...prev,
+          categories: result.categories,
+          locations: result.locations,
+          disabledSources: result.disabledSources,
+          remoteOnly: result.remoteOnly,
+        }));
+        matchingForm.setForm((prev) => ({
+          ...prev,
+          seniorityLevels: result.seniorityLevels,
+          keywords: result.keywords,
+          excludedKeywords: result.excludedKeywords,
+        }));
+      },
+    });
+  }, [aboutForm.generateMutation, searchForm.setForm, matchingForm.setForm]);
 
   const updateSearch = useCallback(
     <K extends keyof SearchPreferences>(key: K, value: SearchPreferences[K]) =>
@@ -77,60 +97,33 @@ export const JobPreferencesTab = () => {
     [matchingForm.setForm],
   );
 
-  const normalizeResult = normalizeMutation.data ?? normalizeFileMutation.data;
-  useEffect(() => {
-    if (!normalizeResult) return;
-    searchForm.setForm((prev) => ({
-      ...prev,
-      rawInput: normalizeResult.rawInput,
-      categories: normalizeResult.categories,
-      locations: normalizeResult.locations,
-      disabledSources: normalizeResult.disabledSources,
-      remoteOnly: normalizeResult.remoteOnly,
-    }));
-    matchingForm.setForm((prev) => ({
-      ...prev,
-      seniorityLevels: normalizeResult.seniorityLevels,
-      keywords: normalizeResult.keywords,
-      excludedKeywords: normalizeResult.excludedKeywords,
-    }));
-  }, [normalizeResult, searchForm.setForm, matchingForm.setForm]);
-
-  useEffect(() => {
-    if (!searchSaved) return;
-    const t = setTimeout(() => setSearchSaved(false), 2500);
-    return () => clearTimeout(t);
-  }, [searchSaved]);
-
-  useEffect(() => {
-    if (!matchingSaved) return;
-    const t = setTimeout(() => setMatchingSaved(false), 2500);
-    return () => clearTimeout(t);
-  }, [matchingSaved]);
-
   const weightsTotal = matchingForm.form.weightKeywords + matchingForm.form.weightSeniority
     + matchingForm.form.weightCategories;
   const weightsInvalid = matchingForm.form.matchWithAi && weightsTotal !== 100;
-
-  const normalizing = normalizeMutation.isPending || normalizeFileMutation.isPending;
 
   if (isLoading) return <Skeleton active paragraph={{ rows: 14 }} />;
 
   return (
     <Collapse
-      defaultActiveKey={["search", "matching"]}
+      activeKey={activeKeys}
+      onChange={setActiveKeys}
       items={[
         {
-          key: "normalize",
-          label: "AI Normalization",
-          extra: <RobotOutlined />,
+          key: "about",
+          label: "About",
+          extra: <UserOutlined />,
           children: (
-            <NormalizeCard
-              rawInput={searchForm.form.rawInput}
-              onRawInputChange={(v) => updateSearch("rawInput", v)}
-              onNormalizeText={(raw) => normalizeMutation.mutate(raw)}
-              onNormalizeFile={(file) => normalizeFileMutation.mutate(file)}
-              normalizing={normalizing}
+            <AboutCard
+              about={aboutForm.about}
+              onAboutChange={aboutForm.change}
+              onDiscard={aboutForm.discard}
+              onSaveText={aboutForm.saveText}
+              onUploadFile={aboutForm.uploadFile}
+              onGenerate={handleGenerate}
+              saving={aboutForm.saving}
+              generating={aboutForm.generating}
+              aboutDirty={aboutForm.dirty}
+              aboutSaved={aboutForm.saved}
             />
           ),
         },
@@ -143,9 +136,9 @@ export const JobPreferencesTab = () => {
               <SearchSection form={searchForm.form} onChange={updateSearch} />
               <SaveBar
                 isDirty={searchForm.isDirty}
-                saved={searchSaved}
+                saved={searchSaved.saved}
                 saving={saveSearchMutation.isPending}
-                onSave={() => saveSearchMutation.mutate(searchForm.form, { onSuccess: () => { setSearchSaved(true); suggestRematch(); } })}
+                onSave={() => saveSearchMutation.mutate(searchForm.form, { onSuccess: () => { searchSaved.flash(); suggestRematch(); } })}
                 onDiscard={searchForm.reset}
               />
             </Flex>
@@ -160,9 +153,9 @@ export const JobPreferencesTab = () => {
               <MatchingSection form={matchingForm.form} onChange={updateMatching} />
               <SaveBar
                 isDirty={matchingForm.isDirty}
-                saved={matchingSaved}
+                saved={matchingSaved.saved}
                 saving={saveMatchingMutation.isPending}
-                onSave={() => saveMatchingMutation.mutate(matchingForm.form, { onSuccess: () => { setMatchingSaved(true); suggestRematch(); } })}
+                onSave={() => saveMatchingMutation.mutate(matchingForm.form, { onSuccess: () => { matchingSaved.flash(); suggestRematch(); } })}
                 onDiscard={matchingForm.reset}
                 saveDisabled={weightsInvalid}
                 saveDisabledReason={weightsInvalid ? `Matching weights must total 100% (currently ${weightsTotal}%)` : undefined}
@@ -173,4 +166,16 @@ export const JobPreferencesTab = () => {
       ]}
     />
   );
+};
+
+const usePersistedKeys = () => {
+  const [keys, setKeysRaw] = useState<string[]>(() => collapseStorage.load());
+
+  const setKeys = useCallback((value: string | string[]) => {
+    const next = Array.isArray(value) ? value : [value];
+    setKeysRaw(next);
+    collapseStorage.save(next);
+  }, []);
+
+  return [keys, setKeys] as const;
 };

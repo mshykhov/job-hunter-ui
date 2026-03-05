@@ -1,36 +1,45 @@
 import { useState } from "react";
 import { Button, Flex, Input, Typography, Upload, App } from "antd";
 import { RobotOutlined, UploadOutlined } from "@ant-design/icons";
+import { SaveBar } from "./SaveBar";
 import { CV_ACCEPTED_FORMATS, CV_MAX_SIZE_MB } from "../constants";
 import type { UploadFile } from "antd";
 
-interface NormalizeCardProps {
-  rawInput: string | null;
-  onRawInputChange: (value: string | null) => void;
-  onNormalizeText: (rawInput: string) => void;
-  onNormalizeFile: (file: File) => void;
-  normalizing: boolean;
+interface AboutCardProps {
+  about: string | null;
+  onAboutChange: (value: string | null) => void;
+  onDiscard: () => void;
+  onSaveText: () => void;
+  onUploadFile: (file: File) => void;
+  onGenerate: () => void;
+  saving: boolean;
+  generating: boolean;
+  aboutDirty: boolean;
+  aboutSaved: boolean;
 }
 
-export const NormalizeCard = ({
-  rawInput,
-  onRawInputChange,
-  onNormalizeText,
-  onNormalizeFile,
-  normalizing,
-}: NormalizeCardProps) => {
+export const AboutCard = ({
+  about,
+  onAboutChange,
+  onDiscard,
+  onSaveText,
+  onUploadFile,
+  onGenerate,
+  saving,
+  generating,
+  aboutDirty,
+  aboutSaved,
+}: AboutCardProps) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const { message } = App.useApp();
 
   const hasFile = fileList.length > 0;
-  const hasText = !!rawInput?.trim();
-  const canNormalize = hasFile || hasText;
+  const hasText = !!about?.trim();
 
-  const handleNormalize = () => {
+  const handleUpload = () => {
     if (hasFile && fileList[0].originFileObj) {
-      onNormalizeFile(fileList[0].originFileObj);
-    } else if (hasText) {
-      onNormalizeText(rawInput!);
+      onUploadFile(fileList[0].originFileObj);
+      setFileList([]);
     }
   };
 
@@ -39,8 +48,8 @@ export const NormalizeCard = ({
       <Input.TextArea
         rows={3}
         placeholder="e.g. Senior Kotlin developer, remote, Spring Boot, no frontend work..."
-        value={rawInput ?? ""}
-        onChange={(e) => onRawInputChange(e.target.value || null)}
+        value={about ?? ""}
+        onChange={(e) => onAboutChange(e.target.value || null)}
         disabled={hasFile}
       />
       <Flex align="center" gap={12} wrap="wrap">
@@ -53,6 +62,7 @@ export const NormalizeCard = ({
               message.error(`File must be smaller than ${CV_MAX_SIZE_MB}MB`);
               return Upload.LIST_IGNORE;
             }
+            setFileList([{ ...file, uid: file.uid, name: file.name, originFileObj: file } as UploadFile]);
             return false;
           }}
           onChange={({ fileList: list }) => setFileList(list)}
@@ -65,15 +75,27 @@ export const NormalizeCard = ({
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
           PDF, DOC or DOCX, max {CV_MAX_SIZE_MB}MB
         </Typography.Text>
+        {hasFile && (
+          <Button size="small" type="primary" loading={saving} onClick={handleUpload}>
+            Save File
+          </Button>
+        )}
       </Flex>
+      <SaveBar
+        isDirty={aboutDirty && !hasFile}
+        saved={aboutSaved}
+        saving={saving}
+        onSave={onSaveText}
+        onDiscard={onDiscard}
+      />
       <div>
         <Button
           icon={<RobotOutlined />}
-          loading={normalizing}
-          onClick={handleNormalize}
-          disabled={!canNormalize}
+          loading={generating}
+          onClick={onGenerate}
+          disabled={!about?.trim()}
         >
-          Normalize with AI
+          Generate Preferences
         </Button>
       </div>
     </Flex>

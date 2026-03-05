@@ -1,7 +1,6 @@
 import type { JobSource } from "@/features/jobs/types";
 
 export interface SearchPreferences {
-  rawInput: string | null;
   categories: string[];
   locations: string[];
   disabledSources: JobSource[];
@@ -29,14 +28,15 @@ export interface TelegramPreferences {
 }
 
 export interface Preferences {
+  about: string | null;
   search: SearchPreferences;
   matching: MatchingPreferences;
   telegram: TelegramPreferences;
 }
 
 export const EMPTY_PREFERENCES: Preferences = {
+  about: null,
   search: {
-    rawInput: null,
     categories: [],
     locations: [],
     disabledSources: [],
@@ -62,15 +62,14 @@ export const EMPTY_PREFERENCES: Preferences = {
   },
 };
 
-export interface NormalizeResponse {
-  rawInput: string;
+export interface GeneratePreferencesResponse {
   categories: string[];
-  locations: string[];
-  disabledSources: JobSource[];
-  remoteOnly: boolean;
   seniorityLevels: string[];
   keywords: string[];
   excludedKeywords: string[];
+  locations: string[];
+  remoteOnly: boolean;
+  disabledSources: JobSource[];
 }
 
 export interface AiConfigForm {

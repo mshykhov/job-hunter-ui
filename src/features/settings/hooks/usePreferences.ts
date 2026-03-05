@@ -5,7 +5,7 @@ import type {
   SearchPreferences,
   MatchingPreferences,
   TelegramPreferences,
-  NormalizeResponse,
+  GeneratePreferencesResponse,
 } from "../types";
 
 const QUERY_KEY = ["preferences"];
@@ -65,25 +65,46 @@ export const useSaveTelegramPreferences = () => {
   });
 };
 
-export const useNormalizePreferences = () => {
+export const useSaveAbout = () => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (rawInput: string) => {
-      const { data } = await api.post<NormalizeResponse>(API_PATHS.PREFERENCES_NORMALIZE, { rawInput });
-      return data;
+    mutationFn: async (about: string) => {
+      await api.put(API_PATHS.PREFERENCES_ABOUT, { about });
+      return about;
+    },
+    onSuccess: (about) => {
+      queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
+        prev ? { ...prev, about } : undefined,
+      );
     },
   });
 };
 
-export const useNormalizeWithFile = () => {
+export const useUploadAbout = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      const { data } = await api.post<NormalizeResponse>(
-        API_PATHS.PREFERENCES_NORMALIZE_FILE,
+      const { data } = await api.put<{ about: string }>(
+        API_PATHS.PREFERENCES_ABOUT_FILE,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } },
       );
+      return data.about;
+    },
+    onSuccess: (about) => {
+      queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
+        prev ? { ...prev, about } : undefined,
+      );
+    },
+  });
+};
+
+export const useGeneratePreferences = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post<GeneratePreferencesResponse>(API_PATHS.PREFERENCES_GENERATE);
       return data;
     },
   });
