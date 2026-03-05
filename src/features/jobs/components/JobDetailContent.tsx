@@ -3,6 +3,7 @@ import { LinkOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import type { Job, JobDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
+import { useSourceNames } from "../hooks/useSourceNames";
 import { OutreachSection } from "./OutreachSection";
 
 interface JobDetailContentProps {
@@ -22,6 +23,7 @@ export const JobDetailContent = ({
   statusLoading,
   onOpenOriginal,
 }: JobDetailContentProps) => {
+  const sourceNames = useSourceNames();
   return (
     <Flex vertical style={{ height: "100%", overflow: "hidden" }}>
       <Flex
@@ -39,7 +41,7 @@ export const JobDetailContent = ({
         </div>
 
         <Flex gap={8} wrap="wrap">
-          <Tag color={getSourceColor(job.source)}>{job.source}</Tag>
+          <Tag color={getSourceColor(job.source)}>{sourceNames[job.source] ?? job.source}</Tag>
           <Tag color={STATUS_COLORS[job.status]}>{STATUS_LABELS[job.status]}</Tag>
           {job.remote && <Tag color="geekblue">Remote</Tag>}
         </Flex>

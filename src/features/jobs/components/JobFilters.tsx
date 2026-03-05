@@ -101,7 +101,7 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
         mode="multiple"
         placeholder="Source"
         allowClear
-        style={{ minWidth: 130 }}
+        style={{ minWidth: 170 }}
         value={filters.sources ?? []}
         onChange={(sources: JobSource[]) =>
           onChange({ ...filters, sources: sources.length ? sources : undefined })

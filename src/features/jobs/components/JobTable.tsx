@@ -9,7 +9,7 @@ import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Job } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
-import { useJobSources } from "../hooks/useJobSources";
+import { useSourceNames } from "../hooks/useSourceNames";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
 import { ResizableHeaderCell, DraggableBodyCell } from "./ResizableHeaderCell";
@@ -150,12 +150,7 @@ export const JobTable = ({
 }: JobTableProps) => {
   const [dragIndex, setDragIndex] = useState<DragIndexState>({ active: "", over: "" });
   const tableRef = useRef<HTMLDivElement>(null);
-  const { data: sources = [] } = useJobSources();
-
-  const sourceNames = useMemo(
-    () => Object.fromEntries(sources.map((s) => [s.id, s.displayName])),
-    [sources],
-  );
+  const sourceNames = useSourceNames();
 
   const baseColumnsMap = useMemo(
     () => new Map<string, ColumnType<Job>>(
