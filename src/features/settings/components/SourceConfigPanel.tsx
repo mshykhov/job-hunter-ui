@@ -1,4 +1,4 @@
-import { Button, Card, Flex, Input, Switch, Typography, message } from "antd";
+import { Button, Card, Flex, Input, Typography, message } from "antd";
 import { CopyOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import type { OutreachSourceConfig, CoverLetterResponse, RecruiterMessageResponse } from "../types";
 
@@ -35,25 +35,6 @@ export const SourceConfigPanel = ({
 
   return (
     <Flex vertical gap={12}>
-      <Flex gap={24}>
-        <Flex align="center" gap={8}>
-          <Switch
-            size="small"
-            checked={config.coverLetterEnabled}
-            onChange={(v) => onUpdate({ coverLetterEnabled: v })}
-          />
-          <Typography.Text style={{ fontSize: 13 }}>Cover Letter</Typography.Text>
-        </Flex>
-        <Flex align="center" gap={8}>
-          <Switch
-            size="small"
-            checked={config.recruiterMessageEnabled}
-            onChange={(v) => onUpdate({ recruiterMessageEnabled: v })}
-          />
-          <Typography.Text style={{ fontSize: 13 }}>Recruiter Message</Typography.Text>
-        </Flex>
-      </Flex>
-
       {config.coverLetterEnabled && (
         <Flex vertical gap={4}>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>

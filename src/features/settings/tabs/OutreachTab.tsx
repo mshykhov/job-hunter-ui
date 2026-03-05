@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { Card, Collapse, Flex, Input, Skeleton, Tag, Typography } from "antd";
+import { useState, useCallback, useMemo } from "react";
+import { Card, Collapse, Flex, Input, Skeleton, Switch, Typography } from "antd";
 import {
   useOutreachSettings,
   useSaveOutreachSettings,
@@ -38,7 +38,17 @@ export const OutreachTab = () => {
       }
     : EMPTY_OUTREACH_SETTINGS;
 
-  const { form, setForm, isDirty, reset } = useDirtyForm<SaveOutreachSettings>(initial);
+  const { form, setForm, isDirty: rawDirty, reset } = useDirtyForm<SaveOutreachSettings>(initial);
+
+  const isReallyDirty = useMemo(() => {
+    if (!rawDirty) return false;
+    const normalizedForm = {
+      ...form,
+      coverLetterPrompt: form.coverLetterPrompt === settings?.defaultCoverLetterPrompt ? null : form.coverLetterPrompt,
+      recruiterMessagePrompt: form.recruiterMessagePrompt === settings?.defaultRecruiterMessagePrompt ? null : form.recruiterMessagePrompt,
+    };
+    return JSON.stringify(normalizedForm) !== JSON.stringify(initial);
+  }, [rawDirty, form, initial, settings]);
 
   const getSourceConfig = useCallback(
     (sourceId: string): OutreachSourceConfig =>
@@ -75,18 +85,26 @@ export const OutreachTab = () => {
             <Typography.Text strong style={{ fontSize: 13 }}>Cover Letter Prompt</Typography.Text>
             <Input.TextArea
               rows={3}
-              placeholder={defaultCL}
-              value={form.coverLetterPrompt ?? ""}
+              value={form.coverLetterPrompt ?? defaultCL}
               onChange={(e) => setForm((prev) => ({ ...prev, coverLetterPrompt: e.target.value || null }))}
+              style={!form.coverLetterPrompt ? { opacity: 0.45 } : undefined}
+              onFocus={(e) => {
+                if (!form.coverLetterPrompt) setForm((prev) => ({ ...prev, coverLetterPrompt: defaultCL }));
+                e.target.select();
+              }}
             />
           </Flex>
           <Flex vertical gap={4}>
             <Typography.Text strong style={{ fontSize: 13 }}>Recruiter Message Prompt</Typography.Text>
             <Input.TextArea
               rows={3}
-              placeholder={defaultRM}
-              value={form.recruiterMessagePrompt ?? ""}
+              value={form.recruiterMessagePrompt ?? defaultRM}
               onChange={(e) => setForm((prev) => ({ ...prev, recruiterMessagePrompt: e.target.value || null }))}
+              style={!form.recruiterMessagePrompt ? { opacity: 0.45 } : undefined}
+              onFocus={(e) => {
+                if (!form.recruiterMessagePrompt) setForm((prev) => ({ ...prev, recruiterMessagePrompt: defaultRM }));
+                e.target.select();
+              }}
             />
           </Flex>
         </Flex>
@@ -95,23 +113,35 @@ export const OutreachTab = () => {
       <Card size="small" title="Source Configuration">
         <Collapse
           ghost
+          collapsible="icon"
           items={sources.map((source) => {
             const config = getSourceConfig(source.id);
-            const tags = [
-              config.coverLetterEnabled && "CL",
-              config.recruiterMessageEnabled && "RM",
-            ].filter(Boolean);
 
             return {
               key: source.id,
               label: (
-                <Flex align="center" gap={8}>
-                  <span>{source.displayName}</span>
-                  {tags.map((tag) => (
-                    <Tag key={tag as string} color="blue" style={{ margin: 0, fontSize: 11 }}>
-                      {tag}
-                    </Tag>
-                  ))}
+                <Flex align="center" gap={12}>
+                  <span style={{ minWidth: 100 }}>{source.displayName}</span>
+                  <Flex align="center" gap={4}>
+                    <Switch
+                      size="small"
+                      checked={config.coverLetterEnabled}
+                      onChange={(v) => updateSourceConfig(source.id, { coverLetterEnabled: v })}
+                    />
+                    <Typography.Text style={{ fontSize: 12 }} type={config.coverLetterEnabled ? undefined : "secondary"}>
+                      Cover Letter
+                    </Typography.Text>
+                  </Flex>
+                  <Flex align="center" gap={4}>
+                    <Switch
+                      size="small"
+                      checked={config.recruiterMessageEnabled}
+                      onChange={(v) => updateSourceConfig(source.id, { recruiterMessageEnabled: v })}
+                    />
+                    <Typography.Text style={{ fontSize: 12 }} type={config.recruiterMessageEnabled ? undefined : "secondary"}>
+                      Recruiter Message
+                    </Typography.Text>
+                  </Flex>
                 </Flex>
               ),
               children: (
@@ -143,10 +173,17 @@ export const OutreachTab = () => {
       </Card>
 
       <SaveBar
-        isDirty={isDirty}
+        isDirty={isReallyDirty}
         saved={saved}
         saving={saveMutation.isPending}
-        onSave={() => saveMutation.mutate(form, { onSuccess: flash })}
+        onSave={() => {
+          const payload = {
+            ...form,
+            coverLetterPrompt: form.coverLetterPrompt === defaultCL ? null : form.coverLetterPrompt,
+            recruiterMessagePrompt: form.recruiterMessagePrompt === defaultRM ? null : form.recruiterMessagePrompt,
+          };
+          saveMutation.mutate(payload, { onSuccess: flash });
+        }}
         onDiscard={reset}
       />
     </Flex>
