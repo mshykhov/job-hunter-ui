@@ -9,6 +9,7 @@ import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Job } from "../types";
 import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
+import { useJobSources } from "../hooks/useJobSources";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
 import { ResizableHeaderCell, DraggableBodyCell } from "./ResizableHeaderCell";
@@ -30,7 +31,7 @@ interface JobTableProps {
   expandable?: ExpandableConfig<Job>;
 }
 
-const BASE_COLUMNS: ColumnsType<Job> = [
+const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job> => [
   {
     key: "rowNum",
     title: "#",
@@ -70,7 +71,9 @@ const BASE_COLUMNS: ColumnsType<Job> = [
     key: "source",
     title: "Source",
     dataIndex: "source",
-    render: (source: Job["source"]) => <Tag color={getSourceColor(source)}>{source}</Tag>,
+    render: (source: Job["source"]) => (
+      <Tag color={getSourceColor(source)}>{sourceNames[source] ?? source}</Tag>
+    ),
   },
   {
     key: "salary",
@@ -128,10 +131,6 @@ const BASE_COLUMNS: ColumnsType<Job> = [
   },
 ];
 
-const BASE_COLUMNS_MAP = new Map<string, ColumnType<Job>>(
-  BASE_COLUMNS.map((col) => [col.key as string, col]),
-);
-
 const SCROLL_THRESHOLD = 200;
 
 export const JobTable = ({
@@ -151,6 +150,19 @@ export const JobTable = ({
 }: JobTableProps) => {
   const [dragIndex, setDragIndex] = useState<DragIndexState>({ active: "", over: "" });
   const tableRef = useRef<HTMLDivElement>(null);
+  const { data: sources = [] } = useJobSources();
+
+  const sourceNames = useMemo(
+    () => Object.fromEntries(sources.map((s) => [s.id, s.displayName])),
+    [sources],
+  );
+
+  const baseColumnsMap = useMemo(
+    () => new Map<string, ColumnType<Job>>(
+      buildBaseColumns(sourceNames).map((col) => [col.key as string, col]),
+    ),
+    [sourceNames],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -167,7 +179,7 @@ export const JobTable = ({
     () =>
       orderedKeys
         .map((key) => {
-          const col = BASE_COLUMNS_MAP.get(key);
+          const col = baseColumnsMap.get(key);
           if (!col) return null;
           const w = columnWidths[key] ?? MIN_COLUMN_WIDTHS[key];
           return {
@@ -184,7 +196,7 @@ export const JobTable = ({
           };
         })
         .filter(Boolean),
-    [orderedKeys, columnWidths, onColumnResize],
+    [orderedKeys, columnWidths, onColumnResize, baseColumnsMap],
   );
 
   const scrollX = useMemo(

@@ -15,7 +15,7 @@ import { EMPTY_PREFERENCES } from "../types";
 import type { SearchPreferences, MatchingPreferences } from "../types";
 
 const DEFAULT_ACTIVE_KEYS = ["about", "search", "matching"];
-const collapseStorage = createStorage<string[]>("job-prefs-collapse", 1, DEFAULT_ACTIVE_KEYS);
+const collapseStorage = createStorage<{ keys: string[] }>("job-prefs-collapse", 1, { keys: DEFAULT_ACTIVE_KEYS });
 
 export const JobPreferencesTab = () => {
   const { modal } = App.useApp();
@@ -169,12 +169,12 @@ export const JobPreferencesTab = () => {
 };
 
 const usePersistedKeys = () => {
-  const [keys, setKeysRaw] = useState<string[]>(() => collapseStorage.load());
+  const [keys, setKeysRaw] = useState<string[]>(() => collapseStorage.load().keys);
 
   const setKeys = useCallback((value: string | string[]) => {
     const next = Array.isArray(value) ? value : [value];
     setKeysRaw(next);
-    collapseStorage.save(next);
+    collapseStorage.save({ keys: next });
   }, []);
 
   return [keys, setKeys] as const;
