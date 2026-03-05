@@ -52,5 +52,5 @@ export const mapPublicJobToTableRow = (job: PublicJob) => ({
   aiRelevanceScore: null,
   publishedAt: job.publishedAt,
   matchedAt: null,
-  updatedAt: null,
+  updatedAt: job.scrapedAt,
 });

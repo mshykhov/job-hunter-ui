@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Table, Tag } from "antd";
 import type { ColumnsType, ColumnType } from "antd/es/table";
+import type { ExpandableConfig } from "antd/es/table/interface";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
@@ -26,6 +27,7 @@ interface JobTableProps {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
+  expandable?: ExpandableConfig<Job>;
 }
 
 const BASE_COLUMNS: ColumnsType<Job> = [
@@ -40,7 +42,22 @@ const BASE_COLUMNS: ColumnsType<Job> = [
     title: "Title",
     dataIndex: "title",
     ellipsis: true,
-    render: (title: string) => <strong>{title}</strong>,
+    render: (title: string, record: Job) =>
+      record.url ? (
+        <a
+          href={record.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          style={{ color: "inherit", textDecoration: "none" }}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
+          <strong>{title}</strong>
+        </a>
+      ) : (
+        <strong>{title}</strong>
+      ),
   },
   {
     key: "company",
@@ -130,6 +147,7 @@ export const JobTable = ({
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
+  expandable,
 }: JobTableProps) => {
   const [dragIndex, setDragIndex] = useState<DragIndexState>({ active: "", over: "" });
   const tableRef = useRef<HTMLDivElement>(null);
@@ -224,6 +242,7 @@ export const JobTable = ({
                 header: { cell: ResizableHeaderCell },
                 body: { cell: DraggableBodyCell },
               }}
+              expandable={expandable}
               pagination={false}
               onRow={(record) => ({
                 onClick: () => onSelect(record),
