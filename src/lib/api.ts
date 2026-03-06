@@ -5,6 +5,7 @@ import type { ApiError } from "@/types";
 declare module "axios" {
   interface AxiosRequestConfig {
     skipErrorHandler?: boolean;
+    _retried?: boolean;
   }
 }
 
@@ -19,6 +20,7 @@ type AuthErrorHandler = () => void;
 
 let errorHandler: ErrorHandler | null = null;
 let tokenGetter: TokenGetter | null = null;
+let tokenRefresher: TokenGetter | null = null;
 let authErrorHandler: AuthErrorHandler | null = null;
 
 export const registerErrorHandler = (handler: ErrorHandler) => {
@@ -29,6 +31,13 @@ export const registerTokenGetter = (getter: TokenGetter) => {
   tokenGetter = getter;
   return () => {
     tokenGetter = null;
+  };
+};
+
+export const registerTokenRefresher = (refresher: TokenGetter) => {
+  tokenRefresher = refresher;
+  return () => {
+    tokenRefresher = null;
   };
 };
 
@@ -67,15 +76,42 @@ const formatError = (error: AxiosError<ApiError>): { title: string; detail: stri
   return { title: `Error ${status}`, detail: message };
 };
 
+let refreshPromise: Promise<string> | null = null;
+
+const refreshTokenOnce = (): Promise<string> | null => {
+  if (!tokenRefresher) return null;
+  if (!refreshPromise) {
+    refreshPromise = tokenRefresher().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+};
+
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<ApiError>) => {
-    const hadToken = !!error.config?.headers?.Authorization;
-    if (error.response?.status === 401 && hadToken && authErrorHandler) {
-      authErrorHandler();
+  async (error: AxiosError<ApiError>) => {
+    const originalRequest = error.config;
+    const hadToken = !!originalRequest?.headers?.Authorization;
+
+    if (error.response?.status === 401 && hadToken && originalRequest && !originalRequest._retried) {
+      const pending = refreshTokenOnce();
+      if (pending) {
+        originalRequest._retried = true;
+        try {
+          const freshToken = await pending;
+          originalRequest.headers.Authorization = `Bearer ${freshToken}`;
+          return api(originalRequest);
+        } catch {
+          authErrorHandler?.();
+          return Promise.reject(error);
+        }
+      }
+      authErrorHandler?.();
       return Promise.reject(error);
     }
-    if (!error.config?.skipErrorHandler) {
+
+    if (!originalRequest?.skipErrorHandler && error.response?.status !== 401) {
       const { title, detail } = formatError(error);
       errorHandler?.(title, detail);
     }

@@ -1,24 +1,27 @@
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { registerTokenGetter, registerAuthErrorHandler } from "@/lib/api";
+import { registerTokenGetter, registerTokenRefresher, registerAuthErrorHandler } from "@/lib/api";
 
 export const useAuthSetup = () => {
-  const { isConfigured, isLoading, isAuthenticated, getAccessTokenSilently, loginWithRedirect } =
-    useAuth();
+  const { isConfigured, isLoading, isAuthenticated, getAccessTokenSilently, logout } = useAuth();
 
   useEffect(() => {
     if (!isConfigured || !isAuthenticated) return;
 
     const cleanupToken = registerTokenGetter(() => getAccessTokenSilently());
+    const cleanupRefresher = registerTokenRefresher(() =>
+      getAccessTokenSilently({ cacheMode: "off" }),
+    );
     const cleanupAuth = registerAuthErrorHandler(() => {
-      loginWithRedirect();
+      logout({ logoutParams: { returnTo: `${window.location.origin}/explore` } });
     });
 
     return () => {
       cleanupToken();
+      cleanupRefresher();
       cleanupAuth();
     };
-  }, [isConfigured, isAuthenticated, getAccessTokenSilently, loginWithRedirect]);
+  }, [isConfigured, isAuthenticated, getAccessTokenSilently, logout]);
 
   return { isLoading, isConfigured };
 };

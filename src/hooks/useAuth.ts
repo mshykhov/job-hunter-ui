@@ -14,8 +14,8 @@ export interface AuthContextValue {
   permissions: string[];
   user?: { email?: string; name?: string; picture?: string };
   loginWithRedirect: () => Promise<void>;
-  logout: (options?: { logoutParams?: { returnTo?: string } }) => void;
-  getAccessTokenSilently: () => Promise<string>;
+  logout: (options?: { logoutParams?: { returnTo?: string } }) => Promise<void>;
+  getAccessTokenSilently: (options?: { cacheMode?: "on" | "off" | "cache-only" }) => Promise<string>;
 }
 
 export const noopAuth: AuthContextValue = {
@@ -24,7 +24,7 @@ export const noopAuth: AuthContextValue = {
   isConfigured: false,
   permissions: [],
   loginWithRedirect: () => Promise.resolve(),
-  logout: () => {},
+  logout: () => Promise.resolve(),
   getAccessTokenSilently: () => Promise.reject(new Error("Auth0 not configured")),
 };
 
