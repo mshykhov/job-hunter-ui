@@ -99,7 +99,7 @@ export const JobsPage = () => {
         onReview={() => handleEnterReview(jobs[0])}
         reviewDisabled={jobs.length === 0}
       />
-      <div style={{ opacity: isPlaceholderData ? 0.6 : 1, transition: "opacity 0.2s" }}>
+      <div className="placeholder-fade" data-placeholder={isPlaceholderData}>
         <JobTable
           jobs={jobs}
           loading={isLoading}

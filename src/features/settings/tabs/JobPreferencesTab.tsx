@@ -31,7 +31,7 @@ export const JobPreferencesTab = () => {
   const searchSaved = useSavedFlash();
   const matchingSaved = useSavedFlash();
 
-  const [activeKeys, setActiveKeys] = usePersistedKeys();
+  const { keys: activeKeys, setKeys: setActiveKeys } = usePersistedKeys();
 
   const suggestRematch = useCallback(() => {
     let hours = 12;
@@ -177,5 +177,5 @@ const usePersistedKeys = () => {
     collapseStorage.save({ keys: next });
   }, []);
 
-  return [keys, setKeys] as const;
+  return { keys, setKeys };
 };

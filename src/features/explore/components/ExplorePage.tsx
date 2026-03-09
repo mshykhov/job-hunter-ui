@@ -8,7 +8,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { JobTable } from "@/features/jobs/components/JobTable";
 import { TableSettings } from "@/features/jobs/components/TableSettings";
 import { ExploreFilters } from "./ExploreFilters";
-import { useExploreFilters } from "./useExploreFilters";
+import { useExploreFilters } from "../hooks/useExploreFilters";
 
 const EXPLORE_COLUMNS: Set<ColumnKey> = new Set([
   "rowNum", "title", "company", "source", "salary", "location", "remote", "publishedAt", "updatedAt",
@@ -95,7 +95,7 @@ export const ExplorePage = () => {
           />
         </Flex>
       </Flex>
-      <div style={{ opacity: isPlaceholderData ? 0.6 : 1, transition: "opacity 0.2s" }}>
+      <div className="placeholder-fade" data-placeholder={isPlaceholderData}>
         <JobTable
           jobs={jobs}
           loading={isLoading}

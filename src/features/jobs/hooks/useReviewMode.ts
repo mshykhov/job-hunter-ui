@@ -50,19 +50,21 @@ export const useReviewMode = (): UseReviewModeReturn => {
 
     loadingRef.current = true;
     setIsPageLoading(true);
-    const response = await fetchJobsPage(s.filters, s.nextPage);
-    setIsPageLoading(false);
-    loadingRef.current = false;
-
-    setState((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        jobs: [...prev.jobs, ...response.content],
-        hasMore: response.page + 1 < response.totalPages,
-        nextPage: response.page + 1,
-      };
-    });
+    try {
+      const response = await fetchJobsPage(s.filters, s.nextPage);
+      setState((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          jobs: [...prev.jobs, ...response.content],
+          hasMore: response.page + 1 < response.totalPages,
+          nextPage: response.page + 1,
+        };
+      });
+    } finally {
+      setIsPageLoading(false);
+      loadingRef.current = false;
+    }
   }, []);
 
   const enter = useCallback(

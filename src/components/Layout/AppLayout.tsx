@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from "./Sidebar";
 import { createStorage } from "@/lib/storage";
 
 interface SidebarState {
@@ -35,7 +35,7 @@ export const AppLayout = ({ isDark, onThemeToggle }: AppLayoutProps) => {
         onThemeToggle={onThemeToggle}
         newJobsCount={0}
       />
-      <Layout style={{ marginLeft: collapsed ? 60 : 220, transition: "margin-left 0.2s" }}>
+      <Layout style={{ marginLeft: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH, transition: "margin-left 0.2s" }}>
         <Layout.Content style={{ padding: 24, minHeight: "100vh" }}>
           <Outlet />
         </Layout.Content>

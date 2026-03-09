@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, API_PATHS } from "@/lib/api";
+import { api, API_PATHS, isAxiosError } from "@/lib/api";
 import { EMPTY_AI_CONFIG } from "../types";
 import type {
   AiConfigForm,
@@ -8,7 +8,6 @@ import type {
   AiSettingsResponse,
   AiProvider,
 } from "../types";
-import axios from "axios";
 
 export const useAiProviders = () => {
   return useQuery({
@@ -40,7 +39,7 @@ export const useAiSettings = () => {
         });
         return data;
       } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
+        if (isAxiosError(error) && error.response?.status === 404) {
           return null;
         }
         throw error;

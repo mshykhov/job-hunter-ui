@@ -15,6 +15,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { AppVersion } from "@/components/AppVersion";
 import { useAuth, PERMISSIONS } from "@/hooks/useAuth";
 
+export const SIDEBAR_WIDTH = 220;
+export const SIDEBAR_COLLAPSED_WIDTH = 60;
+
 interface SidebarProps {
   collapsed: boolean;
   onCollapse: (collapsed: boolean) => void;
@@ -64,8 +67,8 @@ export const Sidebar = ({
       collapsed={collapsed}
       onCollapse={onCollapse}
       trigger={null}
-      width={220}
-      collapsedWidth={60}
+      width={SIDEBAR_WIDTH}
+      collapsedWidth={SIDEBAR_COLLAPSED_WIDTH}
       theme={isDark ? "dark" : "light"}
       style={{
         height: "100vh",

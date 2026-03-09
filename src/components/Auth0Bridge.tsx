@@ -29,7 +29,9 @@ export const Auth0Bridge = ({ children }: Auth0BridgeProps) => {
       .then((token) => {
         if (!cancelled) setPermissions(decodePermissions(token));
       })
-      .catch(() => {});
+      .catch((err: unknown) => {
+        console.error("Failed to fetch permissions:", err);
+      });
     return () => {
       cancelled = true;
     };

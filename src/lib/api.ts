@@ -1,4 +1,5 @@
-import axios, { type AxiosError } from "axios";
+import axios, { isAxiosError, type AxiosError } from "axios";
+export { isAxiosError };
 import { API_URL } from "@/config/constants";
 import type { ApiError } from "@/types";
 
@@ -107,6 +108,11 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
       }
+      authErrorHandler?.();
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && hadToken && originalRequest?._retried) {
       authErrorHandler?.();
       return Promise.reject(error);
     }

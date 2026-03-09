@@ -41,6 +41,8 @@ export const PUBLIC_JOB_SORT_LABELS: Record<PublicJobSort, string> = {
   SCRAPED: "Scraped",
 };
 
+export const REMOTE_CHECK_COLOR = "#52c41a";
+
 export const formatRelativeDate = (dateStr: string | null): string => {
   if (!dateStr) return "\u2014";
   const diff = Date.now() - new Date(dateStr).getTime();

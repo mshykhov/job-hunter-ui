@@ -105,6 +105,15 @@ body {
   pointer-events: auto;
 }
 
+/* Placeholder data fade */
+.placeholder-fade {
+  transition: opacity 0.2s;
+}
+
+.placeholder-fade[data-placeholder="true"] {
+  opacity: 0.6;
+}
+
 /* Job description HTML content */
 .job-description {
   font-size: 13px;

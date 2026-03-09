@@ -8,7 +8,7 @@ import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Job } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
+import { STATUS_COLORS, STATUS_LABELS, REMOTE_CHECK_COLOR, getSourceColor, formatRelativeDate } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
 import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
@@ -94,7 +94,7 @@ const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job>
     dataIndex: "remote",
     align: "center",
     render: (remote: boolean) =>
-      remote ? <CheckCircleOutlined style={{ color: "#52c41a" }} /> : null,
+      remote ? <CheckCircleOutlined style={{ color: REMOTE_CHECK_COLOR }} /> : null,
   },
   {
     key: "status",

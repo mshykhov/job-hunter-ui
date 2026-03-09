@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   build:
-    name: Lint and Build
+    name: Lint, Test and Build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -32,6 +32,9 @@ jobs:
 
       - name: Check formatting
         run: npm run format:check
+
+      - name: Test
+        run: npm run test
 
       - name: Build
         run: npm run build

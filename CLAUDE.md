@@ -206,11 +206,44 @@ npm run dev
 ```bash
 npm run lint          # ESLint (0 warnings allowed)
 npm run format:check  # Prettier
+npm run test          # Vitest (unit + integration)
 npm run build         # TypeScript type-check + build
+```
+
+## Testing
+
+### Stack
+- **Vitest** — test runner (native Vite integration, ESM support)
+- **React Testing Library** — component rendering and interaction
+- **MSW** — HTTP request mocking at network level
+- **jsdom** — DOM environment for tests
+
+### What to Test
+- **Infrastructure logic** — API interceptors (auth retry, error handling), storage persistence
+- **Data transformations** — filter serialization, request body building, response mapping
+- **Custom hooks with business logic** — filter state management, query hooks
+- **Critical user flows** — status changes, filter interactions
+
+### What NOT to Test
+- Ant Design components (already tested by the library)
+- Auth0 SDK internals (external dependency)
+- Pure routing/navigation
+- Presentation-only components without logic
+
+### Conventions
+- **Co-locate tests** with source: `src/lib/__tests__/api.test.ts`
+- **Test real behavior** — focus on bug prevention, not coverage metrics
+- **Use MSW** for API mocking — intercept at network level, not axios mocks
+- **Reset state** between tests — `vi.resetModules()` for module-level state
+
+### Running Tests
+```bash
+npm run test          # Single run (CI)
+npm run test:watch    # Watch mode (development)
 ```
 
 ## CI/CD
 
 - **Trigger**: git tag `v*.*.*`
-- **Pipeline**: lint → build → Docker image → push to registry
+- **Pipeline**: lint → test → build → Docker image → push to registry
 - **Tags**: `:{version}`, `:{major}` (e.g., `:1.0.0`, `:1`)
