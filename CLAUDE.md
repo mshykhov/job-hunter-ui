@@ -231,10 +231,95 @@ npm run build         # TypeScript type-check + build
 - Presentation-only components without logic
 
 ### Conventions
-- **Co-locate tests** with source: `src/lib/__tests__/api.test.ts`
+- **Co-locate tests** with source: `src/lib/__tests__/api.test.ts`, `features/jobs/hooks/__tests__/jobSearchApi.test.ts`
 - **Test real behavior** — focus on bug prevention, not coverage metrics
 - **Use MSW** for API mocking — intercept at network level, not axios mocks
 - **Reset state** between tests — `vi.resetModules()` for module-level state
+- **One describe per module/concern** — group related tests with nested describe blocks
+- **Test names describe behavior** — `"preserves explicitly cleared values through round-trip"`, not `"test save method"`
+
+### Patterns & Recipes
+
+#### MSW server setup (every test file with API calls)
+```typescript
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node"; // ALWAYS from "msw/node", NOT "msw"
+
+const API_BASE = "http://localhost:8095";
+const server = setupServer();
+
+beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
+afterAll(() => server.close());
+afterEach(() => server.resetHandlers());
+```
+
+#### Module-level state isolation (api.ts interceptors, singletons)
+```typescript
+// When testing modules with module-level state (let refreshPromise, callbacks),
+// use vi.resetModules() + dynamic import to get a fresh module per test
+let api: typeof import("../api");
+
+beforeEach(async () => {
+  vi.resetModules();
+  api = await import("../api");
+  server.resetHandlers();
+});
+```
+
+#### Capturing request details
+```typescript
+// For POST — capture body
+let lastBody: Record<string, unknown> = {};
+server.use(
+  http.post(`${API_BASE}/endpoint`, async ({ request }) => {
+    lastBody = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json(responseData);
+  }),
+);
+
+// For GET — capture URL/params
+let lastUrl = "";
+server.use(
+  http.get(`${API_BASE}/endpoint`, ({ request }) => {
+    lastUrl = request.url;
+    return HttpResponse.json(responseData);
+  }),
+);
+// Then parse: new URL(lastUrl).searchParams.get("key")
+
+// For headers (auth tokens, etc.)
+let capturedAuth = "";
+server.use(
+  http.get(`${API_BASE}/test`, ({ request }) => {
+    capturedAuth = request.headers.get("authorization") ?? "";
+    return HttpResponse.json({ ok: true });
+  }),
+);
+```
+
+#### Conditional responses (retry testing)
+```typescript
+let callCount = 0;
+server.use(
+  http.get(`${API_BASE}/data`, () => {
+    callCount++;
+    if (callCount === 1) return new HttpResponse(null, { status: 401 });
+    return HttpResponse.json({ result: "ok" });
+  }),
+);
+```
+
+#### localStorage-dependent tests
+```typescript
+beforeEach(() => localStorage.clear());
+// No MSW needed — test storage directly
+```
+
+### What to Assert
+- **Request shape** — correct params, body structure, headers sent to API
+- **State transitions** — retry logic, error handler invocation, cleanup callbacks
+- **Edge cases** — empty arrays omitted, undefined → null conversion, concurrent dedup
+- **Regression guards** — add a test whenever you fix a bug to prevent recurrence
 
 ### Running Tests
 ```bash
