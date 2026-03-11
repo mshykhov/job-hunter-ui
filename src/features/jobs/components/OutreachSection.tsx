@@ -1,12 +1,14 @@
-import { Button, Collapse, Divider, Flex, Typography, message } from "antd";
 import { CopyOutlined, ThunderboltOutlined } from "@ant-design/icons";
-import type { Job, JobDetail } from "../types";
+import { Button, Collapse, Flex, message,Typography } from "antd";
+
 import { useOutreachSettings } from "@/features/settings/hooks/useOutreach";
+
 import { useGenerateCoverLetter, useGenerateRecruiterMessage } from "../hooks/useOutreachGenerate";
+import type { GroupJob } from "../types";
 
 interface OutreachSectionProps {
-  job: Job;
-  detail: JobDetail;
+  job: GroupJob;
+  groupId: string;
 }
 
 const CopyButton = ({ text }: { text: string }) => {
@@ -20,10 +22,10 @@ const CopyButton = ({ text }: { text: string }) => {
   );
 };
 
-export const OutreachSection = ({ job, detail }: OutreachSectionProps) => {
+export const OutreachSection = ({ job, groupId }: OutreachSectionProps) => {
   const { data: settings } = useOutreachSettings();
-  const generateCoverLetter = useGenerateCoverLetter(job.jobId);
-  const generateRecruiterMessage = useGenerateRecruiterMessage(job.jobId);
+  const generateCoverLetter = useGenerateCoverLetter(job.jobId, groupId);
+  const generateRecruiterMessage = useGenerateRecruiterMessage(job.jobId, groupId);
 
   const sourceConfig = settings?.sourceConfig[job.source];
   const coverLetterEnabled = sourceConfig?.coverLetterEnabled ?? false;
@@ -37,10 +39,10 @@ export const OutreachSection = ({ job, detail }: OutreachSectionProps) => {
     items.push({
       key: "cover-letter",
       label: (
-        <Flex justify="space-between" align="center" style={{ width: "100%" }}>
+        <Flex gap={12} align="center">
           <Typography.Text strong style={{ fontSize: 13 }}>Cover Letter</Typography.Text>
           <Flex gap={4} onClick={(e) => e.stopPropagation()}>
-            {detail.coverLetter && <CopyButton text={detail.coverLetter} />}
+            {job.coverLetter && <CopyButton text={job.coverLetter} />}
             <Button
               type="text"
               size="small"
@@ -48,17 +50,17 @@ export const OutreachSection = ({ job, detail }: OutreachSectionProps) => {
               loading={generateCoverLetter.isPending}
               onClick={() => generateCoverLetter.mutate()}
             >
-              {detail.coverLetter ? "Regenerate" : "Generate"}
+              {job.coverLetter ? "Regenerate" : "Generate"}
             </Button>
           </Flex>
         </Flex>
       ),
       children: (
         <Typography.Paragraph
-          type={detail.coverLetter ? undefined : "secondary"}
+          type={job.coverLetter ? undefined : "secondary"}
           style={{ fontSize: 13, whiteSpace: "pre-wrap", margin: 0 }}
         >
-          {detail.coverLetter ?? "Click Generate to create a cover letter"}
+          {job.coverLetter ?? "Click Generate to create a cover letter"}
         </Typography.Paragraph>
       ),
     });
@@ -68,10 +70,10 @@ export const OutreachSection = ({ job, detail }: OutreachSectionProps) => {
     items.push({
       key: "recruiter-message",
       label: (
-        <Flex justify="space-between" align="center" style={{ width: "100%" }}>
+        <Flex gap={12} align="center">
           <Typography.Text strong style={{ fontSize: 13 }}>Recruiter Message</Typography.Text>
           <Flex gap={4} onClick={(e) => e.stopPropagation()}>
-            {detail.recruiterMessage && <CopyButton text={detail.recruiterMessage} />}
+            {job.recruiterMessage && <CopyButton text={job.recruiterMessage} />}
             <Button
               type="text"
               size="small"
@@ -79,26 +81,21 @@ export const OutreachSection = ({ job, detail }: OutreachSectionProps) => {
               loading={generateRecruiterMessage.isPending}
               onClick={() => generateRecruiterMessage.mutate()}
             >
-              {detail.recruiterMessage ? "Regenerate" : "Generate"}
+              {job.recruiterMessage ? "Regenerate" : "Generate"}
             </Button>
           </Flex>
         </Flex>
       ),
       children: (
         <Typography.Paragraph
-          type={detail.recruiterMessage ? undefined : "secondary"}
+          type={job.recruiterMessage ? undefined : "secondary"}
           style={{ fontSize: 13, whiteSpace: "pre-wrap", margin: 0 }}
         >
-          {detail.recruiterMessage ?? "Click Generate to create a recruiter message"}
+          {job.recruiterMessage ?? "Click Generate to create a recruiter message"}
         </Typography.Paragraph>
       ),
     });
   }
 
-  return (
-    <>
-      <Divider style={{ margin: "12px 0" }} />
-      <Collapse ghost items={items} />
-    </>
-  );
+  return <Collapse ghost items={items} />;
 };

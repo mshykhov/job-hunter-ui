@@ -1,21 +1,16 @@
-import { DatePicker, Flex, Input, InputNumber, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { DatePicker, Flex, Input, InputNumber, Select, Switch, Typography } from "antd";
 import dayjs from "dayjs";
-import { USER_JOB_STATUS, USER_JOB_SORT, PERIOD_FIELD } from "../types";
-import type { JobFilters as JobFiltersType, JobSource, PeriodField, UserJobSort, UserJobStatus } from "../types";
-import { STATUS_LABELS, PERIOD_FIELD_LABELS, USER_JOB_SORT_LABELS } from "../constants";
-import { useJobSources } from "../hooks/useJobSources";
+
+import { STATUS_LABELS, USER_JOB_SORT_LABELS } from "../constants";
+import type { JobGroupFilters as JobGroupFiltersType, UserJobSort, UserJobStatus } from "../types";
+import { USER_JOB_SORT,USER_JOB_STATUS } from "../types";
 
 interface JobFiltersProps {
-  filters: JobFiltersType;
-  onChange: (filters: JobFiltersType) => void;
+  filters: JobGroupFiltersType;
+  onChange: (filters: JobGroupFiltersType) => void;
   statusCounts: Partial<Record<UserJobStatus, number>>;
 }
-
-const periodFieldOptions = Object.values(PERIOD_FIELD).map((f) => ({
-  label: PERIOD_FIELD_LABELS[f],
-  value: f,
-}));
 
 const sortOptions = Object.values(USER_JOB_SORT).map((s) => ({
   label: USER_JOB_SORT_LABELS[s],
@@ -23,16 +18,9 @@ const sortOptions = Object.values(USER_JOB_SORT).map((s) => ({
 }));
 
 export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps) => {
-  const { data: sources = [] } = useJobSources();
-
   const statusOptions = Object.values(USER_JOB_STATUS).map((s) => ({
     label: `${STATUS_LABELS[s]} (${statusCounts[s] ?? 0})`,
     value: s,
-  }));
-
-  const sourceOptions = sources.map((s) => ({
-    label: s.displayName,
-    value: s.id,
   }));
 
   return (
@@ -52,7 +40,7 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
       </Flex>
       <Flex align="center" gap={4}>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          from
+          matched after
         </Typography.Text>
         <DatePicker
           showTime
@@ -60,8 +48,8 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
           placeholder="any time"
           allowClear
           format="YYYY-MM-DD HH:mm"
-          value={filters.since ? dayjs(filters.since) : null}
-          onChange={(date) => onChange({ ...filters, since: date?.toISOString() })}
+          value={filters.matchedAfter ? dayjs(filters.matchedAfter) : null}
+          onChange={(date) => onChange({ ...filters, matchedAfter: date?.toISOString() })}
           presets={[
             { label: "12h", value: dayjs().subtract(12, "hour") },
             { label: "24h", value: dayjs().subtract(24, "hour") },
@@ -69,19 +57,6 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
             { label: "7 days", value: dayjs().subtract(7, "day") },
           ]}
           style={{ width: 190 }}
-        />
-      </Flex>
-      <Flex align="center" gap={4}>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          by
-        </Typography.Text>
-        <Select
-          value={filters.periodField ?? PERIOD_FIELD.MATCHED}
-          onChange={(val) => onChange({ ...filters, periodField: val as PeriodField })}
-          options={periodFieldOptions}
-          size="small"
-          variant="borderless"
-          style={{ width: 105 }}
         />
       </Flex>
       <Select
@@ -94,19 +69,6 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
           onChange({ ...filters, statuses: statuses.length ? statuses : undefined })
         }
         options={statusOptions}
-        size="small"
-        maxTagCount="responsive"
-      />
-      <Select
-        mode="multiple"
-        placeholder="Source"
-        allowClear
-        style={{ minWidth: 170 }}
-        value={filters.sources ?? []}
-        onChange={(sources: JobSource[]) =>
-          onChange({ ...filters, sources: sources.length ? sources : undefined })
-        }
-        options={sourceOptions}
         size="small"
         maxTagCount="responsive"
       />

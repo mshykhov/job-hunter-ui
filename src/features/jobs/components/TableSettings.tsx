@@ -1,9 +1,10 @@
-import { Button, Checkbox, Divider, Flex, Popover, Radio, Select, Typography } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Divider, Flex, Popover, Radio, Select, Typography } from "antd";
+
 import type {
-  TableSettings as TableSettingsType,
   ColumnKey,
   TableDensity,
+  TableSettings as TableSettingsType,
 } from "../hooks/useTableSettings";
 import { COLUMN_LABELS, REFRESH_OPTIONS } from "../hooks/useTableSettings";
 

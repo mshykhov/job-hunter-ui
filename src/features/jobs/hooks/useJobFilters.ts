@@ -1,47 +1,38 @@
 import { useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { JobFilters, JobSource, PeriodField, UserJobStatus } from "../types";
-import { USER_JOB_STATUS, PERIOD_FIELD } from "../types";
+
 import { createStorage } from "@/lib/storage";
 
+import type { JobGroupFilters, UserJobSort, UserJobStatus } from "../types";
+import { USER_JOB_SORT,USER_JOB_STATUS } from "../types";
+
 const PARAM_KEYS = [
-  "sources", "statuses", "search", "remote", "minScore", "since", "periodField", "sortBy",
+  "statuses", "search", "remote", "minScore", "matchedAfter", "sortBy",
 ] as const;
 
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
-const PERIOD_FIELD_VALUES = new Set<string>(Object.values(PERIOD_FIELD));
+const SORT_VALUES = new Set<string>(Object.values(USER_JOB_SORT));
 
-const defaultSince = () => new Date(Date.now() - 24 * 3_600_000).toISOString();
-const DEFAULT_PERIOD_FIELD = PERIOD_FIELD.MATCHED;
-const DEFAULT_FILTERS: JobFilters = { since: defaultSince(), periodField: DEFAULT_PERIOD_FIELD };
+const defaultMatchedAfter = () => new Date(Date.now() - 24 * 3_600_000).toISOString();
+const DEFAULT_FILTERS: JobGroupFilters = { matchedAfter: defaultMatchedAfter() };
 
-const storage = createStorage<JobFilters>("job-hunter-filters", 1, DEFAULT_FILTERS);
+const storage = createStorage<JobGroupFilters>("job-hunter-filters", 2, DEFAULT_FILTERS);
 
-const filtersToParams = (filters: JobFilters, params: URLSearchParams): URLSearchParams => {
+const filtersToParams = (filters: JobGroupFilters, params: URLSearchParams): URLSearchParams => {
   for (const key of PARAM_KEYS) params.delete(key);
 
-  if (filters.sources?.length) params.set("sources", filters.sources.join(","));
   if (filters.statuses?.length) params.set("statuses", filters.statuses.join(","));
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
   if (filters.minScore != null) params.set("minScore", String(filters.minScore));
-  if (filters.since) params.set("since", filters.since);
-  if (filters.periodField && filters.periodField !== DEFAULT_PERIOD_FIELD) {
-    params.set("periodField", filters.periodField);
-  }
+  if (filters.matchedAfter) params.set("matchedAfter", filters.matchedAfter);
   if (filters.sortBy) params.set("sortBy", filters.sortBy);
 
   return params;
 };
 
-const parseFilters = (params: URLSearchParams): JobFilters => {
-  const filters: JobFilters = {};
-
-  const sources = params.get("sources");
-  if (sources) {
-    const parsed = sources.split(",").filter(Boolean) as JobSource[];
-    if (parsed.length) filters.sources = parsed;
-  }
+const parseFilters = (params: URLSearchParams): JobGroupFilters => {
+  const filters: JobGroupFilters = {};
 
   const statuses = params.get("statuses");
   if (statuses) {
@@ -57,16 +48,11 @@ const parseFilters = (params: URLSearchParams): JobFilters => {
   const minScore = params.get("minScore");
   if (minScore) filters.minScore = Number(minScore);
 
-  const since = params.get("since");
-  if (since) filters.since = since;
-
-  const periodField = params.get("periodField");
-  filters.periodField = periodField && PERIOD_FIELD_VALUES.has(periodField)
-    ? periodField as PeriodField
-    : DEFAULT_PERIOD_FIELD;
+  const matchedAfter = params.get("matchedAfter");
+  if (matchedAfter) filters.matchedAfter = matchedAfter;
 
   const sortBy = params.get("sortBy");
-  if (sortBy) filters.sortBy = sortBy;
+  if (sortBy && SORT_VALUES.has(sortBy)) filters.sortBy = sortBy as UserJobSort;
 
   return filters;
 };
@@ -94,7 +80,7 @@ export const useJobFilters = () => {
     : storage.load();
 
   const setFilters = useCallback(
-    (next: JobFilters) => {
+    (next: JobGroupFilters) => {
       storage.save(next);
       setSearchParams(
         (prev) => filtersToParams(next, new URLSearchParams(prev)),

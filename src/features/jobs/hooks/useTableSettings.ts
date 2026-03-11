@@ -1,14 +1,16 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef,useState } from "react";
+
 import { createStorage } from "@/lib/storage";
 
 export const COLUMN_KEYS = [
   "rowNum",
   "title",
   "company",
-  "source",
+  "sources",
   "salary",
-  "location",
+  "locations",
   "remote",
+  "jobCount",
   "status",
   "score",
   "publishedAt",
@@ -22,31 +24,36 @@ export const COLUMN_LABELS: Record<ColumnKey, string> = {
   rowNum: "#",
   title: "Title",
   company: "Company",
-  source: "Source",
+  sources: "Sources",
   salary: "Salary",
-  location: "Location",
+  locations: "Locations",
   remote: "Remote",
+  jobCount: "Jobs",
   status: "Status",
   score: "Score",
   publishedAt: "Published",
   matchedAt: "Matched",
-  updatedAt: "Scraped",
+  updatedAt: "Updated",
 };
 
 export const MIN_COLUMN_WIDTHS: Record<ColumnKey, number> = {
-  rowNum: 50,
-  title: 200,
-  company: 100,
-  source: 80,
-  salary: 80,
-  location: 100,
-  remote: 70,
-  status: 80,
-  score: 60,
-  publishedAt: 110,
-  matchedAt: 110,
-  updatedAt: 110,
+  rowNum: 44,
+  title: 250,
+  company: 140,
+  sources: 110,
+  salary: 120,
+  locations: 150,
+  remote: 68,
+  jobCount: 50,
+  status: 72,
+  score: 56,
+  publishedAt: 100,
+  matchedAt: 100,
+  updatedAt: 100,
 };
+
+/** Column that takes remaining space — no fixed width */
+export const FLEX_COLUMN: ColumnKey = "title";
 
 const ALWAYS_VISIBLE: ColumnKey[] = ["title"];
 
@@ -78,7 +85,7 @@ const DEFAULT_SETTINGS: TableSettings = {
   density: "small",
 };
 
-const STORAGE_VERSION = 7;
+const STORAGE_VERSION = 8;
 
 const loadWithNewColumns = (storageKey: string): TableSettings => {
   const storage = createStorage<TableSettings>(storageKey, STORAGE_VERSION, DEFAULT_SETTINGS);

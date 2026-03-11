@@ -1,12 +1,13 @@
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { fetchJobsPage, fetchPublicJobsPage } from "../jobSearchApi";
-import type { JobFilters, PaginatedJobsResponse, PublicJobPageResponse } from "../../types";
+import { afterAll, afterEach,beforeAll, describe, expect, it } from "vitest";
+
+import type { JobGroupFilters, PaginatedJobGroupsResponse } from "../../types";
+import { fetchJobGroupsPage } from "../jobSearchApi";
 
 const API_BASE = "http://localhost:8095";
 
-const emptyJobsResponse: PaginatedJobsResponse = {
+const emptyResponse: PaginatedJobGroupsResponse = {
   content: [],
   page: 0,
   size: 50,
@@ -15,25 +16,12 @@ const emptyJobsResponse: PaginatedJobsResponse = {
   statusCounts: {},
 };
 
-const emptyPublicResponse: PublicJobPageResponse = {
-  content: [],
-  page: 0,
-  size: 20,
-  totalElements: 0,
-  totalPages: 0,
-};
-
 let lastRequestBody: Record<string, unknown> = {};
-let lastRequestUrl = "";
 
 const server = setupServer(
   http.post(`${API_BASE}/jobs/search`, async ({ request }) => {
     lastRequestBody = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json(emptyJobsResponse);
-  }),
-  http.get(`${API_BASE}/public/jobs`, ({ request }) => {
-    lastRequestUrl = request.url;
-    return HttpResponse.json(emptyPublicResponse);
+    return HttpResponse.json(emptyResponse);
   }),
 );
 
@@ -42,12 +30,11 @@ afterAll(() => server.close());
 afterEach(() => {
   server.resetHandlers();
   lastRequestBody = {};
-  lastRequestUrl = "";
 });
 
-describe("fetchJobsPage — request body building", () => {
+describe("fetchJobGroupsPage — request body building", () => {
   it("sends minimal body with defaults for empty filters", async () => {
-    await fetchJobsPage({}, 0);
+    await fetchJobGroupsPage({}, 0);
 
     expect(lastRequestBody).toEqual({
       page: 0,
@@ -56,110 +43,55 @@ describe("fetchJobsPage — request body building", () => {
     });
   });
 
-  it("maps periodField=matched to matchedAfter param", async () => {
-    const filters: JobFilters = {
-      since: "2026-03-01T00:00:00Z",
-      periodField: "matched",
+  it("sends matchedAfter when provided", async () => {
+    const filters: JobGroupFilters = {
+      matchedAfter: "2026-03-01T00:00:00Z",
     };
-    await fetchJobsPage(filters, 0);
-
-    expect(lastRequestBody.matchedAfter).toBe("2026-03-01T00:00:00Z");
-    expect(lastRequestBody.publishedAfter).toBeUndefined();
-    expect(lastRequestBody.updatedAfter).toBeUndefined();
-  });
-
-  it("maps periodField=published to publishedAfter param", async () => {
-    const filters: JobFilters = {
-      since: "2026-03-01T00:00:00Z",
-      periodField: "published",
-    };
-    await fetchJobsPage(filters, 0);
-
-    expect(lastRequestBody.publishedAfter).toBe("2026-03-01T00:00:00Z");
-    expect(lastRequestBody.matchedAfter).toBeUndefined();
-  });
-
-  it("maps periodField=updated to updatedAfter param", async () => {
-    const filters: JobFilters = {
-      since: "2026-03-01T00:00:00Z",
-      periodField: "updated",
-    };
-    await fetchJobsPage(filters, 0);
-
-    expect(lastRequestBody.updatedAfter).toBe("2026-03-01T00:00:00Z");
-  });
-
-  it("defaults to matchedAfter when periodField is not set", async () => {
-    const filters: JobFilters = { since: "2026-03-01T00:00:00Z" };
-    await fetchJobsPage(filters, 0);
+    await fetchJobGroupsPage(filters, 0);
 
     expect(lastRequestBody.matchedAfter).toBe("2026-03-01T00:00:00Z");
   });
 
   it("includes all filter fields in request body", async () => {
-    const filters: JobFilters = {
-      sources: ["DOU", "DJINNI"],
-      statuses: ["new", "applied"],
-      search: "react",
-      remote: true,
-      minScore: 60,
-      since: "2026-03-01T00:00:00Z",
-      periodField: "matched",
-      sortBy: "PUBLISHED",
-      size: 25,
-    };
-    await fetchJobsPage(filters, 3);
-
-    expect(lastRequestBody).toEqual({
-      sources: ["DOU", "DJINNI"],
+    const filters: JobGroupFilters = {
       statuses: ["new", "applied"],
       search: "react",
       remote: true,
       minScore: 60,
       matchedAfter: "2026-03-01T00:00:00Z",
-      sortBy: "PUBLISHED",
+      sortBy: "MATCHED",
+      size: 25,
+    };
+    await fetchJobGroupsPage(filters, 3);
+
+    expect(lastRequestBody).toEqual({
+      statuses: ["new", "applied"],
+      search: "react",
+      remote: true,
+      minScore: 60,
+      matchedAfter: "2026-03-01T00:00:00Z",
+      sortBy: "MATCHED",
       page: 3,
       size: 25,
     });
   });
 
   it("omits falsy filter values from request body", async () => {
-    const filters: JobFilters = {
-      sources: [],
+    const filters: JobGroupFilters = {
       statuses: [],
       search: "",
       remote: false,
     };
-    await fetchJobsPage(filters, 0);
+    await fetchJobGroupsPage(filters, 0);
 
-    expect(lastRequestBody.sources).toBeUndefined();
     expect(lastRequestBody.statuses).toBeUndefined();
     expect(lastRequestBody.search).toBeUndefined();
     expect(lastRequestBody.remote).toBeUndefined();
   });
-});
 
-describe("fetchPublicJobsPage — query params building", () => {
-  it("appends multiple sources as separate params", async () => {
-    const filters: JobFilters = { sources: ["DOU", "ADZUNA"] };
-    await fetchPublicJobsPage(filters, 0);
+  it("does not send sources field (groups aggregate sources)", async () => {
+    await fetchJobGroupsPage({}, 0);
 
-    const url = new URL(lastRequestUrl);
-    expect(url.searchParams.getAll("sources")).toEqual(["DOU", "ADZUNA"]);
-  });
-
-  it("maps since to publishedAfter param", async () => {
-    const filters: JobFilters = { since: "2026-03-01T00:00:00Z" };
-    await fetchPublicJobsPage(filters, 0);
-
-    const url = new URL(lastRequestUrl);
-    expect(url.searchParams.get("publishedAfter")).toBe("2026-03-01T00:00:00Z");
-  });
-
-  it("uses PUBLISHED as default sort for public jobs", async () => {
-    await fetchPublicJobsPage({}, 0);
-
-    const url = new URL(lastRequestUrl);
-    expect(url.searchParams.get("sortBy")).toBe("PUBLISHED");
+    expect(lastRequestBody.sources).toBeUndefined();
   });
 });

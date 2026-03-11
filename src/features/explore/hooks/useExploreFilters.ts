@@ -1,13 +1,15 @@
 import { useCallback, useState } from "react";
-import type { JobFilters } from "@/features/jobs/types";
+
 import { createStorage } from "@/lib/storage";
 
-const storage = createStorage<JobFilters>("job-hunter-explore-filters", 1, {});
+import type { ExploreFilters } from "../types";
+
+const storage = createStorage<ExploreFilters>("job-hunter-explore-filters", 1, {});
 
 export const useExploreFilters = () => {
-  const [filters, setFiltersState] = useState<JobFilters>(() => storage.load());
+  const [filters, setFiltersState] = useState<ExploreFilters>(() => storage.load());
 
-  const setFilters = useCallback((next: JobFilters) => {
+  const setFilters = useCallback((next: ExploreFilters) => {
     storage.save(next);
     setFiltersState(next);
   }, []);

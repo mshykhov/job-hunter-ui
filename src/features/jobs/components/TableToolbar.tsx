@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Button, Flex, Popover, Radio, Tooltip, Typography } from "antd";
+
 import { ReadOutlined, ReloadOutlined, SyncOutlined } from "@ant-design/icons";
+import { Button, Flex, Popover, Radio, Tooltip, Typography } from "antd";
+
 import type {
-  TableSettings as TableSettingsType,
   ColumnKey,
   TableDensity,
+  TableSettings as TableSettingsType,
 } from "../hooks/useTableSettings";
 import { TableSettings } from "./TableSettings";
 

@@ -1,7 +1,9 @@
 import { useContext } from "react";
-import { useSortable } from "@dnd-kit/sortable";
-import { Resizable } from "react-resizable";
 import type { ResizeCallbackData } from "react-resizable";
+import { Resizable } from "react-resizable";
+
+import { useSortable } from "@dnd-kit/sortable";
+
 import { DragIndexContext, type DragIndexState } from "./DragIndexContext";
 
 interface HeaderCellProps extends React.ThHTMLAttributes<HTMLTableCellElement> {

@@ -1,24 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Table, Tag } from "antd";
+
+import { CheckCircleOutlined } from "@ant-design/icons";
+import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { horizontalListSortingStrategy,SortableContext } from "@dnd-kit/sortable";
+import { Table, Tag, Tooltip } from "antd";
 import type { ColumnsType, ColumnType } from "antd/es/table";
 import type { ExpandableConfig } from "antd/es/table/interface";
-import { CheckCircleOutlined } from "@ant-design/icons";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
-import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
-import type { Job } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, REMOTE_CHECK_COLOR, getSourceColor, formatRelativeDate } from "../constants";
+
+import { formatRelativeDate,getSourceColor, REMOTE_CHECK_COLOR, STATUS_COLORS, STATUS_LABELS } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { ColumnKey, TableDensity } from "../hooks/useTableSettings";
-import { MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
-import { ResizableHeaderCell, DraggableBodyCell } from "./ResizableHeaderCell";
+import { FLEX_COLUMN,MIN_COLUMN_WIDTHS } from "../hooks/useTableSettings";
+import type { JobGroup } from "../types";
 import { DragIndexContext, type DragIndexState } from "./DragIndexContext";
+import { DraggableBodyCell,ResizableHeaderCell } from "./ResizableHeaderCell";
 
 interface JobTableProps {
-  jobs: Job[];
+  jobs: JobGroup[];
   loading: boolean;
-  onSelect: (job: Job) => void;
+  onSelect: (job: JobGroup) => void;
   visibleColumns: ColumnKey[];
   columnOrder: ColumnKey[];
   columnWidths: Partial<Record<ColumnKey, number>>;
@@ -28,37 +30,22 @@ interface JobTableProps {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
-  expandable?: ExpandableConfig<Job>;
+  expandable?: ExpandableConfig<JobGroup>;
 }
 
-const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job> => [
+const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<JobGroup> => [
   {
     key: "rowNum",
     title: "#",
     align: "center",
-    render: (_: unknown, __: Job, index: number) => index + 1,
+    render: (_: unknown, __: JobGroup, index: number) => index + 1,
   },
   {
     key: "title",
     title: "Title",
     dataIndex: "title",
     ellipsis: true,
-    render: (title: string, record: Job) =>
-      record.url ? (
-        <a
-          href={record.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          style={{ color: "inherit", textDecoration: "none" }}
-          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-        >
-          <strong>{title}</strong>
-        </a>
-      ) : (
-        <strong>{title}</strong>
-      ),
+    render: (title: string) => <strong>{title}</strong>,
   },
   {
     key: "company",
@@ -68,12 +55,27 @@ const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job>
     render: (company: string | null) => company ?? "\u2014",
   },
   {
-    key: "source",
-    title: "Source",
-    dataIndex: "source",
-    render: (source: Job["source"]) => (
-      <Tag color={getSourceColor(source)}>{sourceNames[source] ?? source}</Tag>
-    ),
+    key: "sources",
+    title: "Sources",
+    dataIndex: "sources",
+    render: (sources: string[]) => {
+      if (!sources?.length) return "\u2014";
+      const first = sources[0];
+      const rest = sources.length - 1;
+      const tooltip = rest > 0 ? sources.map((s) => sourceNames[s] ?? s).join(", ") : undefined;
+      return (
+        <Tooltip title={tooltip}>
+          <span>
+            <Tag color={getSourceColor(first)} style={{ marginInlineEnd: 0 }}>
+              {sourceNames[first] ?? first}
+            </Tag>
+            {rest > 0 && (
+              <span style={{ fontSize: 11, opacity: 0.65, marginLeft: 4 }}>+{rest}</span>
+            )}
+          </span>
+        </Tooltip>
+      );
+    },
   },
   {
     key: "salary",
@@ -82,11 +84,21 @@ const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job>
     render: (salary: string | null) => salary ?? "\u2014",
   },
   {
-    key: "location",
-    title: "Location",
-    dataIndex: "location",
+    key: "locations",
+    title: "Locations",
+    dataIndex: "locations",
     ellipsis: true,
-    render: (location: string | null) => location ?? "\u2014",
+    render: (locations: string[]) => {
+      if (!locations?.length) return "\u2014";
+      const first = locations[0];
+      const rest = locations.length - 1;
+      if (rest === 0) return first;
+      return (
+        <Tooltip title={locations.join(", ")}>
+          <span>{first} <span style={{ fontSize: 11, opacity: 0.65 }}>+{rest}</span></span>
+        </Tooltip>
+      );
+    },
   },
   {
     key: "remote",
@@ -97,10 +109,17 @@ const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job>
       remote ? <CheckCircleOutlined style={{ color: REMOTE_CHECK_COLOR }} /> : null,
   },
   {
+    key: "jobCount",
+    title: "Jobs",
+    dataIndex: "jobCount",
+    align: "center",
+    render: (count: number) => count,
+  },
+  {
     key: "status",
     title: "Status",
     dataIndex: "status",
-    render: (status: Job["status"]) => (
+    render: (status: JobGroup["status"]) => (
       <Tag color={STATUS_COLORS[status]}>{STATUS_LABELS[status]}</Tag>
     ),
   },
@@ -125,7 +144,7 @@ const buildBaseColumns = (sourceNames: Record<string, string>): ColumnsType<Job>
   },
   {
     key: "updatedAt",
-    title: "Scraped",
+    title: "Updated",
     dataIndex: "updatedAt",
     render: formatRelativeDate,
   },
@@ -153,7 +172,7 @@ export const JobTable = ({
   const sourceNames = useSourceNames();
 
   const baseColumnsMap = useMemo(
-    () => new Map<string, ColumnType<Job>>(
+    () => new Map<string, ColumnType<JobGroup>>(
       buildBaseColumns(sourceNames).map((col) => [col.key as string, col]),
     ),
     [sourceNames],
@@ -177,10 +196,10 @@ export const JobTable = ({
           const col = baseColumnsMap.get(key);
           if (!col) return null;
           const w = columnWidths[key] ?? MIN_COLUMN_WIDTHS[key];
+          const isFlex = key === FLEX_COLUMN;
           return {
             ...col,
-            width: w,
-            minWidth: MIN_COLUMN_WIDTHS[key],
+            width: isFlex ? undefined : w,
             onHeaderCell: () => ({
               id: key,
               width: w,
@@ -238,8 +257,8 @@ export const JobTable = ({
       <SortableContext items={orderedKeys} strategy={horizontalListSortingStrategy}>
         <DragIndexContext.Provider value={dragIndex}>
           <div ref={tableRef}>
-            <Table<Job>
-              columns={columns as ColumnsType<Job>}
+            <Table<JobGroup>
+              columns={columns as ColumnsType<JobGroup>}
               dataSource={jobs}
               loading={loading}
               rowKey="id"

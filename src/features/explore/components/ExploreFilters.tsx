@@ -1,14 +1,17 @@
-import { DatePicker, Flex, Input, Select, Switch, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { DatePicker, Flex, Input, Select, Switch, Typography } from "antd";
 import dayjs from "dayjs";
-import { PUBLIC_JOB_SORT } from "@/features/jobs/types";
-import type { JobFilters, JobSource, PublicJobSort } from "@/features/jobs/types";
+
 import { PUBLIC_JOB_SORT_LABELS } from "@/features/jobs/constants";
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
+import type { JobSource, PublicJobSort } from "@/features/jobs/types";
+import { PUBLIC_JOB_SORT } from "@/features/jobs/types";
+
+import type { ExploreFilters as ExploreFiltersType } from "../types";
 
 interface ExploreFiltersProps {
-  filters: JobFilters;
-  onChange: (filters: JobFilters) => void;
+  filters: ExploreFiltersType;
+  onChange: (filters: ExploreFiltersType) => void;
 }
 
 const sortOptions = Object.values(PUBLIC_JOB_SORT).map((s) => ({

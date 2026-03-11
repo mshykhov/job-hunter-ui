@@ -8,43 +8,52 @@ export const USER_JOB_STATUS = {
 
 export type UserJobStatus = (typeof USER_JOB_STATUS)[keyof typeof USER_JOB_STATUS];
 
-export interface Job {
+export interface JobGroup {
   id: string;
-  jobId: string;
+  groupId: string;
   title: string;
   company: string | null;
-  url: string;
-  source: JobSource;
+  sources: JobSource[];
+  locations: string[];
   salary: string | null;
-  location: string | null;
   remote: boolean;
   status: UserJobStatus;
   aiRelevanceScore: number | null;
+  jobCount: number;
   publishedAt: string | null;
   matchedAt: string | null;
+  createdAt: string | null;
   updatedAt: string | null;
 }
 
-export interface JobDetail extends Job {
+export interface GroupJob {
+  jobId: string;
+  url: string;
+  source: JobSource;
   description: string;
-  aiReasoning: string | null;
+  salary: string | null;
+  location: string | null;
+  remote: boolean;
   coverLetter: string | null;
   recruiterMessage: string | null;
+  publishedAt: string | null;
+  scrapedAt: string | null;
 }
 
-export const PERIOD_FIELD = {
-  MATCHED: "matched",
-  PUBLISHED: "published",
-  UPDATED: "updated",
-} as const;
-
-export type PeriodField = (typeof PERIOD_FIELD)[keyof typeof PERIOD_FIELD];
+export interface JobGroupDetail {
+  groupId: string;
+  title: string;
+  company: string | null;
+  remote: boolean;
+  status: UserJobStatus;
+  aiRelevanceScore: number | null;
+  aiReasoning: string | null;
+  jobs: GroupJob[];
+}
 
 export const USER_JOB_SORT = {
   SCORE: "SCORE",
-  PUBLISHED: "PUBLISHED",
   MATCHED: "MATCHED",
-  SCRAPED: "SCRAPED",
 } as const;
 
 export type UserJobSort = (typeof USER_JOB_SORT)[keyof typeof USER_JOB_SORT];
@@ -56,20 +65,18 @@ export const PUBLIC_JOB_SORT = {
 
 export type PublicJobSort = (typeof PUBLIC_JOB_SORT)[keyof typeof PUBLIC_JOB_SORT];
 
-export interface JobFilters {
+export interface JobGroupFilters {
   statuses?: UserJobStatus[];
-  sources?: JobSource[];
   search?: string;
   remote?: boolean;
   minScore?: number;
-  since?: string;
-  periodField?: PeriodField;
-  sortBy?: string;
+  matchedAfter?: string;
+  sortBy?: UserJobSort;
   size?: number;
 }
 
-export interface PaginatedJobsResponse {
-  content: Job[];
+export interface PaginatedJobGroupsResponse {
+  content: JobGroup[];
   page: number;
   size: number;
   totalElements: number;

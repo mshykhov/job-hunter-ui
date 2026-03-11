@@ -1,15 +1,17 @@
 import { Flex, Typography } from "antd";
-import type { Job, UserJobStatus } from "../types";
+
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+
+import { useJobFilters } from "../hooks/useJobFilters";
 import { useJobs } from "../hooks/useJobs";
 import { useJobStatus } from "../hooks/useJobStatus";
 import { useRematch } from "../hooks/useRematch";
-import { useJobFilters } from "../hooks/useJobFilters";
-import { useTableSettings } from "../hooks/useTableSettings";
 import { useReviewMode } from "../hooks/useReviewMode";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useTableSettings } from "../hooks/useTableSettings";
+import type { JobGroup, UserJobStatus } from "../types";
 import { JobFilters } from "./JobFilters";
-import { JobTable } from "./JobTable";
 import { JobReviewCard } from "./JobReviewCard";
+import { JobTable } from "./JobTable";
 import { TableToolbar } from "./TableToolbar";
 
 export const JobsPage = () => {
@@ -38,16 +40,16 @@ export const JobsPage = () => {
   const rematchMutation = useRematch();
   const reviewMode = useReviewMode();
 
-  const handleEnterReview = (job: Job) => {
+  const handleEnterReview = (job: JobGroup) => {
     if (jobs.length > 0) {
       const pagesLoaded = Math.ceil(jobs.length / (debouncedFilters.size ?? 50));
       reviewMode.enter(jobs, job, totalElements, debouncedFilters, !!hasNextPage, pagesLoaded);
     }
   };
 
-  const handleStatusChange = (jobId: string, status: UserJobStatus) => {
+  const handleStatusChange = (groupId: string, status: UserJobStatus) => {
     statusMutation.mutate(
-      { jobId, status },
+      { groupId, status },
       {
         onSuccess: (updated) => {
           if (reviewMode.isActive) reviewMode.advanceWithUpdate(updated);

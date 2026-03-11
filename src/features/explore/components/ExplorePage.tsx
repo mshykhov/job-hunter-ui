@@ -1,17 +1,20 @@
 import { useMemo } from "react";
-import { Button, Flex, Tooltip, Typography } from "antd";
+
 import { ReloadOutlined } from "@ant-design/icons";
-import type { Job } from "@/features/jobs/types";
-import { usePublicJobs, mapPublicJobToTableRow } from "@/features/jobs/hooks/usePublicJobs";
-import { useTableSettings, type ColumnKey } from "@/features/jobs/hooks/useTableSettings";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { Button, Flex, Tooltip, Typography } from "antd";
+
 import { JobTable } from "@/features/jobs/components/JobTable";
 import { TableSettings } from "@/features/jobs/components/TableSettings";
-import { ExploreFilters } from "./ExploreFilters";
+import { mapPublicJobToTableRow,usePublicJobs } from "@/features/jobs/hooks/usePublicJobs";
+import { type ColumnKey,useTableSettings } from "@/features/jobs/hooks/useTableSettings";
+import type { JobGroup } from "@/features/jobs/types";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+
 import { useExploreFilters } from "../hooks/useExploreFilters";
+import { ExploreFilters } from "./ExploreFilters";
 
 const EXPLORE_COLUMNS: Set<ColumnKey> = new Set([
-  "rowNum", "title", "company", "source", "salary", "location", "remote", "publishedAt", "updatedAt",
+  "rowNum", "title", "company", "sources", "salary", "locations", "publishedAt", "updatedAt",
 ]);
 
 export const ExplorePage = () => {
@@ -44,14 +47,14 @@ export const ExplorePage = () => {
 
   const expandable = useMemo(
     () => ({
-      expandedRowRender: (record: Job) => (
+      expandedRowRender: (record: JobGroup) => (
         <Typography.Paragraph
           style={{ margin: 0, whiteSpace: "pre-wrap", maxHeight: 300, overflow: "auto" }}
         >
           {descriptionMap.get(record.id) || "\u2014"}
         </Typography.Paragraph>
       ),
-      rowExpandable: (record: Job) => !!descriptionMap.get(record.id),
+      rowExpandable: (record: JobGroup) => !!descriptionMap.get(record.id),
     }),
     [descriptionMap],
   );

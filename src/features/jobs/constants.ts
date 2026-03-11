@@ -1,4 +1,4 @@
-import type { PeriodField, PublicJobSort, UserJobSort, UserJobStatus } from "./types";
+import type { PublicJobSort, UserJobSort, UserJobStatus } from "./types";
 
 export const STATUS_COLORS: Record<UserJobStatus, string> = {
   new: "blue",
@@ -23,17 +23,9 @@ const FALLBACK_COLORS = ["magenta", "geekblue", "volcano", "gold", "lime"];
 export const getSourceColor = (source: string): string =>
   KNOWN_SOURCE_COLORS[source.toLowerCase()] ?? FALLBACK_COLORS[source.length % FALLBACK_COLORS.length];
 
-export const PERIOD_FIELD_LABELS: Record<PeriodField, string> = {
-  matched: "Matched",
-  published: "Published",
-  updated: "Scraped",
-};
-
 export const USER_JOB_SORT_LABELS: Record<UserJobSort, string> = {
   SCORE: "Score",
-  PUBLISHED: "Published",
   MATCHED: "Matched",
-  SCRAPED: "Scraped",
 };
 
 export const PUBLIC_JOB_SORT_LABELS: Record<PublicJobSort, string> = {

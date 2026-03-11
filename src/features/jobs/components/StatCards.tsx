@@ -1,5 +1,6 @@
-import { Card, Flex, Statistic } from "antd";
 import { ArrowUpOutlined } from "@ant-design/icons";
+import { Card, Flex, Statistic } from "antd";
+
 import type { UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
 

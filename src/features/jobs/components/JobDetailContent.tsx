@@ -1,18 +1,18 @@
-import { Button, Descriptions, Divider, Flex, Skeleton, Space, Tag, Typography } from "antd";
-import { LinkOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
-import type { Job, JobDetail, UserJobStatus } from "../types";
-import { USER_JOB_STATUS } from "../types";
-import { STATUS_COLORS, STATUS_LABELS, getSourceColor, formatRelativeDate } from "../constants";
+import { CheckOutlined, CloseOutlined, UndoOutlined } from "@ant-design/icons";
+import { Button, Divider, Flex, Space, Tag, Typography } from "antd";
+
+import { formatRelativeDate,getSourceColor, STATUS_COLORS, STATUS_LABELS } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
-import { OutreachSection } from "./OutreachSection";
+import type { JobGroup, JobGroupDetail, UserJobStatus } from "../types";
+import { USER_JOB_STATUS } from "../types";
+import { JobGroupJobs } from "./JobGroupJobs";
 
 interface JobDetailContentProps {
-  job: Job;
-  detail: JobDetail | undefined;
+  job: JobGroup;
+  detail: JobGroupDetail | undefined;
   detailLoading: boolean;
-  onStatusChange: (jobId: string, status: UserJobStatus) => void;
+  onStatusChange: (groupId: string, status: UserJobStatus) => void;
   statusLoading: boolean;
-  onOpenOriginal: () => void;
 }
 
 export const JobDetailContent = ({
@@ -21,7 +21,6 @@ export const JobDetailContent = ({
   detailLoading,
   onStatusChange,
   statusLoading,
-  onOpenOriginal,
 }: JobDetailContentProps) => {
   const sourceNames = useSourceNames();
   return (
@@ -41,9 +40,16 @@ export const JobDetailContent = ({
         </div>
 
         <Flex gap={8} wrap="wrap">
-          <Tag color={getSourceColor(job.source)}>{sourceNames[job.source] ?? job.source}</Tag>
+          {job.sources.map((source) => (
+            <Tag key={source} color={getSourceColor(source)}>
+              {sourceNames[source] ?? source}
+            </Tag>
+          ))}
           <Tag color={STATUS_COLORS[job.status]}>{STATUS_LABELS[job.status]}</Tag>
-          {job.remote && <Tag color="geekblue">Remote</Tag>}
+          {job.remote && <Tag color="cyan">Remote</Tag>}
+          {job.jobCount > 1 && (
+            <Tag>{job.jobCount} postings</Tag>
+          )}
         </Flex>
 
         <Space size="small">
@@ -52,7 +58,7 @@ export const JobDetailContent = ({
             size="small"
             icon={<CheckOutlined />}
             loading={statusLoading}
-            onClick={() => onStatusChange(job.jobId, USER_JOB_STATUS.APPLIED)}
+            onClick={() => onStatusChange(job.groupId, USER_JOB_STATUS.APPLIED)}
             disabled={job.status === USER_JOB_STATUS.APPLIED}
           >
             Applied
@@ -61,53 +67,47 @@ export const JobDetailContent = ({
             size="small"
             icon={<CloseOutlined />}
             loading={statusLoading}
-            onClick={() => onStatusChange(job.jobId, USER_JOB_STATUS.IRRELEVANT)}
+            onClick={() => onStatusChange(job.groupId, USER_JOB_STATUS.IRRELEVANT)}
             disabled={job.status === USER_JOB_STATUS.IRRELEVANT}
           >
             Irrelevant
           </Button>
           <Button
-            type="link"
             size="small"
-            onClick={onOpenOriginal}
-            icon={<LinkOutlined />}
+            icon={<UndoOutlined />}
+            loading={statusLoading}
+            onClick={() => onStatusChange(job.groupId, USER_JOB_STATUS.NEW)}
+            disabled={job.status === USER_JOB_STATUS.NEW}
           >
-            Original
+            Reset
           </Button>
         </Space>
       </Flex>
 
       <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
-        <Descriptions column={1} size="small" style={{ marginBottom: 16 }}>
-          {job.salary && <Descriptions.Item label="Salary">{job.salary}</Descriptions.Item>}
-          {job.location && (
-            <Descriptions.Item label="Location">{job.location}</Descriptions.Item>
+        <Flex gap={16} wrap="wrap" style={{ marginBottom: 16 }}>
+          {job.salary && (
+            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+              Salary: {job.salary}
+            </Typography.Text>
           )}
-          <Descriptions.Item label="Published">{formatRelativeDate(job.publishedAt)}</Descriptions.Item>
-          <Descriptions.Item label="Matched">{formatRelativeDate(job.matchedAt)}</Descriptions.Item>
+          {job.locations.length > 0 && (
+            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+              {job.locations.join(", ")}
+            </Typography.Text>
+          )}
+          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+            Matched: {formatRelativeDate(job.matchedAt)}
+          </Typography.Text>
           {job.aiRelevanceScore != null && (
-            <Descriptions.Item label="AI Score">{job.aiRelevanceScore}%</Descriptions.Item>
+            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+              AI Score: {job.aiRelevanceScore}%
+            </Typography.Text>
           )}
-        </Descriptions>
-
-        {detail && <OutreachSection job={job} detail={detail} />}
-
-        <Divider style={{ margin: "12px 0" }} />
-
-        {detailLoading ? (
-          <Skeleton active paragraph={{ rows: 8 }} />
-        ) : detail?.description ? (
-          <div
-            className="job-description"
-            dangerouslySetInnerHTML={{ __html: detail.description }}
-          />
-        ) : (
-          <Typography.Text type="secondary">No description available</Typography.Text>
-        )}
+        </Flex>
 
         {detail?.aiReasoning && (
           <>
-            <Divider style={{ margin: "12px 0" }} />
             <Typography.Text strong style={{ display: "block", marginBottom: 8 }}>
               AI Reasoning
             </Typography.Text>
@@ -119,6 +119,18 @@ export const JobDetailContent = ({
             </Typography.Paragraph>
           </>
         )}
+
+        <Divider style={{ margin: "12px 0" }} />
+
+        <Typography.Text strong style={{ display: "block", marginBottom: 8 }}>
+          Postings ({detail?.jobs.length ?? "..."})
+        </Typography.Text>
+
+        <JobGroupJobs
+          jobs={detail?.jobs ?? []}
+          groupId={job.groupId}
+          loading={detailLoading}
+        />
       </div>
     </Flex>
   );

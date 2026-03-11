@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, API_PATHS } from "@/lib/api";
-import type { CoverLetterResponse, RecruiterMessageResponse } from "@/features/settings/types";
-import type { JobDetail } from "../types";
 
-export const useGenerateCoverLetter = (jobId: string) => {
+import type { CoverLetterResponse, RecruiterMessageResponse } from "@/features/settings/types";
+import { api, API_PATHS } from "@/lib/api";
+
+import type { JobGroupDetail } from "../types";
+
+export const useGenerateCoverLetter = (jobId: string, groupId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
@@ -11,14 +13,21 @@ export const useGenerateCoverLetter = (jobId: string) => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData<JobDetail>(["job-detail", jobId], (prev) =>
-        prev ? { ...prev, coverLetter: data.coverLetter } : undefined,
+      queryClient.setQueryData<JobGroupDetail>(["job-detail", groupId], (prev) =>
+        prev
+          ? {
+              ...prev,
+              jobs: prev.jobs.map((j) =>
+                j.jobId === jobId ? { ...j, coverLetter: data.coverLetter } : j,
+              ),
+            }
+          : undefined,
       );
     },
   });
 };
 
-export const useGenerateRecruiterMessage = (jobId: string) => {
+export const useGenerateRecruiterMessage = (jobId: string, groupId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
@@ -26,8 +35,15 @@ export const useGenerateRecruiterMessage = (jobId: string) => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData<JobDetail>(["job-detail", jobId], (prev) =>
-        prev ? { ...prev, recruiterMessage: data.recruiterMessage } : undefined,
+      queryClient.setQueryData<JobGroupDetail>(["job-detail", groupId], (prev) =>
+        prev
+          ? {
+              ...prev,
+              jobs: prev.jobs.map((j) =>
+                j.jobId === jobId ? { ...j, recruiterMessage: data.recruiterMessage } : j,
+              ),
+            }
+          : undefined,
       );
     },
   });

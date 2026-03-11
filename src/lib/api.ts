@@ -1,4 +1,4 @@
-import axios, { isAxiosError, type AxiosError } from "axios";
+import axios, { type AxiosError,isAxiosError } from "axios";
 export { isAxiosError };
 import { API_URL } from "@/config/constants";
 import type { ApiError } from "@/types";
@@ -130,8 +130,9 @@ export const API_PATHS = {
   PUBLIC_VERSION: "/public/version",
   PUBLIC_JOB_SOURCES: "/public/jobs/sources",
   JOBS_SEARCH: "/jobs/search",
-  JOB_DETAIL: (jobId: string) => `/jobs/${jobId}`,
-  JOB_STATUS: (jobId: string) => `/jobs/${jobId}/status`,
+  JOB_GROUP_DETAIL: (groupId: string) => `/jobs/groups/${groupId}`,
+  JOB_GROUP_STATUS: (groupId: string) => `/jobs/groups/${groupId}/status`,
+  JOB_GROUPS_BULK_STATUS: "/jobs/groups/status",
   CRITERIA: "/criteria",
   PREFERENCES: "/preferences",
   PREFERENCES_SEARCH: "/preferences/search",

@@ -1,18 +1,20 @@
-import { useEffect, useCallback } from "react";
-import { Button, Flex, Popover, Spin, Typography } from "antd";
+import { useCallback,useEffect } from "react";
+
 import {
-  LeftOutlined,
-  RightOutlined,
   CloseOutlined,
+  LeftOutlined,
   QuestionCircleOutlined,
+  RightOutlined,
 } from "@ant-design/icons";
-import type { Job, UserJobStatus } from "../types";
-import { USER_JOB_STATUS } from "../types";
+import { Button, Flex, Popover, Spin, Typography } from "antd";
+
 import { useJobDetail } from "../hooks/useJobDetail";
+import type { JobGroup, UserJobStatus } from "../types";
+import { USER_JOB_STATUS } from "../types";
 import { JobDetailContent } from "./JobDetailContent";
 
 interface JobReviewCardProps {
-  job: Job;
+  job: JobGroup;
   currentIndex: number;
   total: number;
   hasPrev: boolean;
@@ -20,17 +22,17 @@ interface JobReviewCardProps {
   onPrev: () => void;
   onNext: () => void;
   onClose: () => void;
-  onStatusChange: (jobId: string, status: UserJobStatus) => void;
+  onStatusChange: (groupId: string, status: UserJobStatus) => void;
   statusLoading: boolean;
   loading?: boolean;
 }
 
 const SHORTCUTS = [
-  { key: "Q / ←", desc: "Previous" },
-  { key: "E / →", desc: "Next" },
+  { key: "Q / \u2190", desc: "Previous" },
+  { key: "E / \u2192", desc: "Next" },
   { key: "A", desc: "Mark Applied" },
   { key: "D / X", desc: "Mark Irrelevant" },
-  { key: "O", desc: "Open original" },
+  { key: "R", desc: "Reset to New" },
   { key: "Esc", desc: "Back to list" },
 ];
 
@@ -65,23 +67,25 @@ export const JobReviewCard = ({
   statusLoading,
   loading,
 }: JobReviewCardProps) => {
-  const { data: detail, isLoading: detailLoading } = useJobDetail(job.jobId);
+  const { data: detail, isLoading: detailLoading } = useJobDetail(job.groupId);
 
   const handleApply = useCallback(() => {
     if (job.status !== USER_JOB_STATUS.APPLIED) {
-      onStatusChange(job.jobId, USER_JOB_STATUS.APPLIED);
+      onStatusChange(job.groupId, USER_JOB_STATUS.APPLIED);
     }
   }, [job, onStatusChange]);
 
   const handleDecline = useCallback(() => {
     if (job.status !== USER_JOB_STATUS.IRRELEVANT) {
-      onStatusChange(job.jobId, USER_JOB_STATUS.IRRELEVANT);
+      onStatusChange(job.groupId, USER_JOB_STATUS.IRRELEVANT);
     }
   }, [job, onStatusChange]);
 
-  const handleOpen = useCallback(() => {
-    window.open(job.url, "_blank", "noopener,noreferrer");
-  }, [job.url]);
+  const handleReset = useCallback(() => {
+    if (job.status !== USER_JOB_STATUS.NEW) {
+      onStatusChange(job.groupId, USER_JOB_STATUS.NEW);
+    }
+  }, [job, onStatusChange]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -101,17 +105,17 @@ export const JobReviewCard = ({
           e.preventDefault();
           handleDecline();
           break;
-        case "o":
-        case "O":
+        case "r":
+        case "R":
           e.preventDefault();
-          handleOpen();
+          handleReset();
           break;
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleApply, handleDecline, handleOpen]);
+  }, [handleApply, handleDecline, handleReset]);
 
   return (
     <Flex vertical className="review-card">
@@ -169,7 +173,6 @@ export const JobReviewCard = ({
           detailLoading={detailLoading}
           onStatusChange={onStatusChange}
           statusLoading={statusLoading}
-          onOpenOriginal={handleOpen}
         />
       </div>
       </Spin>
