@@ -327,8 +327,26 @@ npm run test          # Single run (CI)
 npm run test:watch    # Watch mode (development)
 ```
 
-## CI/CD
+## Releasing
 
+### Process
+1. **Verify quality** — `npm run lint && npm run test && npm run build` must all pass
+2. **Bump version** — `npm version <patch|minor|major> --no-git-tag-version`
+3. **Commit** — `git commit -am "chore: set version to X.Y.Z"`
+4. **Tag** — `git tag vX.Y.Z`
+5. **Push** — `git push && git push origin vX.Y.Z`
+6. **Check CI** — verify GitHub Actions passes: `gh run list --limit 1`
+7. **Update parent repo** — in `job-hunter/`: `git add ui && git commit -m "chore: update ui submodule to vX.Y.Z" && git push`
+
+### If CI fails
+- Check logs: `gh run view <run-id> --log-failed`
+- Fix the issue, commit, then retag:
+  ```bash
+  git tag -d vX.Y.Z && git push origin :refs/tags/vX.Y.Z
+  git tag vX.Y.Z && git push origin vX.Y.Z
+  ```
+
+### CI/CD
 - **Trigger**: git tag `v*.*.*`
 - **Pipeline**: lint → test → build → Docker image → push to registry
 - **Tags**: `:{version}`, `:{major}` (e.g., `:1.0.0`, `:1`)
