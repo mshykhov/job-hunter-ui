@@ -7,6 +7,7 @@ const buildRequestBody = (filters: JobGroupFilters, page: number) => {
   const body: Record<string, unknown> = {};
 
   if (filters.statuses?.length) body.statuses = filters.statuses;
+  if (filters.sources?.length) body.sources = filters.sources;
   if (filters.search) body.search = filters.search;
   if (filters.remote) body.remote = true;
   if (filters.matchedAfter) body.matchedAfter = filters.matchedAfter;

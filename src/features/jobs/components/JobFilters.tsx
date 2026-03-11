@@ -3,6 +3,7 @@ import { DatePicker, Flex, Input, InputNumber, Select, Switch, Typography } from
 import dayjs from "dayjs";
 
 import { STATUS_LABELS, USER_JOB_SORT_LABELS } from "../constants";
+import { useJobSources } from "../hooks/useJobSources";
 import type { JobGroupFilters as JobGroupFiltersType, UserJobSort, UserJobStatus } from "../types";
 import { USER_JOB_SORT,USER_JOB_STATUS } from "../types";
 
@@ -18,6 +19,8 @@ const sortOptions = Object.values(USER_JOB_SORT).map((s) => ({
 }));
 
 export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps) => {
+  const { data: jobSources = [] } = useJobSources();
+  const sourceOptions = jobSources.map((s) => ({ label: s.displayName, value: s.id }));
   const statusOptions = Object.values(USER_JOB_STATUS).map((s) => ({
     label: `${STATUS_LABELS[s]} (${statusCounts[s] ?? 0})`,
     value: s,
@@ -69,6 +72,19 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
           onChange({ ...filters, statuses: statuses.length ? statuses : undefined })
         }
         options={statusOptions}
+        size="small"
+        maxTagCount="responsive"
+      />
+      <Select
+        mode="multiple"
+        placeholder="Sources"
+        allowClear
+        style={{ minWidth: 130 }}
+        value={filters.sources ?? []}
+        onChange={(sources: string[]) =>
+          onChange({ ...filters, sources: sources.length ? sources : undefined })
+        }
+        options={sourceOptions}
         size="small"
         maxTagCount="responsive"
       />

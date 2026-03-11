@@ -68,6 +68,7 @@ export type PublicJobSort = (typeof PUBLIC_JOB_SORT)[keyof typeof PUBLIC_JOB_SOR
 
 export interface JobGroupFilters {
   statuses?: UserJobStatus[];
+  sources?: string[];
   search?: string;
   remote?: boolean;
   minScore?: number;

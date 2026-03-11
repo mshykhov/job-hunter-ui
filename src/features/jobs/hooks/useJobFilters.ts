@@ -7,7 +7,7 @@ import type { JobGroupFilters, UserJobSort, UserJobStatus } from "../types";
 import { USER_JOB_SORT,USER_JOB_STATUS } from "../types";
 
 const PARAM_KEYS = [
-  "statuses", "search", "remote", "minScore", "matchedAfter", "sortBy",
+  "statuses", "sources", "search", "remote", "minScore", "matchedAfter", "sortBy",
 ] as const;
 
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
@@ -22,6 +22,7 @@ const filtersToParams = (filters: JobGroupFilters, params: URLSearchParams): URL
   for (const key of PARAM_KEYS) params.delete(key);
 
   if (filters.statuses?.length) params.set("statuses", filters.statuses.join(","));
+  if (filters.sources?.length) params.set("sources", filters.sources.join(","));
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
   if (filters.minScore != null) params.set("minScore", String(filters.minScore));
@@ -38,6 +39,12 @@ const parseFilters = (params: URLSearchParams): JobGroupFilters => {
   if (statuses) {
     const parsed = statuses.split(",").filter((s) => STATUS_VALUES.has(s)) as UserJobStatus[];
     if (parsed.length) filters.statuses = parsed;
+  }
+
+  const sources = params.get("sources");
+  if (sources) {
+    const parsed = sources.split(",").filter(Boolean);
+    if (parsed.length) filters.sources = parsed;
   }
 
   const search = params.get("search");
