@@ -1,11 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback,useEffect, useState } from "react";
+
 import { Card, Checkbox, Flex, Input, Skeleton, Switch, Typography } from "antd";
-import { usePreferences, useSaveTelegramPreferences } from "../hooks/usePreferences";
-import { useDirtyForm } from "../hooks/useDirtyForm";
-import { SaveBar } from "../components/SaveBar";
-import { EMPTY_PREFERENCES } from "../types";
+
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
+
+import { SaveBar } from "../components/SaveBar";
+import { useDirtyForm } from "../hooks/useDirtyForm";
+import { usePreferences, useSaveTelegramPreferences } from "../hooks/usePreferences";
 import type { TelegramPreferences } from "../types";
+import { EMPTY_PREFERENCES } from "../types";
 
 export const TelegramTab = () => {
   const { data: preferences, isLoading } = usePreferences();

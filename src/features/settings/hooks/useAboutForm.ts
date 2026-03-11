@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
-import { useSaveAbout, useUploadAbout, useGeneratePreferences } from "./usePreferences";
-import { useSavedFlash } from "./useSavedFlash";
+import { useCallback, useState } from "react";
+
 import type { Preferences } from "../types";
+import { useGeneratePreferences,useSaveAbout, useUploadAbout } from "./usePreferences";
+import { useSavedFlash } from "./useSavedFlash";
 
 export const useAboutForm = (preferences: Preferences | undefined) => {
   const saveAboutMutation = useSaveAbout();
@@ -11,13 +12,13 @@ export const useAboutForm = (preferences: Preferences | undefined) => {
 
   const [about, setAbout] = useState<string | null>(preferences?.about ?? null);
   const [dirty, setDirty] = useState(false);
+  const [syncedAbout, setSyncedAbout] = useState(preferences?.about);
 
-  useEffect(() => {
-    if (preferences) {
-      setAbout(preferences.about);
-      setDirty(false);
-    }
-  }, [preferences]);
+  if (preferences && preferences.about !== syncedAbout) {
+    setSyncedAbout(preferences.about);
+    setAbout(preferences.about);
+    setDirty(false);
+  }
 
   const change = useCallback((value: string | null) => {
     setAbout(value);

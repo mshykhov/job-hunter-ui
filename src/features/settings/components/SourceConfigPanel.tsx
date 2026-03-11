@@ -1,6 +1,7 @@
-import { Button, Card, Flex, Input, Typography, message } from "antd";
 import { CopyOutlined, ThunderboltOutlined } from "@ant-design/icons";
-import type { OutreachSourceConfig, CoverLetterResponse, RecruiterMessageResponse } from "../types";
+import { Button, Card, Flex, Input, message,Typography } from "antd";
+
+import type { CoverLetterResponse, OutreachSourceConfig, RecruiterMessageResponse } from "../types";
 
 interface SourceConfigPanelProps {
   sourceId: string;

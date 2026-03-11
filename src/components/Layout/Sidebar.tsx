@@ -1,19 +1,21 @@
-import { Layout, Menu, Button, Badge, Flex, Typography, theme } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import {
-  FileSearchOutlined,
-  CompassOutlined,
-  SettingOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  SunOutlined,
-  MoonOutlined,
   AimOutlined,
+  CompassOutlined,
+  FileSearchOutlined,
   LoginOutlined,
   LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  MoonOutlined,
+  SettingOutlined,
+  SunOutlined,
 } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Badge, Button, Flex, Layout, Menu, theme,Typography } from "antd";
+
 import { AppVersion } from "@/components/AppVersion";
-import { useAuth, PERMISSIONS } from "@/hooks/useAuth";
+import { PERMISSIONS,useAuth } from "@/hooks/useAuth";
 
 export const SIDEBAR_WIDTH = 220;
 export const SIDEBAR_COLLAPSED_WIDTH = 60;
@@ -89,15 +91,7 @@ export const Sidebar = ({
             <Flex align="center" gap={10}>
               <AimOutlined style={{ fontSize: 22, color: token.colorPrimary }} />
               {!collapsed && (
-                <span
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 700,
-                    whiteSpace: "nowrap",
-                    color: token.colorText,
-                    letterSpacing: -0.3,
-                  }}
-                >
+                <span style={{ fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", color: token.colorText, letterSpacing: -0.3 }}>
                   Job Hunter
                 </span>
               )}
@@ -137,26 +131,18 @@ export const Sidebar = ({
               {user.email}
             </Typography.Text>
           )}
-          {isConfigured &&
-            (isAuthenticated ? (
-              <Button
-                type="text"
-                size="small"
-                icon={<LogoutOutlined />}
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-              >
-                {!collapsed && "Logout"}
-              </Button>
-            ) : (
-              <Button
-                type="text"
-                size="small"
-                icon={<LoginOutlined />}
-                onClick={() => loginWithRedirect()}
-              >
-                {!collapsed && "Sign In"}
-              </Button>
-            ))}
+          {isConfigured && isAuthenticated && (
+            <Button type="text" size="small" icon={<LogoutOutlined />}
+              onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+            >
+              {!collapsed && "Logout"}
+            </Button>
+          )}
+          {isConfigured && !isAuthenticated && (
+            <Button type="text" size="small" icon={<LoginOutlined />} onClick={() => loginWithRedirect()}>
+              {!collapsed && "Sign In"}
+            </Button>
+          )}
           {collapsed && (
             <Button
               type="text"

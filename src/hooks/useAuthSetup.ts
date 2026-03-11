@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+
 import { useAuth } from "@/hooks/useAuth";
-import { registerTokenGetter, registerTokenRefresher, registerAuthErrorHandler } from "@/lib/api";
+import { registerAuthErrorHandler,registerTokenGetter, registerTokenRefresher } from "@/lib/api";
 
 export const useAuthSetup = () => {
   const { isConfigured, isLoading, isAuthenticated, getAccessTokenSilently, logout } = useAuth();

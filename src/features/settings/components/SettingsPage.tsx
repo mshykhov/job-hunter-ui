@@ -1,7 +1,8 @@
 import { Flex, Tabs, Typography } from "antd";
+
 import { SETTINGS_TABS } from "../constants";
-import { JobPreferencesTab } from "../tabs/JobPreferencesTab";
 import { AiConfigTab } from "../tabs/AiConfigTab";
+import { JobPreferencesTab } from "../tabs/JobPreferencesTab";
 import { OutreachTab } from "../tabs/OutreachTab";
 import { TelegramTab } from "../tabs/TelegramTab";
 

@@ -1,6 +1,8 @@
 import { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
+
 import { Flex, Spin } from "antd";
+
 import { useAuth } from "@/hooks/useAuth";
 
 interface ProtectedRouteProps {

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- core domain types, splitting would hurt cohesion */
 export type JobSource = string;
 
 export const USER_JOB_STATUS = {

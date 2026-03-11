@@ -1,11 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { api, API_PATHS } from "@/lib/api";
+
 import type {
+  GeneratePreferencesResponse,
+  MatchingPreferences,
   Preferences,
   SearchPreferences,
-  MatchingPreferences,
   TelegramPreferences,
-  GeneratePreferencesResponse,
 } from "../types";
 
 const QUERY_KEY = ["preferences"];

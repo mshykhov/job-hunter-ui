@@ -62,6 +62,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
           <div
             className="job-description"
             style={{ fontSize: 13, maxHeight: 400, overflow: "auto" }}
+            // eslint-disable-next-line react/no-danger -- sanitized via DOMPurify
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.description) }}
           />
         )}

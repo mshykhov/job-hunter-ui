@@ -1,7 +1,8 @@
-import { Card, Col, Flex, Input, Row, Slider, Switch, Tag, Typography, theme } from "antd";
 import { RobotOutlined } from "@ant-design/icons";
-import { TagListInput } from "./TagListInput";
+import { Card, Col, Flex, Input, Row, Slider, Switch, Tag, theme,Typography } from "antd";
+
 import type { MatchingPreferences } from "../types";
+import { TagListInput } from "./TagListInput";
 
 interface MatchingSectionProps {
   form: MatchingPreferences;
@@ -147,16 +148,9 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
               </Flex>
               <Flex vertical gap={4}>
                 <Typography.Text strong style={{ fontSize: 13 }}>Custom Prompt</Typography.Text>
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                Additional instructions for AI matching, appended to the default prompt.
-              </Typography.Text>
-              <Input.TextArea
-                rows={3}
-                placeholder="Custom instructions for the AI matching engine..."
-                value={form.customPrompt ?? ""}
-                onChange={(e) => onChange("customPrompt", e.target.value || null)}
-              />
-            </Flex>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>Additional instructions for AI matching, appended to the default prompt.</Typography.Text>
+                <Input.TextArea rows={3} placeholder="Custom instructions for the AI matching engine..." value={form.customPrompt ?? ""} onChange={(e) => onChange("customPrompt", e.target.value || null)} />
+              </Flex>
             </>
           )}
         </Flex>

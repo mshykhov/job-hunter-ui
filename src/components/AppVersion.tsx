@@ -1,5 +1,6 @@
-import { Flex, theme } from "antd";
 import { useQuery } from "@tanstack/react-query";
+import { Flex, theme } from "antd";
+
 import { APP_VERSION } from "@/config/constants";
 import { api, API_PATHS } from "@/lib/api";
 

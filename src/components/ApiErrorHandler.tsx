@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+
 import { App } from "antd";
+
 import { registerErrorHandler } from "@/lib/api";
 
 export const ApiErrorHandler = () => {

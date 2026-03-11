@@ -1,6 +1,8 @@
 import { Flex, Spin } from "antd";
-import { useTheme } from "@/hooks/useTheme";
+
 import { useAuthSetup } from "@/hooks/useAuthSetup";
+import { useTheme } from "@/hooks/useTheme";
+
 import { AppProviders } from "./providers";
 import { AppRoutes } from "./routes";
 

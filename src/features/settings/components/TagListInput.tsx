@@ -1,7 +1,8 @@
-import { useState, useRef } from "react";
-import { Tag, Input, Flex } from "antd";
+import { useRef,useState } from "react";
+
 import { ClearOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { InputRef } from "antd";
+import { Flex,Input, Tag } from "antd";
 
 interface TagListInputProps {
   value: string[];

@@ -1,9 +1,10 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate,Route, Routes } from "react-router-dom";
+
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ExplorePage } from "@/features/explore/components/ExplorePage";
 import { JobsPage } from "@/features/jobs/components/JobsPage";
 import { SettingsPage } from "@/features/settings/components/SettingsPage";
-import { ExplorePage } from "@/features/explore/components/ExplorePage";
 import { useAuth } from "@/hooks/useAuth";
 
 interface AppRoutesProps {

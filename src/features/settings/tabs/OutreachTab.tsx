@@ -1,17 +1,21 @@
-import { useState, useCallback, useMemo } from "react";
-import { Card, Collapse, Flex, Input, Skeleton, Switch, Typography } from "antd";
+import { useCallback, useMemo,useState } from "react";
+
+import { Card, Collapse, Flex, Skeleton, Switch, Typography } from "antd";
+
+import { useJobSources } from "@/features/jobs/hooks/useJobSources";
+
+import { DefaultPromptsCard } from "../components/DefaultPromptsCard";
+import { SaveBar } from "../components/SaveBar";
+import { SourceConfigPanel } from "../components/SourceConfigPanel";
+import { useDirtyForm } from "../hooks/useDirtyForm";
 import {
   useOutreachSettings,
   useSaveOutreachSettings,
   useTestCoverLetter,
   useTestRecruiterMessage,
 } from "../hooks/useOutreach";
-import { useDirtyForm } from "../hooks/useDirtyForm";
 import { useSavedFlash } from "../hooks/useSavedFlash";
-import { SaveBar } from "../components/SaveBar";
-import { SourceConfigPanel } from "../components/SourceConfigPanel";
-import { useJobSources } from "@/features/jobs/hooks/useJobSources";
-import type { SaveOutreachSettings, OutreachSourceConfig, CoverLetterResponse, RecruiterMessageResponse } from "../types";
+import type { CoverLetterResponse, OutreachSourceConfig, RecruiterMessageResponse,SaveOutreachSettings } from "../types";
 import { EMPTY_OUTREACH_SETTINGS } from "../types";
 
 const DEFAULT_SOURCE_CONFIG: OutreachSourceConfig = {
@@ -30,13 +34,16 @@ export const OutreachTab = () => {
   const { saved, flash } = useSavedFlash();
   const [testResults, setTestResults] = useState<Record<string, CoverLetterResponse | RecruiterMessageResponse>>({});
 
-  const initial: SaveOutreachSettings = settings
-    ? {
-        coverLetterPrompt: settings.coverLetterPrompt,
-        recruiterMessagePrompt: settings.recruiterMessagePrompt,
-        sourceConfig: settings.sourceConfig,
-      }
-    : EMPTY_OUTREACH_SETTINGS;
+  const initial = useMemo<SaveOutreachSettings>(() =>
+    settings
+      ? {
+          coverLetterPrompt: settings.coverLetterPrompt,
+          recruiterMessagePrompt: settings.recruiterMessagePrompt,
+          sourceConfig: settings.sourceConfig,
+        }
+      : EMPTY_OUTREACH_SETTINGS,
+    [settings],
+  );
 
   const { form, setForm, isDirty: rawDirty, reset } = useDirtyForm<SaveOutreachSettings>(initial);
 
@@ -76,39 +83,7 @@ export const OutreachTab = () => {
 
   return (
     <Flex vertical gap={16}>
-      <Card size="small" title="Default Prompts">
-        <Flex vertical gap={12}>
-          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            Default prompts used when a source has no custom prompt configured.
-          </Typography.Text>
-          <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Cover Letter Prompt</Typography.Text>
-            <Input.TextArea
-              rows={3}
-              value={form.coverLetterPrompt ?? defaultCL}
-              onChange={(e) => setForm((prev) => ({ ...prev, coverLetterPrompt: e.target.value || null }))}
-              style={!form.coverLetterPrompt ? { opacity: 0.45 } : undefined}
-              onFocus={(e) => {
-                if (!form.coverLetterPrompt) setForm((prev) => ({ ...prev, coverLetterPrompt: defaultCL }));
-                e.target.select();
-              }}
-            />
-          </Flex>
-          <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Recruiter Message Prompt</Typography.Text>
-            <Input.TextArea
-              rows={3}
-              value={form.recruiterMessagePrompt ?? defaultRM}
-              onChange={(e) => setForm((prev) => ({ ...prev, recruiterMessagePrompt: e.target.value || null }))}
-              style={!form.recruiterMessagePrompt ? { opacity: 0.45 } : undefined}
-              onFocus={(e) => {
-                if (!form.recruiterMessagePrompt) setForm((prev) => ({ ...prev, recruiterMessagePrompt: defaultRM }));
-                e.target.select();
-              }}
-            />
-          </Flex>
-        </Flex>
-      </Card>
+      <DefaultPromptsCard form={form} defaultCL={defaultCL} defaultRM={defaultRM} onUpdate={setForm} />
 
       <Card size="small" title="Source Configuration">
         <Collapse

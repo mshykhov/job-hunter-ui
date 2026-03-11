@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Button, Flex, Input, Typography, Upload, App } from "antd";
+
 import { RobotOutlined, UploadOutlined } from "@ant-design/icons";
-import { SaveBar } from "./SaveBar";
-import { CV_ACCEPTED_FORMATS, CV_MAX_SIZE_MB } from "../constants";
 import type { UploadFile } from "antd";
+import { App,Button, Flex, Input, Typography, Upload } from "antd";
+
+import { CV_ACCEPTED_FORMATS, CV_MAX_SIZE_MB } from "../constants";
+import { SaveBar } from "./SaveBar";
 
 interface AboutCardProps {
   about: string | null;

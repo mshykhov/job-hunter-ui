@@ -1,5 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode,useEffect, useState } from "react";
+
 import { useAuth0 } from "@auth0/auth0-react";
+
 import { AuthContext } from "@/hooks/useAuth";
 
 interface Auth0BridgeProps {

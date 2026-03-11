@@ -1,8 +1,10 @@
 import { Checkbox, Col, Flex, Row, Switch, Typography } from "antd";
-import type { JobSource } from "@/features/jobs/types";
+
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
-import { TagListInput } from "./TagListInput";
+import type { JobSource } from "@/features/jobs/types";
+
 import type { SearchPreferences } from "../types";
+import { TagListInput } from "./TagListInput";
 
 interface SearchSectionProps {
   form: SearchPreferences;

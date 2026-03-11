@@ -6,12 +6,13 @@ import {
   QuestionCircleOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Popover, Spin, Typography } from "antd";
+import { Button, Flex, Popover, Spin } from "antd";
 
 import { useJobDetail } from "../hooks/useJobDetail";
 import type { JobGroup, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
 import { JobDetailContent } from "./JobDetailContent";
+import { ShortcutsHelp } from "./ShortcutsHelp";
 
 interface JobReviewCardProps {
   job: JobGroup;
@@ -26,33 +27,6 @@ interface JobReviewCardProps {
   statusLoading: boolean;
   loading?: boolean;
 }
-
-const SHORTCUTS = [
-  { key: "Q / \u2190", desc: "Previous" },
-  { key: "E / \u2192", desc: "Next" },
-  { key: "A", desc: "Mark Applied" },
-  { key: "D / X", desc: "Mark Irrelevant" },
-  { key: "R", desc: "Reset to New" },
-  { key: "Esc", desc: "Back to list" },
-];
-
-const ShortcutsHelp = () => (
-  <Flex vertical gap={6} style={{ width: 180 }}>
-    <Typography.Text strong style={{ fontSize: 12 }}>
-      Keyboard shortcuts
-    </Typography.Text>
-    {SHORTCUTS.map(({ key, desc }) => (
-      <Flex key={key} justify="space-between" gap={12}>
-        <Typography.Text code style={{ fontSize: 11 }}>
-          {key}
-        </Typography.Text>
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {desc}
-        </Typography.Text>
-      </Flex>
-    ))}
-  </Flex>
-);
 
 export const JobReviewCard = ({
   job,

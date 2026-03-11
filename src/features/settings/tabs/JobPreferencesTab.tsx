@@ -1,21 +1,21 @@
-import { useState, useCallback } from "react";
-import { App, Collapse, Flex, Skeleton } from "antd";
+import { useCallback } from "react";
+
 import { FilterOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
-import { createStorage } from "@/lib/storage";
-import { usePreferences, useSaveSearchPreferences, useSaveMatchingPreferences } from "../hooks/usePreferences";
+import { App, Collapse, Flex, Skeleton } from "antd";
+
 import { useRematch } from "@/features/jobs/hooks/useRematch";
-import { useDirtyForm } from "../hooks/useDirtyForm";
-import { useAboutForm } from "../hooks/useAboutForm";
-import { useSavedFlash } from "../hooks/useSavedFlash";
+
 import { AboutCard } from "../components/AboutCard";
-import { SearchSection } from "../components/SearchSection";
 import { MatchingSection } from "../components/MatchingSection";
 import { SaveBar } from "../components/SaveBar";
+import { SearchSection } from "../components/SearchSection";
+import { useAboutForm } from "../hooks/useAboutForm";
+import { useDirtyForm } from "../hooks/useDirtyForm";
+import { usePersistedKeys } from "../hooks/usePersistedKeys";
+import { usePreferences, useSaveMatchingPreferences,useSaveSearchPreferences } from "../hooks/usePreferences";
+import { useSavedFlash } from "../hooks/useSavedFlash";
+import type { MatchingPreferences,SearchPreferences } from "../types";
 import { EMPTY_PREFERENCES } from "../types";
-import type { SearchPreferences, MatchingPreferences } from "../types";
-
-const DEFAULT_ACTIVE_KEYS = ["about", "search", "matching"];
-const collapseStorage = createStorage<{ keys: string[] }>("job-prefs-collapse", 1, { keys: DEFAULT_ACTIVE_KEYS });
 
 export const JobPreferencesTab = () => {
   const { modal } = App.useApp();
@@ -83,18 +83,18 @@ export const JobPreferencesTab = () => {
         }));
       },
     });
-  }, [aboutForm.generateMutation, searchForm.setForm, matchingForm.setForm]);
+  }, [aboutForm, searchForm, matchingForm]);
 
   const updateSearch = useCallback(
     <K extends keyof SearchPreferences>(key: K, value: SearchPreferences[K]) =>
       searchForm.setForm((prev) => ({ ...prev, [key]: value })),
-    [searchForm.setForm],
+    [searchForm],
   );
 
   const updateMatching = useCallback(
     <K extends keyof MatchingPreferences>(key: K, value: MatchingPreferences[K]) =>
       matchingForm.setForm((prev) => ({ ...prev, [key]: value })),
-    [matchingForm.setForm],
+    [matchingForm],
   );
 
   const weightsTotal = matchingForm.form.weightKeywords + matchingForm.form.weightSeniority
@@ -166,16 +166,4 @@ export const JobPreferencesTab = () => {
       ]}
     />
   );
-};
-
-const usePersistedKeys = () => {
-  const [keys, setKeysRaw] = useState<string[]>(() => collapseStorage.load().keys);
-
-  const setKeys = useCallback((value: string | string[]) => {
-    const next = Array.isArray(value) ? value : [value];
-    setKeysRaw(next);
-    collapseStorage.save({ keys: next });
-  }, []);
-
-  return { keys, setKeys };
 };

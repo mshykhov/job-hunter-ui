@@ -1,13 +1,16 @@
 import { useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { api, API_PATHS, isAxiosError } from "@/lib/api";
-import { EMPTY_AI_CONFIG } from "../types";
+
 import type {
   AiConfigForm,
+  AiProvider,
   AiProvidersResponse,
   AiSettingsResponse,
-  AiProvider,
 } from "../types";
+import { EMPTY_AI_CONFIG } from "../types";
 
 export const useAiProviders = () => {
   return useQuery({

@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
+
 import { Auth0Provider } from "@auth0/auth0-react";
+
 import { AUTH0_CONFIG, AUTH0_ENABLED } from "@/config/constants";
 import { AuthContext, noopAuth } from "@/hooks/useAuth";
+
 import { Auth0Bridge } from "./Auth0Bridge";
 
 interface AuthProviderProps {
