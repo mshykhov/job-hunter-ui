@@ -76,6 +76,7 @@ npm run lint          # ESLint (0 warnings)
 npm run format:check  # Prettier check
 ```
 
+
 ## Docker
 
 Multi-stage build: Node (build) → nginx-unprivileged (serve) on port 8080.
