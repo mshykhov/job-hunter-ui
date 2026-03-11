@@ -6,7 +6,7 @@ import {
   QuestionCircleOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Popover, Spin } from "antd";
+import { Button, Flex, Popover, Spin, Typography } from "antd";
 
 import { useJobDetail } from "../hooks/useJobDetail";
 import type { JobGroup, UserJobStatus } from "../types";
