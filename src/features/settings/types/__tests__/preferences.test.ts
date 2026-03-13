@@ -16,7 +16,7 @@ describe("EMPTY_PREFERENCES", () => {
   });
 
   it("matching does not contain removed fields", () => {
-    const matching = EMPTY_PREFERENCES.matching as Record<string, unknown>;
+    const matching = EMPTY_PREFERENCES.matching as unknown as Record<string, unknown>;
     expect(matching).not.toHaveProperty("seniorityLevels");
     expect(matching).not.toHaveProperty("keywords");
     expect(matching).not.toHaveProperty("weightKeywords");
