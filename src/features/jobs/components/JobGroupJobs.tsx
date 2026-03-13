@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { LinkOutlined } from "@ant-design/icons";
 import { Button, Collapse, Flex, Skeleton, Tag, Typography } from "antd";
 
-import { sanitizeHtml } from "@/lib/sanitize";
+import { formatDescription } from "@/lib/formatDescription";
 
 import { getSourceColor } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
@@ -63,7 +63,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
             className="job-description"
             style={{ fontSize: 13, maxHeight: 400, overflow: "auto" }}
             // eslint-disable-next-line react/no-danger -- sanitized via DOMPurify
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.description) }}
+            dangerouslySetInnerHTML={{ __html: formatDescription(job.description) }}
           />
         )}
       </Flex>
