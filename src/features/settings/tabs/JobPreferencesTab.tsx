@@ -77,8 +77,6 @@ export const JobPreferencesTab = () => {
         }));
         matchingForm.setForm((prev) => ({
           ...prev,
-          seniorityLevels: result.seniorityLevels,
-          keywords: result.keywords,
           excludedKeywords: result.excludedKeywords,
         }));
       },
@@ -96,10 +94,6 @@ export const JobPreferencesTab = () => {
       matchingForm.setForm((prev) => ({ ...prev, [key]: value })),
     [matchingForm],
   );
-
-  const weightsTotal = matchingForm.form.weightKeywords + matchingForm.form.weightSeniority
-    + matchingForm.form.weightCategories;
-  const weightsInvalid = matchingForm.form.matchWithAi && weightsTotal !== 100;
 
   if (isLoading) return <Skeleton active paragraph={{ rows: 14 }} />;
 
@@ -120,8 +114,10 @@ export const JobPreferencesTab = () => {
               onSaveText={aboutForm.saveText}
               onUploadFile={aboutForm.uploadFile}
               onGenerate={handleGenerate}
+              onOptimize={aboutForm.optimize}
               saving={aboutForm.saving}
               generating={aboutForm.generating}
+              optimizing={aboutForm.optimizing}
               aboutDirty={aboutForm.dirty}
               aboutSaved={aboutForm.saved}
             />
@@ -157,8 +153,6 @@ export const JobPreferencesTab = () => {
                 saving={saveMatchingMutation.isPending}
                 onSave={() => saveMatchingMutation.mutate(matchingForm.form, { onSuccess: () => { matchingSaved.flash(); suggestRematch(); } })}
                 onDiscard={matchingForm.reset}
-                saveDisabled={weightsInvalid}
-                saveDisabledReason={weightsInvalid ? `Matching weights must total 100% (currently ${weightsTotal}%)` : undefined}
               />
             </Flex>
           ),

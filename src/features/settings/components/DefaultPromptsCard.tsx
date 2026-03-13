@@ -19,6 +19,7 @@ export const DefaultPromptsCard = ({ form, defaultCL, defaultRM, onUpdate }: Def
         <Typography.Text strong style={{ fontSize: 13 }}>Cover Letter Prompt</Typography.Text>
         <Input.TextArea
           rows={3}
+          showCount
           value={form.coverLetterPrompt ?? defaultCL}
           onChange={(e) => onUpdate((prev) => ({ ...prev, coverLetterPrompt: e.target.value || null }))}
           style={!form.coverLetterPrompt ? { opacity: 0.45 } : undefined}
@@ -32,6 +33,7 @@ export const DefaultPromptsCard = ({ form, defaultCL, defaultRM, onUpdate }: Def
         <Typography.Text strong style={{ fontSize: 13 }}>Recruiter Message Prompt</Typography.Text>
         <Input.TextArea
           rows={3}
+          showCount
           value={form.recruiterMessagePrompt ?? defaultRM}
           onChange={(e) => onUpdate((prev) => ({ ...prev, recruiterMessagePrompt: e.target.value || null }))}
           style={!form.recruiterMessagePrompt ? { opacity: 0.45 } : undefined}

@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react";
 
 import type { Preferences } from "../types";
-import { useGeneratePreferences,useSaveAbout, useUploadAbout } from "./usePreferences";
+import { useGeneratePreferences, useOptimizeAbout, useSaveAbout, useUploadAbout } from "./usePreferences";
 import { useSavedFlash } from "./useSavedFlash";
 
 export const useAboutForm = (preferences: Preferences | undefined) => {
   const saveAboutMutation = useSaveAbout();
   const uploadAboutMutation = useUploadAbout();
   const generateMutation = useGeneratePreferences();
+  const optimizeMutation = useOptimizeAbout();
   const { saved, flash } = useSavedFlash();
 
   const [about, setAbout] = useState<string | null>(preferences?.about ?? null);
@@ -48,16 +49,28 @@ export const useAboutForm = (preferences: Preferences | undefined) => {
     });
   }, [uploadAboutMutation, flash]);
 
+  const optimize = useCallback(() => {
+    optimizeMutation.mutate(undefined, {
+      onSuccess: (optimized) => {
+        setAbout(optimized);
+        setDirty(true);
+        flash();
+      },
+    });
+  }, [optimizeMutation, flash]);
+
   return {
     about,
     dirty,
     saved,
     saving: saveAboutMutation.isPending || uploadAboutMutation.isPending,
     generating: generateMutation.isPending,
+    optimizing: optimizeMutation.isPending,
     change,
     discard,
     saveText,
     uploadFile,
+    optimize,
     generate: generateMutation.mutate,
     generateMutation,
   };

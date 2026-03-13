@@ -111,3 +111,12 @@ export const useGeneratePreferences = () => {
     },
   });
 };
+
+export const useOptimizeAbout = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.post<{ about: string }>(API_PATHS.PREFERENCES_ABOUT_OPTIMIZE);
+      return data.about;
+    },
+  });
+};

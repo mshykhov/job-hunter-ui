@@ -43,6 +43,7 @@ export const SourceConfigPanel = ({
           </Typography.Text>
           <Input.TextArea
             rows={2}
+            showCount
             placeholder={defaultCoverLetterPrompt}
             value={config.coverLetterPrompt ?? ""}
             onChange={(e) => onUpdate({ coverLetterPrompt: e.target.value || null })}
@@ -57,6 +58,7 @@ export const SourceConfigPanel = ({
           </Typography.Text>
           <Input.TextArea
             rows={2}
+            showCount
             placeholder={defaultRecruiterMessagePrompt}
             value={config.recruiterMessagePrompt ?? ""}
             onChange={(e) => onUpdate({ recruiterMessagePrompt: e.target.value || null })}

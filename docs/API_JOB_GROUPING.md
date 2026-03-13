@@ -27,6 +27,7 @@ Request:
 ```json
 {
   "statuses": ["new", "applied"],
+  "sources": ["djinni", "linkedin"],
   "matchedAfter": "2026-01-01T00:00:00Z",
   "search": "kotlin",
   "remote": true,
@@ -72,7 +73,10 @@ Response:
 }
 ```
 
-Notes:
+Filter notes:
+- `sources` — filter by job source; returns groups where at least one job matches any of the specified sources
+
+Response notes:
 - `sources` — sorted alphabetically by value, deduplicated across all jobs in group
 - `locations` — sorted alphabetically, nulls excluded, deduplicated
 - `salary` — first non-null salary found in the group

@@ -39,7 +39,7 @@ export const SearchSection = ({ form, onChange }: SearchSectionProps) => {
       <Flex vertical gap={4}>
         <Typography.Text strong style={{ fontSize: 13 }}>Locations</Typography.Text>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Preferred job locations
+          Used for LinkedIn job search queries, not for filtering other sources
         </Typography.Text>
         <TagListInput
           value={form.locations}

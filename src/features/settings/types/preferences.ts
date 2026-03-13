@@ -8,16 +8,11 @@ export interface SearchPreferences {
 }
 
 export interface MatchingPreferences {
-  seniorityLevels: string[];
-  keywords: string[];
   excludedKeywords: string[];
   excludedTitleKeywords: string[];
   excludedCompanies: string[];
   matchWithAi: boolean;
   customPrompt: string | null;
-  weightKeywords: number;
-  weightSeniority: number;
-  weightCategories: number;
 }
 
 export interface TelegramPreferences {
@@ -43,16 +38,11 @@ export const EMPTY_PREFERENCES: Preferences = {
     remoteOnly: false,
   },
   matching: {
-    seniorityLevels: [],
-    keywords: [],
     excludedKeywords: [],
     excludedTitleKeywords: [],
     excludedCompanies: [],
     matchWithAi: true,
     customPrompt: null,
-    weightKeywords: 45,
-    weightSeniority: 30,
-    weightCategories: 25,
   },
   telegram: {
     chatId: null,
@@ -64,8 +54,6 @@ export const EMPTY_PREFERENCES: Preferences = {
 
 export interface GeneratePreferencesResponse {
   categories: string[];
-  seniorityLevels: string[];
-  keywords: string[];
   excludedKeywords: string[];
   locations: string[];
   remoteOnly: boolean;

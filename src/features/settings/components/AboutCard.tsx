@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { RobotOutlined, UploadOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, RobotOutlined, UploadOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd";
-import { App,Button, Flex, Input, Typography, Upload } from "antd";
+import { App, Button, Flex, Input, Tooltip, Typography, Upload } from "antd";
 
 import { CV_ACCEPTED_FORMATS, CV_MAX_SIZE_MB } from "../constants";
 import { SaveBar } from "./SaveBar";
@@ -14,8 +14,10 @@ interface AboutCardProps {
   onSaveText: () => void;
   onUploadFile: (file: File) => void;
   onGenerate: () => void;
+  onOptimize: () => void;
   saving: boolean;
   generating: boolean;
+  optimizing: boolean;
   aboutDirty: boolean;
   aboutSaved: boolean;
 }
@@ -27,8 +29,10 @@ export const AboutCard = ({
   onSaveText,
   onUploadFile,
   onGenerate,
+  onOptimize,
   saving,
   generating,
+  optimizing,
   aboutDirty,
   aboutSaved,
 }: AboutCardProps) => {
@@ -47,8 +51,18 @@ export const AboutCard = ({
 
   return (
     <Flex vertical gap={12}>
+      <Flex align="center" gap={6}>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          Your profile is the most important input for AI matching.
+        </Typography.Text>
+        <Tooltip title="Describe your skills, experience, and what you're looking for. The more detailed your profile, the more accurate your AI scores will be.">
+          <InfoCircleOutlined style={{ fontSize: 12, color: "inherit", cursor: "help" }} />
+        </Tooltip>
+      </Flex>
       <Input.TextArea
         rows={3}
+        showCount
+        maxLength={3000}
         placeholder="e.g. Senior Kotlin developer, remote, Spring Boot, no frontend work..."
         value={about ?? ""}
         onChange={(e) => onAboutChange(e.target.value || null)}
@@ -90,7 +104,17 @@ export const AboutCard = ({
         onSave={onSaveText}
         onDiscard={onDiscard}
       />
-      <div>
+      <Flex gap={8}>
+        <Tooltip title="AI cleans and restructures your profile: removes formatting, emojis, contacts; organizes into role, skills, experience">
+          <Button
+            icon={<RobotOutlined />}
+            loading={optimizing}
+            onClick={onOptimize}
+            disabled={!about?.trim() || aboutDirty}
+          >
+            Optimize Profile
+          </Button>
+        </Tooltip>
         <Button
           icon={<RobotOutlined />}
           loading={generating}
@@ -99,7 +123,7 @@ export const AboutCard = ({
         >
           Generate Preferences
         </Button>
-      </div>
+      </Flex>
     </Flex>
   );
 };

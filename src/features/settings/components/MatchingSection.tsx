@@ -1,5 +1,5 @@
-import { RobotOutlined } from "@ant-design/icons";
-import { Card, Col, Flex, Input, Row, Slider, Switch, Tag, theme,Typography } from "antd";
+import { InfoCircleOutlined, RobotOutlined } from "@ant-design/icons";
+import { Card, Col, Flex, Input, Row, Switch, Tag, theme, Tooltip, Typography } from "antd";
 
 import type { MatchingPreferences } from "../types";
 import { TagListInput } from "./TagListInput";
@@ -9,9 +9,25 @@ interface MatchingSectionProps {
   onChange: <K extends keyof MatchingPreferences>(key: K, value: MatchingPreferences[K]) => void;
 }
 
+const AI_MATCHING_INFO = `AI reads each job description and compares it with your About section to understand how well you fit the role. It evaluates three things:
+
+• Technical fit — do your skills match what the job requires?
+• Experience fit — does your seniority and type of work align?
+• Category fit — is the job's primary tech stack in your target categories?
+
+Score: 90–100 near-perfect, 75–89 strong, 60–74 good, 40–59 moderate, below 40 weak.
+
+Jobs are pre-filtered before AI: excluded keywords, companies, and categories are applied instantly without using AI tokens.`;
+
+const CUSTOM_PROMPT_PLACEHOLDER = `Example:
+Kotlin and Java are equally good for me — treat as interchangeable.
+I prefer product companies over outsourcing.
+Interested in: fintech, iGaming, cloud platforms, Web3.
+I'm open to Lead roles if they're still hands-on.
+Skip jobs focused on frontend even if they mention Java.`;
+
 export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
   const { token } = theme.useToken();
-  const weightsTotal = form.weightKeywords + form.weightSeniority + form.weightCategories;
 
   return (
     <Flex vertical gap={16}>
@@ -69,6 +85,12 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
             <Tag color={form.matchWithAi ? "processing" : "default"} bordered={false}>
               {form.matchWithAi ? "Enabled" : "Disabled"}
             </Tag>
+            <Tooltip
+              title={<span style={{ whiteSpace: "pre-line" }}>{AI_MATCHING_INFO}</span>}
+              overlayStyle={{ maxWidth: 420 }}
+            >
+              <InfoCircleOutlined style={{ color: token.colorTextSecondary, cursor: "help" }} />
+            </Tooltip>
           </Flex>
         }
         extra={
@@ -82,78 +104,26 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
           borderColor: form.matchWithAi ? token.colorPrimaryBorder : undefined,
         }}
       >
-        <Flex vertical gap={16} style={{ opacity: form.matchWithAi ? 1 : 0.5 }}>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} lg={12}>
-              <Flex vertical gap={4}>
-                <Typography.Text strong style={{ fontSize: 13 }}>Seniority Levels</Typography.Text>
-                <TagListInput
-                  value={form.seniorityLevels}
-                  onChange={(v) => onChange("seniorityLevels", v)}
-                  placeholder="e.g. senior"
-                  color="purple"
-                />
-              </Flex>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Flex vertical gap={4}>
-                <Typography.Text strong style={{ fontSize: 13 }}>Keywords</Typography.Text>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                  Skills and frameworks for AI job matching
-                </Typography.Text>
-                <TagListInput
-                  value={form.keywords}
-                  onChange={(v) => onChange("keywords", v)}
-                  placeholder="e.g. spring"
-                  color="green"
-                />
-              </Flex>
-            </Col>
-          </Row>
-          {form.matchWithAi && (
-            <>
-              <Flex vertical gap={8}>
-                <Flex align="center" justify="space-between">
-                  <Typography.Text strong style={{ fontSize: 13 }}>Matching Weights</Typography.Text>
-                  <Typography.Text
-                    type={weightsTotal === 100 ? "secondary" : "danger"}
-                    style={{ fontSize: 12 }}
-                  >
-                    Total: {weightsTotal}%{weightsTotal !== 100 && " (should be 100%)"}
-                  </Typography.Text>
-                </Flex>
-                <Row gutter={[16, 8]}>
-                  <Col xs={24} sm={12}>
-                    <Flex align="center" justify="space-between">
-                      <Typography.Text style={{ fontSize: 12 }}>Keywords</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightKeywords}%</Typography.Text>
-                    </Flex>
-                    <Slider min={0} max={100} step={5} value={form.weightKeywords} onChange={(v) => onChange("weightKeywords", v)} />
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Flex align="center" justify="space-between">
-                      <Typography.Text style={{ fontSize: 12 }}>Seniority</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightSeniority}%</Typography.Text>
-                    </Flex>
-                    <Slider min={0} max={100} step={5} value={form.weightSeniority} onChange={(v) => onChange("weightSeniority", v)} />
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Flex align="center" justify="space-between">
-                      <Typography.Text style={{ fontSize: 12 }}>Categories</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{form.weightCategories}%</Typography.Text>
-                    </Flex>
-                    <Slider min={0} max={100} step={5} value={form.weightCategories} onChange={(v) => onChange("weightCategories", v)} />
-                  </Col>
-                </Row>
-              </Flex>
-              <Flex vertical gap={4}>
-                <Typography.Text strong style={{ fontSize: 13 }}>Custom Prompt</Typography.Text>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>Additional instructions for AI matching, appended to the default prompt.</Typography.Text>
-                <Input.TextArea rows={3} placeholder="Custom instructions for the AI matching engine..." value={form.customPrompt ?? ""} onChange={(e) => onChange("customPrompt", e.target.value || null)} />
-              </Flex>
-            </>
-          )}
-        </Flex>
+        {form.matchWithAi ? (
+          <Flex vertical gap={4}>
+            <Typography.Text strong style={{ fontSize: 13 }}>Custom Instructions</Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              Optional. Tell AI what matters to you beyond your profile and categories.
+            </Typography.Text>
+            <Input.TextArea
+              rows={4}
+              showCount
+              maxLength={500}
+              placeholder={CUSTOM_PROMPT_PLACEHOLDER}
+              value={form.customPrompt ?? ""}
+              onChange={(e) => onChange("customPrompt", e.target.value || null)}
+            />
+          </Flex>
+        ) : (
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            When disabled, jobs are filtered only by excluded keywords, companies, and categories — no AI scoring.
+          </Typography.Text>
+        )}
       </Card>
     </Flex>
   );

@@ -140,6 +140,7 @@ export const API_PATHS = {
   PREFERENCES_TELEGRAM: "/preferences/telegram",
   PREFERENCES_ABOUT: "/preferences/about",
   PREFERENCES_ABOUT_FILE: "/preferences/about/file",
+  PREFERENCES_ABOUT_OPTIMIZE: "/preferences/about/optimize",
   PREFERENCES_GENERATE: "/preferences/generate",
   AI_PROVIDERS: "/settings/ai-providers",
   AI_SETTINGS: "/settings/ai",
