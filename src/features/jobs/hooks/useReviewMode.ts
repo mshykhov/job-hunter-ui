@@ -129,6 +129,8 @@ export const useReviewMode = (): UseReviewModeReturn => {
     if (!isActive) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 

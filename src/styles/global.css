@@ -119,6 +119,8 @@ body {
   font-size: 13px;
   line-height: 1.7;
   word-break: break-word;
+  user-select: text;
+  cursor: text;
 }
 
 .job-description h1,
