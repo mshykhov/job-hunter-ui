@@ -22,8 +22,13 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
   const sourceNames = useSourceNames();
 
   const groupedBySource = useMemo(() => {
+    const sorted = [...jobs].sort((a, b) => {
+      const dateA = a.publishedAt ?? a.scrapedAt ?? "";
+      const dateB = b.publishedAt ?? b.scrapedAt ?? "";
+      return dateB.localeCompare(dateA);
+    });
     const map = new Map<string, GroupJob[]>();
-    for (const job of jobs) {
+    for (const job of sorted) {
       const existing = map.get(job.source) ?? [];
       existing.push(job);
       map.set(job.source, existing);
