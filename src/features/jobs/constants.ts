@@ -18,7 +18,7 @@ const KNOWN_SOURCE_COLORS: Record<string, string> = {
   linkedin: "cyan",
 };
 
-const FALLBACK_COLORS = ["magenta", "geekblue", "volcano", "gold", "lime"];
+const FALLBACK_COLORS = ["magenta", "geekblue", "volcano", "gold", "red"];
 
 export const getSourceColor = (source: string): string =>
   KNOWN_SOURCE_COLORS[source.toLowerCase()] ?? FALLBACK_COLORS[source.length % FALLBACK_COLORS.length];
@@ -32,9 +32,7 @@ export const PUBLIC_JOB_SORT_LABELS: Record<PublicJobSort, string> = {
   PUBLISHED: "Published",
   SCRAPED: "Scraped",
 };
-
-export const REMOTE_CHECK_COLOR = "#52c41a";
-
+export const [REMOTE_CHECK_COLOR, REMOTE_TAG_COLOR] = ["#52c41a", "lime"] as const;
 export const formatRelativeDate = (dateStr: string | null): string => {
   if (!dateStr) return "\u2014";
   const diff = Date.now() - new Date(dateStr).getTime();

@@ -1,7 +1,7 @@
 import { DollarOutlined, EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import { Button, Tag, Typography } from "antd";
 
-import { formatRelativeDate } from "../constants";
+import { formatRelativeDate, REMOTE_TAG_COLOR } from "../constants";
 import type { GroupJob } from "../types";
 
 interface JobEntryLabelProps {
@@ -23,7 +23,7 @@ export const JobEntryLabel = ({ job }: JobEntryLabelProps) => (
           {job.salary}
         </Typography.Text>
       )}
-      {job.remote && <Tag color="cyan" style={{ margin: 0 }}>Remote</Tag>}
+      {job.remote && <Tag color={REMOTE_TAG_COLOR} style={{ margin: 0 }}>Remote</Tag>}
     </div>
     <span className="job-entry-label-date">
       {formatRelativeDate(job.publishedAt)}

@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Divider, Flex, Space, Tag, Typography } from "antd";
 
-import { formatRelativeDate, getSourceColor, STATUS_COLORS, STATUS_LABELS } from "../constants";
+import { formatRelativeDate, getSourceColor, REMOTE_TAG_COLOR, STATUS_COLORS, STATUS_LABELS } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { JobGroup, JobGroupDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
@@ -32,6 +32,7 @@ export const JobDetailContent = ({
   statusLoading,
 }: JobDetailContentProps) => {
   const sourceNames = useSourceNames();
+  const postingCount = detail?.jobs?.length ?? job.jobCount;
   return (
     <Flex vertical style={{ height: "100%", overflow: "hidden" }}>
       <Flex
@@ -67,9 +68,9 @@ export const JobDetailContent = ({
             </Tag>
           ))}
           <Tag color={STATUS_COLORS[job.status]}>{STATUS_LABELS[job.status]}</Tag>
-          {job.remote && <Tag color="cyan">Remote</Tag>}
-          {job.jobCount > 1 && (
-            <Tag>{job.jobCount} postings</Tag>
+          {job.remote && <Tag color={REMOTE_TAG_COLOR}>Remote</Tag>}
+          {postingCount > 1 && (
+            <Tag>{postingCount} postings</Tag>
           )}
         </Flex>
 
@@ -150,7 +151,7 @@ export const JobDetailContent = ({
 
         <div className="job-detail-section-title">
           Postings
-          <Tag>{detail?.jobs?.length ?? "..."}</Tag>
+          <Tag>{postingCount}</Tag>
         </div>
 
         <JobGroupJobs
