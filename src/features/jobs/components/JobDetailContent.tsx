@@ -1,10 +1,19 @@
-import { CheckOutlined, CloseOutlined, UndoOutlined } from "@ant-design/icons";
+import {
+  CalendarOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  DollarOutlined,
+  EnvironmentOutlined,
+  RobotOutlined,
+  UndoOutlined,
+} from "@ant-design/icons";
 import { Button, Divider, Flex, Space, Tag, Typography } from "antd";
 
-import { formatRelativeDate,getSourceColor, STATUS_COLORS, STATUS_LABELS } from "../constants";
+import { formatRelativeDate, getSourceColor, STATUS_COLORS, STATUS_LABELS } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { JobGroup, JobGroupDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
+import { getScoreClass, getScoreLabel } from "../utils/jobDetailUtils";
 import { JobGroupJobs } from "./JobGroupJobs";
 
 interface JobDetailContentProps {
@@ -30,14 +39,26 @@ export const JobDetailContent = ({
         gap={12}
         className="job-detail-header"
       >
-        <div>
-          <Typography.Title level={5} style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
-            {job.title}
-          </Typography.Title>
-          {job.company && (
-            <Typography.Text type="secondary">{job.company}</Typography.Text>
+        <Flex justify="space-between" align="flex-start" gap={12}>
+          <div style={{ minWidth: 0 }}>
+            <Typography.Title level={5} style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
+              {job.title}
+            </Typography.Title>
+            {job.company && (
+              <Typography.Text type="secondary">{job.company}</Typography.Text>
+            )}
+          </div>
+
+          {job.aiRelevanceScore != null && (
+            <span
+              className={`job-detail-score ${getScoreClass(job.aiRelevanceScore)}`}
+              aria-label={`AI relevance score: ${job.aiRelevanceScore}% (${getScoreLabel(job.aiRelevanceScore)})`}
+            >
+              <RobotOutlined />
+              {job.aiRelevanceScore}%
+            </span>
           )}
-        </div>
+        </Flex>
 
         <Flex gap={8} wrap="wrap">
           {job.sources.map((source) => (
@@ -85,46 +106,52 @@ export const JobDetailContent = ({
       </Flex>
 
       <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
-        <Flex gap={16} wrap="wrap" style={{ marginBottom: 16 }}>
+        <div className="job-detail-meta">
           {job.salary && (
-            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-              Salary: {job.salary}
-            </Typography.Text>
+            <span className="job-detail-meta-item">
+              <DollarOutlined />
+              {job.salary}
+            </span>
           )}
           {job.locations.length > 0 && (
-            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+            <span className="job-detail-meta-item">
+              <EnvironmentOutlined />
               {job.locations.join(", ")}
-            </Typography.Text>
+            </span>
           )}
-          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            Matched: {formatRelativeDate(job.matchedAt)}
-          </Typography.Text>
-          {job.aiRelevanceScore != null && (
-            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-              AI Score: {job.aiRelevanceScore}%
-            </Typography.Text>
+          {job.publishedAt && (
+            <span className="job-detail-meta-item">
+              <CalendarOutlined />
+              Published {formatRelativeDate(job.publishedAt)}
+            </span>
           )}
-        </Flex>
+          {job.matchedAt && (
+            <span className="job-detail-meta-item">
+              <CalendarOutlined />
+              Matched {formatRelativeDate(job.matchedAt)}
+            </span>
+          )}
+        </div>
 
         {detail?.aiReasoning && (
           <>
-            <Typography.Text strong style={{ display: "block", marginBottom: 8 }}>
-              AI Reasoning
-            </Typography.Text>
-            <Typography.Paragraph
-              type="secondary"
-              style={{ fontSize: 13, whiteSpace: "pre-wrap" }}
-            >
-              {detail.aiReasoning}
-            </Typography.Paragraph>
+            <div className="job-detail-reasoning">
+              <div className="job-detail-reasoning-title">
+                <RobotOutlined />
+                AI Reasoning
+              </div>
+              <p className="job-detail-reasoning-text">
+                {detail.aiReasoning}
+              </p>
+            </div>
+            <Divider style={{ margin: "12px 0" }} />
           </>
         )}
 
-        <Divider style={{ margin: "12px 0" }} />
-
-        <Typography.Text strong style={{ display: "block", marginBottom: 8 }}>
-          Postings ({detail?.jobs.length ?? "..."})
-        </Typography.Text>
+        <div className="job-detail-section-title">
+          Postings
+          <Tag>{detail?.jobs?.length ?? "..."}</Tag>
+        </div>
 
         <JobGroupJobs
           jobs={detail?.jobs ?? []}

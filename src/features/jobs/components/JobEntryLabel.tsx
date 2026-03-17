@@ -1,5 +1,5 @@
-import { LinkOutlined } from "@ant-design/icons";
-import { Button, Flex, Typography } from "antd";
+import { DollarOutlined, EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
+import { Button, Tag, Typography } from "antd";
 
 import { formatRelativeDate } from "../constants";
 import type { GroupJob } from "../types";
@@ -9,18 +9,25 @@ interface JobEntryLabelProps {
 }
 
 export const JobEntryLabel = ({ job }: JobEntryLabelProps) => (
-  <Flex gap={8} align="center">
-    {job.location && (
-      <Typography.Text type="secondary" style={{ fontSize: 13 }} ellipsis>
-        {job.location}
-      </Typography.Text>
-    )}
-    {job.salary && (
-      <Typography.Text style={{ fontSize: 13, flexShrink: 0 }}>{job.salary}</Typography.Text>
-    )}
-    <Typography.Text type="secondary" style={{ fontSize: 11, flexShrink: 0 }}>
+  <div className="job-entry-label">
+    <div className="job-entry-label-meta">
+      {job.location && (
+        <Typography.Text type="secondary" style={{ fontSize: 13 }} ellipsis>
+          <EnvironmentOutlined style={{ marginRight: 4 }} />
+          {job.location}
+        </Typography.Text>
+      )}
+      {job.salary && (
+        <Typography.Text style={{ fontSize: 13, flexShrink: 0 }}>
+          <DollarOutlined style={{ marginRight: 4 }} />
+          {job.salary}
+        </Typography.Text>
+      )}
+      {job.remote && <Tag color="cyan" style={{ margin: 0 }}>Remote</Tag>}
+    </div>
+    <span className="job-entry-label-date">
       {formatRelativeDate(job.publishedAt)}
-    </Typography.Text>
+    </span>
     <Button
       type="link"
       size="small"
@@ -32,5 +39,5 @@ export const JobEntryLabel = ({ job }: JobEntryLabelProps) => (
     >
       Open
     </Button>
-  </Flex>
+  </div>
 );

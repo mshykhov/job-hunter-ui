@@ -8,6 +8,7 @@ import { formatDescription } from "@/lib/formatDescription";
 import { getSourceColor } from "../constants";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { GroupJob } from "../types";
+import { sortJobsByDate } from "../utils/jobDetailUtils";
 import { JobEntryContent } from "./JobEntryContent";
 import { JobEntryLabel } from "./JobEntryLabel";
 import { OutreachSection } from "./OutreachSection";
@@ -22,11 +23,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
   const sourceNames = useSourceNames();
 
   const groupedBySource = useMemo(() => {
-    const sorted = [...jobs].sort((a, b) => {
-      const dateA = a.publishedAt ?? a.scrapedAt ?? "";
-      const dateB = b.publishedAt ?? b.scrapedAt ?? "";
-      return dateB.localeCompare(dateA);
-    });
+    const sorted = sortJobsByDate(jobs);
     const map = new Map<string, GroupJob[]>();
     for (const job of sorted) {
       const existing = map.get(job.source) ?? [];
