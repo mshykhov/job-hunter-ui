@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code config (commit shared rules, keep local settings out)
+!.claude/
+.claude/*
+!.claude/rules/
+!.claude/rules/**
