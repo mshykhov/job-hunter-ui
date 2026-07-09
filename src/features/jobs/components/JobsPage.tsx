@@ -1,26 +1,36 @@
+import { useMemo } from "react";
+
 import { Flex, Typography } from "antd";
 
+import { JobReviewCard } from "@/features/jobs/components/JobReviewCard";
+import { useJobFilters } from "@/features/jobs/hooks/useJobFilters";
+import { useJobs } from "@/features/jobs/hooks/useJobs";
+import { useJobStatus } from "@/features/jobs/hooks/useJobStatus";
+import { useRematch } from "@/features/jobs/hooks/useRematch";
+import { useReviewMode } from "@/features/jobs/hooks/useReviewMode";
+import { DEFAULT_MATCHED_RANGE } from "@/features/jobs/timeRange";
+import type { JobGroup, UserJobStatus } from "@/features/jobs/types";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
-import { useJobFilters } from "../hooks/useJobFilters";
-import { useJobs } from "../hooks/useJobs";
-import { useJobStatus } from "../hooks/useJobStatus";
-import { useRematch } from "../hooks/useRematch";
-import { useReviewMode } from "../hooks/useReviewMode";
-import { useTableSettings } from "../hooks/useTableSettings";
-import type { JobGroup, UserJobStatus } from "../types";
+import { useOpenPrimaryJob } from "../hooks/useOpenPrimaryJob";
 import { JobFilters } from "./JobFilters";
-import { JobReviewCard } from "./JobReviewCard";
-import { JobTable } from "./JobTable";
-import { TableToolbar } from "./TableToolbar";
+import { JobList } from "./JobList";
+import { JobsToolbar } from "./JobsToolbar";
+
+const REFRESH_INTERVAL = 60_000;
 
 export const JobsPage = () => {
   const { filters, setFilters } = useJobFilters();
-
-  const { settings, toggleColumn, setColumnWidth, setRefreshInterval, setDensity, reorderColumns } =
-    useTableSettings();
-
   const debouncedFilters = useDebouncedValue(filters, 300);
+
+  const jobsFilters = useMemo(
+    () => ({
+      ...debouncedFilters,
+      matchedAfter: undefined,
+      matchedWithin: debouncedFilters.matchedWithin ?? DEFAULT_MATCHED_RANGE,
+    }),
+    [debouncedFilters],
+  );
 
   const {
     jobs,
@@ -34,16 +44,17 @@ export const JobsPage = () => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useJobs(debouncedFilters, settings.refreshInterval);
+  } = useJobs(jobsFilters, REFRESH_INTERVAL);
 
   const statusMutation = useJobStatus();
   const rematchMutation = useRematch();
   const reviewMode = useReviewMode();
+  const openPrimary = useOpenPrimaryJob();
 
   const handleEnterReview = (job: JobGroup) => {
     if (jobs.length > 0) {
-      const pagesLoaded = Math.ceil(jobs.length / (debouncedFilters.size ?? 50));
-      reviewMode.enter(jobs, job, totalElements, debouncedFilters, !!hasNextPage, pagesLoaded);
+      const pagesLoaded = Math.ceil(jobs.length / (jobsFilters.size ?? 50));
+      reviewMode.enter(jobs, job, totalElements, jobsFilters, !!hasNextPage, pagesLoaded);
     }
   };
 
@@ -87,31 +98,24 @@ export const JobsPage = () => {
         Jobs
       </Typography.Title>
       <JobFilters filters={filters} onChange={setFilters} statusCounts={statusCounts} />
-      <TableToolbar
+      <JobsToolbar
         total={totalElements}
         isFetching={isFetching}
         dataUpdatedAt={dataUpdatedAt}
         onRefresh={() => refetch()}
         onRematch={(since) => rematchMutation.mutate(since)}
         rematchLoading={rematchMutation.isPending}
-        settings={settings}
-        onToggleColumn={toggleColumn}
-        onRefreshChange={setRefreshInterval}
-        onDensityChange={setDensity}
         onReview={() => handleEnterReview(jobs[0])}
         reviewDisabled={jobs.length === 0}
       />
       <div className="placeholder-fade" data-placeholder={isPlaceholderData}>
-        <JobTable
+        <JobList
           jobs={jobs}
           loading={isLoading}
+          statusPending={statusMutation.isPending}
           onSelect={handleEnterReview}
-          visibleColumns={settings.visibleColumns}
-          columnOrder={settings.columnOrder}
-          columnWidths={settings.columnWidths}
-          onColumnResize={setColumnWidth}
-          onColumnReorder={reorderColumns}
-          density={settings.density}
+          onOpenPrimary={openPrimary}
+          onStatusChange={handleStatusChange}
           hasNextPage={!!hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
           onLoadMore={() => fetchNextPage()}

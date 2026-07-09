@@ -7,7 +7,7 @@ import type { JobGroupFilters, UserJobSort, UserJobStatus } from "../types";
 import { USER_JOB_SORT,USER_JOB_STATUS } from "../types";
 
 const PARAM_KEYS = [
-  "statuses", "sources", "search", "remote", "minScore", "matchedAfter", "sortBy",
+  "statuses", "sources", "search", "remote", "minScore", "matchedAfter", "matchedWithin", "sortBy",
 ] as const;
 
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
@@ -27,6 +27,7 @@ const filtersToParams = (filters: JobGroupFilters, params: URLSearchParams): URL
   if (filters.remote) params.set("remote", "true");
   if (filters.minScore != null) params.set("minScore", String(filters.minScore));
   if (filters.matchedAfter) params.set("matchedAfter", filters.matchedAfter);
+  if (filters.matchedWithin) params.set("matchedWithin", filters.matchedWithin);
   if (filters.sortBy) params.set("sortBy", filters.sortBy);
 
   return params;
@@ -57,6 +58,9 @@ const parseFilters = (params: URLSearchParams): JobGroupFilters => {
 
   const matchedAfter = params.get("matchedAfter");
   if (matchedAfter) filters.matchedAfter = matchedAfter;
+
+  const matchedWithin = params.get("matchedWithin");
+  if (matchedWithin) filters.matchedWithin = matchedWithin;
 
   const sortBy = params.get("sortBy");
   if (sortBy && SORT_VALUES.has(sortBy)) filters.sortBy = sortBy as UserJobSort;

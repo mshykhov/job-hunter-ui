@@ -3,24 +3,13 @@ import { useState } from "react";
 import { ReadOutlined, ReloadOutlined, SyncOutlined } from "@ant-design/icons";
 import { Button, Flex, Popover, Radio, Tooltip, Typography } from "antd";
 
-import type {
-  ColumnKey,
-  TableDensity,
-  TableSettings as TableSettingsType,
-} from "../hooks/useTableSettings";
-import { TableSettings } from "./TableSettings";
-
-interface TableToolbarProps {
+interface JobsToolbarProps {
   total: number;
   isFetching: boolean;
   dataUpdatedAt: number;
   onRefresh: () => void;
   onRematch: (since?: string) => void;
   rematchLoading: boolean;
-  settings: TableSettingsType;
-  onToggleColumn: (key: ColumnKey) => void;
-  onRefreshChange: (interval: number) => void;
-  onDensityChange: (density: TableDensity) => void;
   onReview: () => void;
   reviewDisabled: boolean;
 }
@@ -42,23 +31,19 @@ const PERIOD_MS: Record<RematchPeriod, number> = {
 const periodToSince = (period: RematchPeriod): string =>
   new Date(Date.now() - PERIOD_MS[period]).toISOString();
 
-export const TableToolbar = ({
+export const JobsToolbar = ({
   total,
   isFetching,
   dataUpdatedAt,
   onRefresh,
   onRematch,
   rematchLoading,
-  settings,
-  onToggleColumn,
-  onRefreshChange,
-  onDensityChange,
   onReview,
   reviewDisabled,
-}: TableToolbarProps) => {
-  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
+}: JobsToolbarProps) => {
   const [rematchOpen, setRematchOpen] = useState(false);
   const [period, setPeriod] = useState<RematchPeriod>("24h");
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
 
   const handleRematch = () => {
     setRematchOpen(false);
@@ -76,36 +61,31 @@ export const TableToolbar = ({
         style={{ display: "flex", flexDirection: "column", gap: 4 }}
       >
         {(Object.keys(PERIOD_LABELS) as RematchPeriod[]).map((key) => (
-          <Radio key={key} value={key}>{PERIOD_LABELS[key]}</Radio>
+          <Radio key={key} value={key}>
+            {PERIOD_LABELS[key]}
+          </Radio>
         ))}
       </Radio.Group>
-      <Button
-        type="primary"
-        size="small"
-        block
-        onClick={handleRematch}
-        loading={rematchLoading}
-      >
+      <Button type="primary" size="small" block onClick={handleRematch} loading={rematchLoading}>
         Rematch
       </Button>
     </Flex>
   );
 
   return (
-    <Flex justify="space-between" align="center" style={{ marginBottom: 8 }}>
-      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-        {total} jobs {lastUpdated && `\u00B7 Updated ${lastUpdated}`}
+    <Flex justify="space-between" align="center" className="jobs-toolbar">
+      <Typography.Text type="secondary" className="jobs-toolbar-count">
+        {total} jobs{lastUpdated && ` · updated ${lastUpdated}`}
       </Typography.Text>
-      <Flex align="center" gap={2}>
-        <Tooltip title="Review jobs one by one">
-          <Button
-            type="text"
-            size="small"
-            icon={<ReadOutlined />}
-            onClick={onReview}
-            disabled={reviewDisabled}
-          />
-        </Tooltip>
+      <Flex align="center" gap={4}>
+        <Button
+          type="text"
+          icon={<ReadOutlined />}
+          onClick={onReview}
+          disabled={reviewDisabled}
+        >
+          Review
+        </Button>
         <Popover
           content={rematchContent}
           trigger="click"
@@ -114,27 +94,12 @@ export const TableToolbar = ({
           placement="bottomRight"
         >
           <Tooltip title="Re-match jobs">
-            <Button
-              type="text"
-              size="small"
-              icon={<SyncOutlined spin={rematchLoading} />}
-            />
+            <Button type="text" icon={<SyncOutlined spin={rematchLoading} />} />
           </Tooltip>
         </Popover>
         <Tooltip title="Refresh">
-          <Button
-            type="text"
-            size="small"
-            icon={<ReloadOutlined spin={isFetching} />}
-            onClick={onRefresh}
-          />
+          <Button type="text" icon={<ReloadOutlined spin={isFetching} />} onClick={onRefresh} />
         </Tooltip>
-        <TableSettings
-          settings={settings}
-          onToggleColumn={onToggleColumn}
-          onRefreshChange={onRefreshChange}
-          onDensityChange={onDensityChange}
-        />
       </Flex>
     </Flex>
   );

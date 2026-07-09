@@ -73,6 +73,7 @@ export interface JobGroupFilters {
   remote?: boolean;
   minScore?: number;
   matchedAfter?: string;
+  matchedWithin?: string;
   sortBy?: UserJobSort;
   size?: number;
 }
