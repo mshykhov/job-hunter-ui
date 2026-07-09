@@ -41,10 +41,11 @@ User's Browser
 
 | Page | Auth | Description |
 |------|------|-------------|
-| Jobs | Yes | Main dashboard — job table with filters, side panel, kanban toggle |
-| Statistics | Yes | Charts — jobs over time, by source, status distribution |
-| Settings | Yes | User preferences — criteria, notifications, account |
-| Login | No | Auth0 redirect |
+| Explore | No | Public job browser - shared job table, expandable rows, no review actions |
+| Jobs | Yes | Main dashboard - job table with filters + keyboard-driven review mode (triage) |
+| Settings | Yes | User preferences - 4 tabs: Job Preferences, AI Config, Outreach, Telegram |
+
+Unauthenticated users land on `/explore`; sign-in is an Auth0 redirect from the sidebar (no dedicated login page).
 
 ---
 
@@ -65,16 +66,16 @@ src/
 │   └── ErrorBoundary.tsx
 ├── features/               # Feature modules — one folder per domain
 │   ├── jobs/
-│   │   ├── components/     # JobTable, JobFilters, JobSidePanel, JobKanban
-│   │   ├── hooks/          # useJobs, useJobStatus, useJobFilters
+│   │   ├── components/     # JobTable, JobFilters, JobReviewCard, JobDetailContent, JobGroupJobs
+│   │   ├── hooks/          # useJobs, useJobStatus, useJobFilters, useReviewMode
 │   │   ├── types.ts        # Job, JobStatus, JobFilters interfaces
 │   │   └── constants.ts    # Job-specific constants (status colors, etc.)
-│   ├── statistics/
-│   │   ├── components/
-│   │   ├── hooks/
+│   ├── explore/            # Public job browser - reuses jobs' JobTable
+│   │   ├── components/     # ExplorePage, ExploreFilters
+│   │   ├── hooks/          # useExploreFilters, usePublicJobs
 │   │   └── types.ts
 │   └── settings/
-│       ├── components/
+│       ├── components/     # tabs (JobPreferences, AiConfig, Outreach, Telegram) + SaveBar, TagListInput
 │       ├── hooks/
 │       └── types.ts
 ├── hooks/                  # Shared hooks (useAuth, useTheme)
