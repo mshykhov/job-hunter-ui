@@ -17,7 +17,12 @@ export const useOpenPrimaryJob = () => {
 
   return useCallback(
     async (job: JobGroup) => {
-      // Open the tab synchronously inside the click gesture so the popup blocker allows it.
+      if (job.primaryUrl) {
+        window.open(job.primaryUrl, "_blank", "noopener,noreferrer");
+        return;
+      }
+      // No primary url on the list payload: open the tab synchronously inside the click
+      // gesture (so the popup blocker allows it), then resolve it from the group detail.
       const tab = window.open("about:blank", "_blank");
       try {
         const detail = await queryClient.fetchQuery({

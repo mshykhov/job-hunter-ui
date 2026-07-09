@@ -61,6 +61,7 @@ const buildGroups = (): JobGroup[] => {
       id: `g${i}`, groupId: `g${i}`, title: pick(TITLES), company: pick(COMPANIES),
       sources, locations: pick(LOCATIONS), salary: pick(SALARIES), remote: rnd() < 0.72,
       status: pick(STATUSES), aiRelevanceScore: score, jobCount: rnd() < 0.3 ? 1 + Math.floor(rnd() * 3) : 1,
+      primaryUrl: "https://example.com/job",
       publishedAt, matchedAt, createdAt: matchedAt, updatedAt: matchedAt,
     });
   }

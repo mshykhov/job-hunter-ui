@@ -21,6 +21,7 @@ export interface JobGroup {
   status: UserJobStatus;
   aiRelevanceScore: number | null;
   jobCount: number;
+  primaryUrl?: string | null;
   publishedAt: string | null;
   matchedAt: string | null;
   createdAt: string | null;
