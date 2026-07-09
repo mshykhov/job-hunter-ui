@@ -383,6 +383,18 @@ body {
   font-size: 12px;
 }
 
+/* Sticky filter + toolbar */
+.jobs-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  background: var(--ant-color-bg-layout);
+}
+
 /* List + rows */
 .jobs-list {
   background: var(--ant-color-bg-container);
@@ -433,6 +445,12 @@ body {
 
 .jobs-row:hover {
   background: var(--ant-color-fill-quaternary);
+}
+
+.jobs-row--selected,
+.jobs-row--selected:hover {
+  background: var(--ant-color-primary-bg);
+  box-shadow: inset 3px 0 0 var(--ant-color-primary);
 }
 
 .jobs-row:focus-visible {

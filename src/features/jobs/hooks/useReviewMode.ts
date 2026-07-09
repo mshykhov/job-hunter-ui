@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef,useState } from "react";
 
+import { hasModifier, isTypingTarget } from "../keyboard";
 import type { JobGroup, JobGroupFilters } from "../types";
 import { fetchJobGroupsPage } from "./jobSearchApi";
 
@@ -129,15 +130,12 @@ export const useReviewMode = (): UseReviewModeReturn => {
     if (!isActive) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (hasModifier(e) || isTypingTarget(e.target)) return;
 
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-
-      if (e.key === "ArrowRight" || e.key === "e" || e.key === "E") {
+      if (e.key === "ArrowRight" || e.code === "KeyE") {
         e.preventDefault();
         goNext();
-      } else if (e.key === "ArrowLeft" || e.key === "q" || e.key === "Q") {
+      } else if (e.key === "ArrowLeft" || e.code === "KeyQ") {
         e.preventDefault();
         goPrev();
       } else if (e.key === "Escape") {

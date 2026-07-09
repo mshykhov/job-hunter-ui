@@ -4,6 +4,7 @@ import { Flex, Typography } from "antd";
 
 import { JobReviewCard } from "@/features/jobs/components/JobReviewCard";
 import { useJobFilters } from "@/features/jobs/hooks/useJobFilters";
+import { useJobListKeyboard } from "@/features/jobs/hooks/useJobListKeyboard";
 import { useJobs } from "@/features/jobs/hooks/useJobs";
 import { useJobStatus } from "@/features/jobs/hooks/useJobStatus";
 import { useRematch } from "@/features/jobs/hooks/useRematch";
@@ -69,6 +70,16 @@ export const JobsPage = () => {
     );
   };
 
+  const { selected } = useJobListKeyboard({
+    count: jobs.length,
+    enabled: !reviewMode.isActive,
+    hasNextPage: !!hasNextPage,
+    onOpen: (i) => handleEnterReview(jobs[i]),
+    onOpenPrimary: (i) => openPrimary(jobs[i]),
+    onStatus: (i, status) => handleStatusChange(jobs[i].groupId, status),
+    onLoadMore: () => fetchNextPage(),
+  });
+
   if (reviewMode.isActive && reviewMode.currentJob) {
     return (
       <Flex vertical gap={16}>
@@ -97,22 +108,25 @@ export const JobsPage = () => {
       <Typography.Title level={4} style={{ margin: 0 }}>
         Jobs
       </Typography.Title>
-      <JobFilters filters={filters} onChange={setFilters} statusCounts={statusCounts} />
-      <JobsToolbar
-        total={totalElements}
-        isFetching={isFetching}
-        dataUpdatedAt={dataUpdatedAt}
-        onRefresh={() => refetch()}
-        onRematch={(since) => rematchMutation.mutate(since)}
-        rematchLoading={rematchMutation.isPending}
-        onReview={() => handleEnterReview(jobs[0])}
-        reviewDisabled={jobs.length === 0}
-      />
+      <div className="jobs-sticky">
+        <JobFilters filters={filters} onChange={setFilters} statusCounts={statusCounts} />
+        <JobsToolbar
+          total={totalElements}
+          isFetching={isFetching}
+          dataUpdatedAt={dataUpdatedAt}
+          onRefresh={() => refetch()}
+          onRematch={(since) => rematchMutation.mutate(since)}
+          rematchLoading={rematchMutation.isPending}
+          onReview={() => handleEnterReview(jobs[0])}
+          reviewDisabled={jobs.length === 0}
+        />
+      </div>
       <div className="placeholder-fade" data-placeholder={isPlaceholderData}>
         <JobList
           jobs={jobs}
           loading={isLoading}
           statusPending={statusMutation.isPending}
+          selectedIndex={selected}
           onSelect={handleEnterReview}
           onOpenPrimary={openPrimary}
           onStatusChange={handleStatusChange}

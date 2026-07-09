@@ -10,6 +10,7 @@ interface JobListProps {
   jobs: JobGroup[];
   loading: boolean;
   statusPending: boolean;
+  selectedIndex: number;
   onSelect: (job: JobGroup) => void;
   onOpenPrimary: (job: JobGroup) => void;
   onStatusChange: (groupId: string, status: UserJobStatus) => void;
@@ -24,6 +25,7 @@ export const JobList = ({
   jobs,
   loading,
   statusPending,
+  selectedIndex,
   onSelect,
   onOpenPrimary,
   onStatusChange,
@@ -62,6 +64,7 @@ export const JobList = ({
           key={job.id}
           job={job}
           index={index}
+          selected={index === selectedIndex}
           sourceNames={sourceNames}
           statusPending={statusPending}
           onSelect={onSelect}

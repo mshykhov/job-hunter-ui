@@ -1,7 +1,14 @@
 import { useState } from "react";
 
-import { ReadOutlined, ReloadOutlined, SyncOutlined } from "@ant-design/icons";
+import {
+  QuestionCircleOutlined,
+  ReadOutlined,
+  ReloadOutlined,
+  SyncOutlined,
+} from "@ant-design/icons";
 import { Button, Flex, Popover, Radio, Tooltip, Typography } from "antd";
+
+import { ShortcutsHelp } from "./ShortcutsHelp";
 
 interface JobsToolbarProps {
   total: number;
@@ -78,6 +85,11 @@ export const JobsToolbar = ({
         {total} jobs{lastUpdated && ` · updated ${lastUpdated}`}
       </Typography.Text>
       <Flex align="center" gap={4}>
+        <Popover content={<ShortcutsHelp />} trigger="click" placement="bottomRight">
+          <Tooltip title="Keyboard shortcuts">
+            <Button type="text" icon={<QuestionCircleOutlined />} />
+          </Tooltip>
+        </Popover>
         <Button
           type="text"
           icon={<ReadOutlined />}

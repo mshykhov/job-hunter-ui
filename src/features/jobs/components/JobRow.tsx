@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { Tag, Tooltip, Typography } from "antd";
 
@@ -16,6 +18,7 @@ import { JobScore } from "./JobScore";
 interface JobRowProps {
   job: JobGroup;
   index: number;
+  selected: boolean;
   sourceNames: Record<string, string>;
   statusPending: boolean;
   onSelect: (job: JobGroup) => void;
@@ -26,12 +29,14 @@ interface JobRowProps {
 export const JobRow = ({
   job,
   index,
+  selected,
   sourceNames,
   statusPending,
   onSelect,
   onOpenPrimary,
   onStatusChange,
 }: JobRowProps) => {
+  const rowRef = useRef<HTMLDivElement>(null);
   const [firstSource, ...restSources] = job.sources;
   const location = job.locations[0];
   const extraLocations = job.locations.length - 1;
@@ -40,8 +45,18 @@ export const JobRow = ({
       ? "No AI match score"
       : `${job.aiRelevanceScore}% - ${getScoreLabel(job.aiRelevanceScore)} match`;
 
+  useEffect(() => {
+    if (selected) rowRef.current?.scrollIntoView({ block: "nearest" });
+  }, [selected]);
+
   return (
-    <div className="jobs-row" onClick={() => onSelect(job)} role="button" tabIndex={0}>
+    <div
+      ref={rowRef}
+      className={selected ? "jobs-row jobs-row--selected" : "jobs-row"}
+      onClick={() => onSelect(job)}
+      role="button"
+      tabIndex={0}
+    >
       <span className="jobs-row-index">{index + 1}</span>
       <Tooltip title={scoreTitle}>
         <span className="jobs-score-cell">

@@ -9,6 +9,7 @@ import {
 import { Button, Flex, Popover, Spin, Typography } from "antd";
 
 import { useJobDetail } from "../hooks/useJobDetail";
+import { hasModifier, isTypingTarget } from "../keyboard";
 import type { JobGroup, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
 import { JobDetailContent } from "./JobDetailContent";
@@ -63,29 +64,17 @@ export const JobReviewCard = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (hasModifier(e) || isTypingTarget(e.target)) return;
 
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-
-      switch (e.key) {
-        case "a":
-        case "A":
-          e.preventDefault();
-          handleApply();
-          break;
-        case "d":
-        case "D":
-        case "x":
-        case "X":
-          e.preventDefault();
-          handleDecline();
-          break;
-        case "r":
-        case "R":
-          e.preventDefault();
-          handleReset();
-          break;
+      if (e.code === "KeyA") {
+        e.preventDefault();
+        handleApply();
+      } else if (e.code === "KeyD" || e.code === "KeyX") {
+        e.preventDefault();
+        handleDecline();
+      } else if (e.code === "KeyR") {
+        e.preventDefault();
+        handleReset();
       }
     };
 
