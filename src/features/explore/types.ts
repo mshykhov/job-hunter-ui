@@ -5,6 +5,7 @@ export interface ExploreFilters {
   search?: string;
   remote?: boolean;
   since?: string;
+  within?: string;
   sortBy?: PublicJobSort;
   size?: number;
 }

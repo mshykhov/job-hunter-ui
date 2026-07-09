@@ -5,6 +5,7 @@ import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { ExploreFilters } from "@/features/explore/types";
 import { api, API_PATHS } from "@/lib/api";
 
+import { rangeToMatchedAfter } from "../timeRange";
 import type { JobGroup, PublicJob, PublicJobPageResponse } from "../types";
 import { PUBLIC_JOB_SORT } from "../types";
 
@@ -17,7 +18,8 @@ const fetchPublicJobsPage = async (
   params.set("size", String(filters.size ?? 20));
   if (filters.search) params.set("search", filters.search);
   if (filters.remote) params.set("remote", "true");
-  if (filters.since) params.set("publishedAfter", filters.since);
+  const publishedAfter = filters.within ? rangeToMatchedAfter(filters.within) : filters.since;
+  if (publishedAfter) params.set("publishedAfter", publishedAfter);
   params.set("sortBy", filters.sortBy ?? PUBLIC_JOB_SORT.PUBLISHED);
   filters.sources?.forEach((s) => params.append("sources", s));
 

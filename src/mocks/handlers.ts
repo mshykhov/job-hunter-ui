@@ -89,15 +89,34 @@ export const handlers = [
 
   http.get(url("/public/jobs"), ({ request }) => {
     const params = new URL(request.url).searchParams;
+    const publishedAfter = params.get("publishedAfter");
+    const search = params.get("search")?.toLowerCase();
+    const remote = params.get("remote") === "true";
+    const sources = params.getAll("sources");
+    const sortBy = params.get("sortBy");
+
+    let filtered = PUBLIC_JOBS.filter((j) => {
+      if (publishedAfter && (!j.publishedAt || j.publishedAt < publishedAfter)) return false;
+      if (remote && !j.remote) return false;
+      if (sources.length && !sources.includes(j.source)) return false;
+      if (
+        search &&
+        !`${j.title} ${j.company ?? ""} ${j.location ?? ""}`.toLowerCase().includes(search)
+      )
+        return false;
+      return true;
+    });
+    const dateKey = sortBy === "SCRAPED" ? "scrapedAt" : "publishedAt";
+    filtered = [...filtered].sort((a, b) => (b[dateKey] ?? "").localeCompare(a[dateKey] ?? ""));
+
     const size = Number(params.get("size") ?? 50);
     const page = Number(params.get("page") ?? 0);
-    const content = PUBLIC_JOBS.slice(page * size, page * size + size);
     return HttpResponse.json({
-      content,
+      content: filtered.slice(page * size, page * size + size),
       page,
       size,
-      totalElements: PUBLIC_JOBS.length,
-      totalPages: Math.max(1, Math.ceil(PUBLIC_JOBS.length / size)),
+      totalElements: filtered.length,
+      totalPages: Math.max(1, Math.ceil(filtered.length / size)),
     });
   }),
 

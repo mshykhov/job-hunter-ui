@@ -610,3 +610,38 @@ body {
     gap: 10px;
   }
 }
+
+/* ===== Explore rows (public browser) ===== */
+.explore-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) 150px;
+  grid-template-areas: "main meta trail";
+}
+
+.explore-row--expanded {
+  background: var(--ant-color-fill-quaternary);
+}
+
+.explore-expand {
+  padding: 4px 16px 16px 38px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-fill-quaternary);
+}
+
+@media (max-width: 980px) {
+  .explore-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "main trail"
+      "meta trail";
+  }
+}
+
+@media (max-width: 620px) {
+  .explore-row {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "main"
+      "meta"
+      "trail";
+  }
+}
