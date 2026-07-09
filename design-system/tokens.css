@@ -1,0 +1,33 @@
+/* Mirrors src/styles/theme.ts. If theme.ts changes, update these and re-sync. */
+:root {
+  /* Brand */
+  --accent: #4F46E5;
+  --accent-selected: rgba(79, 70, 229, 0.15);
+  --radius: 6px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  /* Dark (default) */
+  --dark-body: #0F0F12;
+  --dark-surface: #1A1A1E;
+  --dark-chrome: #141417;   /* sider / header */
+  --dark-raised: #1F1F23;   /* trigger / table header */
+  --dark-border: #2A2A2E;
+  --dark-hover: rgba(255, 255, 255, 0.06);
+  --dark-row-hover: rgba(255, 255, 255, 0.04);
+  --dark-text: #E6E6E8;
+  --dark-text-dim: #8A8A93;
+
+  /* Light */
+  --light-body: #F5F5F7;
+  --light-surface: #FFFFFF;
+  --light-table-header: #FAFAFA;
+
+  /* Semantic (antd presets used in-app) */
+  --status-new: #1677ff;      /* blue */
+  --status-applied: #52c41a;  /* green */
+  --status-irrelevant: #8c8c8c;
+  --remote-check: #52c41a;
+  --source-dou: #d46b08;      /* orange */
+  --source-djinni: #722ed1;   /* purple */
+  --source-linkedin: #08979c; /* cyan */
+}

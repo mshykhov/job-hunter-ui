@@ -1,0 +1,47 @@
+<!-- @dsCard group="Colors" -->
+<!doctype html>
+<meta charset="utf-8" />
+<title>Colors</title>
+<style>
+  body {
+    margin: 0; padding: 28px;
+    background: #0F0F12; color: #E6E6E8;
+    font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8A8A93; margin: 0 0 12px; font-weight: 600; }
+  section { margin-bottom: 26px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .sw { border: 1px solid #2A2A2E; border-radius: 6px; overflow: hidden; }
+  .chip { height: 54px; }
+  .meta { padding: 8px 10px; background: #1A1A1E; font-size: 12px; }
+  .meta b { display: block; font-weight: 600; }
+  .meta span { color: #8A8A93; }
+</style>
+<section>
+  <h2>Brand</h2>
+  <div class="grid">
+    <div class="sw"><div class="chip" style="background:#4F46E5"></div><div class="meta"><b>Accent</b><span>#4F46E5</span></div></div>
+    <div class="sw"><div class="chip" style="background:rgba(79,70,229,.15)"></div><div class="meta"><b>Accent / selected</b><span>rgba(79,70,229,.15)</span></div></div>
+  </div>
+</section>
+<section>
+  <h2>Dark surfaces</h2>
+  <div class="grid">
+    <div class="sw"><div class="chip" style="background:#0F0F12"></div><div class="meta"><b>Body</b><span>#0F0F12</span></div></div>
+    <div class="sw"><div class="chip" style="background:#141417"></div><div class="meta"><b>Chrome</b><span>#141417</span></div></div>
+    <div class="sw"><div class="chip" style="background:#1A1A1E"></div><div class="meta"><b>Surface</b><span>#1A1A1E</span></div></div>
+    <div class="sw"><div class="chip" style="background:#1F1F23"></div><div class="meta"><b>Raised</b><span>#1F1F23</span></div></div>
+    <div class="sw"><div class="chip" style="background:#2A2A2E"></div><div class="meta"><b>Border</b><span>#2A2A2E</span></div></div>
+  </div>
+</section>
+<section>
+  <h2>Semantic</h2>
+  <div class="grid">
+    <div class="sw"><div class="chip" style="background:#1677ff"></div><div class="meta"><b>Status · New</b><span>blue #1677ff</span></div></div>
+    <div class="sw"><div class="chip" style="background:#52c41a"></div><div class="meta"><b>Status · Applied / Remote</b><span>green #52c41a</span></div></div>
+    <div class="sw"><div class="chip" style="background:#8c8c8c"></div><div class="meta"><b>Status · Irrelevant</b><span>gray #8c8c8c</span></div></div>
+    <div class="sw"><div class="chip" style="background:#d46b08"></div><div class="meta"><b>Source · DOU</b><span>orange #d46b08</span></div></div>
+    <div class="sw"><div class="chip" style="background:#722ed1"></div><div class="meta"><b>Source · Djinni</b><span>purple #722ed1</span></div></div>
+    <div class="sw"><div class="chip" style="background:#08979c"></div><div class="meta"><b>Source · LinkedIn</b><span>cyan #08979c</span></div></div>
+  </div>
+</section>

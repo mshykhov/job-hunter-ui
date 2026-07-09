@@ -1,0 +1,36 @@
+<!-- @dsCard group="Brand" -->
+<!doctype html>
+<meta charset="utf-8" />
+<title>Foundations</title>
+<style>
+  body {
+    margin: 0; padding: 28px;
+    background: #0F0F12; color: #E6E6E8;
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8A8A93; margin: 0 0 12px; font-weight: 600; }
+  .facts { display: grid; grid-template-columns: 140px 1fr; gap: 10px 16px; margin-bottom: 26px; }
+  .facts div:nth-child(odd) { color: #8A8A93; }
+  .radii { display: flex; gap: 16px; align-items: flex-end; }
+  .radii .box { width: 64px; height: 64px; background: #1A1A1E; border: 1px solid #2A2A2E; }
+  .cap { color: #8A8A93; font-size: 12px; margin-top: 6px; text-align: center; }
+</style>
+<section>
+  <h2>Foundations</h2>
+  <div class="facts">
+    <div>Library</div><div>Ant Design v6 · React 19</div>
+    <div>Theme</div><div>Dark-first (antd darkAlgorithm), light variant available</div>
+    <div>Accent</div><div>#4F46E5</div>
+    <div>Base radius</div><div>6px</div>
+    <div>Font</div><div>System UI stack</div>
+  </div>
+</section>
+<section>
+  <h2>Radius scale</h2>
+  <div class="radii">
+    <div><div class="box" style="border-radius:4px"></div><div class="cap">4 · inputs</div></div>
+    <div><div class="box" style="border-radius:6px"></div><div class="cap">6 · base</div></div>
+    <div><div class="box" style="border-radius:10px"></div><div class="cap">10 · cards</div></div>
+    <div><div class="box" style="border-radius:999px"></div><div class="cap">pill · tags</div></div>
+  </div>
+</section>
