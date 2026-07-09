@@ -202,6 +202,16 @@ npm install
 npm run dev
 ```
 
+### Preview with a mocked API (no backend)
+
+`npm run dev:mock` runs the full app at `:5173` with the API served by MSW - no
+backend, no Auth0. It uses `--mode mock` -> `.env.mock` (`VITE_ENABLE_MOCKS=true`,
+`AUTH0_ENABLED=false`); `main.tsx` starts the worker only when the flag is set, so
+plain `dev`/`build` are unaffected. Handlers and seeded fixtures live in `src/mocks/`
+(`handlers.ts`, `fixtures.ts`, `browser.ts`) and are the shared source of truth for
+mocking - reuse them in tests instead of duplicating. Use this to browse or screenshot
+any screen with realistic data.
+
 ## Quality Checks
 
 ```bash

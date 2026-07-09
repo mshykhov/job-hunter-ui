@@ -6,10 +6,18 @@ import { AuthProvider } from "@/components/AuthProvider";
 
 import "@/styles/global.css";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>
-);
+const enableMocking = async () => {
+  if (import.meta.env.VITE_ENABLE_MOCKS !== "true") return;
+  const { worker } = await import("@/mocks/browser");
+  await worker.start({ onUnhandledRequest: "bypass" });
+};
+
+enableMocking().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </StrictMode>,
+  );
+});
