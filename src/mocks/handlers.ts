@@ -4,6 +4,12 @@ import { API_URL } from "@/config/constants";
 import type { JobGroup, PaginatedJobGroupsResponse, UserJobStatus } from "@/features/jobs/types";
 
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
+import {
+  AI_PROVIDERS_MOCK,
+  AI_SETTINGS_MOCK,
+  OUTREACH_MOCK,
+  PREFERENCES_MOCK,
+} from "./settingsFixtures";
 
 const url = (path: string) => `${API_URL}${path}`;
 
@@ -122,4 +128,20 @@ export const handlers = [
 
   http.get(url("/public/version"), () => HttpResponse.json({ version: "dev-mock" })),
   http.get(url("/actuator/health"), () => HttpResponse.json({ status: "UP" })),
+
+  http.get(url("/preferences"), () => HttpResponse.json(PREFERENCES_MOCK)),
+  http.put(url("/preferences/search"), async ({ request }) => HttpResponse.json(await request.json())),
+  http.put(url("/preferences/matching"), async ({ request }) => HttpResponse.json(await request.json())),
+  http.put(url("/preferences/telegram"), async ({ request }) => HttpResponse.json(await request.json())),
+  http.put(url("/preferences/about"), async ({ request }) => HttpResponse.json(await request.json())),
+
+  http.get(url("/settings/outreach"), () => HttpResponse.json(OUTREACH_MOCK)),
+  http.put(url("/settings/outreach"), async ({ request }) => HttpResponse.json(await request.json())),
+
+  http.get(url("/settings/ai-providers"), () => HttpResponse.json(AI_PROVIDERS_MOCK)),
+  http.get(url("/settings/ai"), () => HttpResponse.json(AI_SETTINGS_MOCK)),
+  http.put(url("/settings/ai"), async ({ request }) => {
+    const body = (await request.json()) as { modelId: string };
+    return HttpResponse.json({ modelId: body.modelId, apiKeyHint: "sk-ant-...saved" });
+  }),
 ];
