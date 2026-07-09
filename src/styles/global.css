@@ -23,8 +23,8 @@ body {
 }
 
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 *::-webkit-scrollbar-track {
@@ -32,12 +32,15 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.42);
+  background-clip: padding-box;
 }
 
 /* Review card */
@@ -53,10 +56,23 @@ body {
 }
 
 .review-card-body {
+  position: relative;
   flex: 1;
   overflow: hidden;
   border: 1px solid var(--ant-color-border-secondary, #303030);
   border-radius: 8px;
+}
+
+.review-card-body::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 12px;
+  bottom: 1px;
+  height: 40px;
+  pointer-events: none;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(to bottom, transparent, var(--ant-color-bg-layout));
 }
 
 /* Job detail header */
@@ -414,7 +430,7 @@ body {
 .jobs-row {
   position: relative;
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1.3fr) 160px;
+  grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1.3fr) 190px;
   grid-template-areas: "ring main meta trail";
   align-items: center;
   column-gap: 16px;
@@ -493,18 +509,19 @@ body {
 
 .jobs-cell-trail {
   grid-area: trail;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 30px;
+}
+
+.jobs-trail-swap {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-height: 30px;
-}
-
-.jobs-trail-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: opacity 0.12s ease;
+  min-width: 104px;
 }
 
 .jobs-trail-actions {
@@ -519,8 +536,12 @@ body {
   transition: opacity 0.12s ease;
 }
 
-.jobs-row:hover .jobs-trail-info,
-.jobs-row:focus-within .jobs-trail-info {
+.jobs-trail-swap .jobs-row-time {
+  transition: opacity 0.12s ease;
+}
+
+.jobs-row:hover .jobs-trail-swap .jobs-row-time,
+.jobs-row:focus-within .jobs-trail-swap .jobs-row-time {
   opacity: 0;
 }
 

@@ -106,18 +106,18 @@ export const JobRow = ({
       </div>
 
       <div className="jobs-cell-trail">
-        <div className="jobs-trail-info">
-          <Tag color={STATUS_COLORS[job.status]} className="jobs-tag-flush">
-            {STATUS_LABELS[job.status]}
-          </Tag>
+        <Tag color={STATUS_COLORS[job.status]} className="jobs-tag-flush">
+          {STATUS_LABELS[job.status]}
+        </Tag>
+        <div className="jobs-trail-swap">
           <span className="jobs-row-time">{formatRelativeDate(job.matchedAt)}</span>
+          <JobRowActions
+            job={job}
+            pending={statusPending}
+            onOpenPrimary={onOpenPrimary}
+            onStatusChange={onStatusChange}
+          />
         </div>
-        <JobRowActions
-          job={job}
-          pending={statusPending}
-          onOpenPrimary={onOpenPrimary}
-          onStatusChange={onStatusChange}
-        />
       </div>
     </div>
   );
