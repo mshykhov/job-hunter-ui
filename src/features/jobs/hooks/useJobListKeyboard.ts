@@ -17,7 +17,9 @@ const PREFETCH_THRESHOLD = 5;
 
 export const useJobListKeyboard = (args: UseJobListKeyboardArgs) => {
   const [selected, setSelected] = useState(-1);
-  const clamped = selected >= args.count ? args.count - 1 : selected;
+  // Keep an active row cursor whenever the list has data, so the shortcuts work
+  // immediately (and are discoverable) without arrowing down first.
+  const clamped = args.count === 0 ? -1 : Math.min(Math.max(selected, 0), args.count - 1);
   const stateRef = useRef(args);
   const selectedRef = useRef(clamped);
 
