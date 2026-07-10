@@ -75,7 +75,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
   // Multiple jobs — group by source, each job is a collapsible item
   // First job in each source group is expanded by default
   const defaultActiveKeys = sources.flatMap(([source, sourceJobs]) =>
-    sourceJobs.length > 0 ? [`${source}-${sourceJobs[0].jobId}`] : [],
+    sourceJobs.length > 0 ? [`${source}-${sourceJobs[0].jobId}`] : []
   );
 
   const sourceItems = sources.map(([source, sourceJobs]) => {
@@ -96,11 +96,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
         <Tag color={getSourceColor(source)} style={{ alignSelf: "flex-start" }}>
           {sourceNames[source] ?? source} ({jobItems.length})
         </Tag>
-        <Collapse
-          size="small"
-          defaultActiveKey={defaultActiveKeys}
-          items={jobItems}
-        />
+        <Collapse size="small" defaultActiveKey={defaultActiveKeys} items={jobItems} />
       </Flex>
     );
   }

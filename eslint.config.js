@@ -36,12 +36,7 @@ export default defineConfig([
       "simple-import-sort/imports": [
         "error",
         {
-          groups: [
-            ["^react"],
-            ["^[a-z@]"],
-            ["^@/"],
-            ["^\\."],
-          ],
+          groups: [["^react"], ["^[a-z@]"], ["^@/"], ["^\\."]],
         },
       ],
       "simple-import-sort/exports": "error",

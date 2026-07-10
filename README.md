@@ -4,15 +4,15 @@ React frontend for [Job Hunter](https://github.com/mshykhov/job-hunter). Dashboa
 
 ## Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| React 19 | UI framework |
-| TypeScript | Type safety |
-| Vite | Build tool |
-| Ant Design 6 | Component library |
-| TanStack Query | Server state management |
-| Auth0 | Authentication (optional) |
-| Axios | HTTP client |
+| Technology     | Purpose                   |
+| -------------- | ------------------------- |
+| React 19       | UI framework              |
+| TypeScript     | Type safety               |
+| Vite           | Build tool                |
+| Ant Design 6   | Component library         |
+| TanStack Query | Server state management   |
+| Auth0          | Authentication (optional) |
+| Axios          | HTTP client               |
 
 ## Architecture
 
@@ -26,12 +26,12 @@ User's Browser
 
 ### Pages
 
-| Page | Auth | Description |
-|------|------|-------------|
-| Landing | No | Welcome page with sign-in |
-| Jobs | Yes | Main dashboard — job table with filters, side panel, review mode |
-| Statistics | No | Status cards and analytics |
-| Settings | Yes | User preferences — criteria, notifications |
+| Page       | Auth | Description                                                      |
+| ---------- | ---- | ---------------------------------------------------------------- |
+| Landing    | No   | Welcome page with sign-in                                        |
+| Jobs       | Yes  | Main dashboard — job table with filters, side panel, review mode |
+| Statistics | No   | Status cards and analytics                                       |
+| Settings   | Yes  | User preferences — criteria, notifications                       |
 
 ### Project Structure
 
@@ -57,13 +57,13 @@ npm run dev                   # http://localhost:5173
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `API_URL` | Kotlin API base URL | Yes |
-| `AUTH0_DOMAIN` | Auth0 tenant domain | No |
-| `AUTH0_CLIENT_ID` | Auth0 SPA client ID | No |
-| `AUTH0_AUDIENCE` | Auth0 API audience | No |
-| `AUTH0_ENABLED` | Enable/disable auth (`true`/`false`) | No |
+| Variable          | Description                          | Required |
+| ----------------- | ------------------------------------ | -------- |
+| `API_URL`         | Kotlin API base URL                  | Yes      |
+| `AUTH0_DOMAIN`    | Auth0 tenant domain                  | No       |
+| `AUTH0_CLIENT_ID` | Auth0 SPA client ID                  | No       |
+| `AUTH0_AUDIENCE`  | Auth0 API audience                   | No       |
+| `AUTH0_ENABLED`   | Enable/disable auth (`true`/`false`) | No       |
 
 When Auth0 is not configured, all pages are accessible without authentication.
 
@@ -75,7 +75,6 @@ npm run build         # TypeScript check + production build
 npm run lint          # ESLint (0 warnings)
 npm run format:check  # Prettier check
 ```
-
 
 ## Docker
 

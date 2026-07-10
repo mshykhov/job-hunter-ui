@@ -37,7 +37,7 @@ const applyFilters = (list: JobGroup[], f: SearchBody): JobGroup[] => {
       (g) =>
         g.title.toLowerCase().includes(q) ||
         (g.company ?? "").toLowerCase().includes(q) ||
-        g.locations.join(" ").toLowerCase().includes(q),
+        g.locations.join(" ").toLowerCase().includes(q)
     );
   }
   return out;
@@ -130,13 +130,23 @@ export const handlers = [
   http.get(url("/actuator/health"), () => HttpResponse.json({ status: "UP" })),
 
   http.get(url("/preferences"), () => HttpResponse.json(PREFERENCES_MOCK)),
-  http.put(url("/preferences/search"), async ({ request }) => HttpResponse.json(await request.json())),
-  http.put(url("/preferences/matching"), async ({ request }) => HttpResponse.json(await request.json())),
-  http.put(url("/preferences/telegram"), async ({ request }) => HttpResponse.json(await request.json())),
-  http.put(url("/preferences/about"), async ({ request }) => HttpResponse.json(await request.json())),
+  http.put(url("/preferences/search"), async ({ request }) =>
+    HttpResponse.json(await request.json())
+  ),
+  http.put(url("/preferences/matching"), async ({ request }) =>
+    HttpResponse.json(await request.json())
+  ),
+  http.put(url("/preferences/telegram"), async ({ request }) =>
+    HttpResponse.json(await request.json())
+  ),
+  http.put(url("/preferences/about"), async ({ request }) =>
+    HttpResponse.json(await request.json())
+  ),
 
   http.get(url("/settings/outreach"), () => HttpResponse.json(OUTREACH_MOCK)),
-  http.put(url("/settings/outreach"), async ({ request }) => HttpResponse.json(await request.json())),
+  http.put(url("/settings/outreach"), async ({ request }) =>
+    HttpResponse.json(await request.json())
+  ),
 
   http.get(url("/settings/ai-providers"), () => HttpResponse.json(AI_PROVIDERS_MOCK)),
   http.get(url("/settings/ai"), () => HttpResponse.json(AI_SETTINGS_MOCK)),

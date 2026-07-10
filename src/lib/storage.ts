@@ -23,7 +23,7 @@ export const createStorage = <T>(key: string, version: number, defaults: T) => (
   save: (data: T): void => {
     try {
       const sanitized = Object.fromEntries(
-        Object.entries(data as Record<string, unknown>).map(([k, v]) => [k, v ?? null]),
+        Object.entries(data as Record<string, unknown>).map(([k, v]) => [k, v ?? null])
       );
       const entry: StorageEntry<T> = { v: version, data: sanitized as T };
       localStorage.setItem(key, JSON.stringify(entry));

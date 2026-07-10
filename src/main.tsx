@@ -18,6 +18,6 @@ enableMocking().then(() => {
       <AuthProvider>
         <App />
       </AuthProvider>
-    </StrictMode>,
+    </StrictMode>
   );
 });

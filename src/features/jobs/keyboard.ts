@@ -14,8 +14,7 @@ export const isTypingTarget = (target: EventTarget | null): boolean => {
   return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
 };
 
-export const hasModifier = (e: KeyboardEvent): boolean =>
-  e.ctrlKey || e.metaKey || e.altKey;
+export const hasModifier = (e: KeyboardEvent): boolean => e.ctrlKey || e.metaKey || e.altKey;
 
 export const STATUS_ACTIONS: Partial<Record<ShortcutActionId, UserJobStatus>> = {
   markApplied: USER_JOB_STATUS.APPLIED,

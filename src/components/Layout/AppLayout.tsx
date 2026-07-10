@@ -1,11 +1,11 @@
-import { useCallback, useEffect,useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import { Layout } from "antd";
 
 import { createStorage } from "@/lib/storage";
 
-import { Sidebar, SIDEBAR_COLLAPSED_WIDTH,SIDEBAR_WIDTH } from "./Sidebar";
+import { Sidebar, SIDEBAR_COLLAPSED_WIDTH, SIDEBAR_WIDTH } from "./Sidebar";
 
 interface SidebarState {
   collapsed: boolean;
@@ -38,7 +38,12 @@ export const AppLayout = ({ isDark, onThemeToggle }: AppLayoutProps) => {
         onThemeToggle={onThemeToggle}
         newJobsCount={0}
       />
-      <Layout style={{ marginLeft: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH, transition: "margin-left 0.2s" }}>
+      <Layout
+        style={{
+          marginLeft: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH,
+          transition: "margin-left 0.2s",
+        }}
+      >
         <Layout.Content style={{ padding: 24, minHeight: "100vh" }}>
           <Outlet />
         </Layout.Content>

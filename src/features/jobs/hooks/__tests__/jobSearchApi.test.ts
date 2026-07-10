@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, afterEach,beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import type { JobGroupFilters, PaginatedJobGroupsResponse } from "../../types";
 import { fetchJobGroupsPage } from "../jobSearchApi";
@@ -22,7 +22,7 @@ const server = setupServer(
   http.post(`${API_BASE}/jobs/search`, async ({ request }) => {
     lastRequestBody = (await request.json()) as Record<string, unknown>;
     return HttpResponse.json(emptyResponse);
-  }),
+  })
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));

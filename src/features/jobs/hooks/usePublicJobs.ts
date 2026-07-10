@@ -11,7 +11,7 @@ import { PUBLIC_JOB_SORT } from "../types";
 
 const fetchPublicJobsPage = async (
   filters: ExploreFilters,
-  page: number,
+  page: number
 ): Promise<PublicJobPageResponse> => {
   const params = new URLSearchParams();
   params.set("page", String(page));
@@ -24,7 +24,7 @@ const fetchPublicJobsPage = async (
   filters.sources?.forEach((s) => params.append("sources", s));
 
   const { data } = await api.get<PublicJobPageResponse>(
-    `${API_PATHS.PUBLIC_JOBS}?${params.toString()}`,
+    `${API_PATHS.PUBLIC_JOBS}?${params.toString()}`
   );
   return data;
 };
@@ -41,10 +41,7 @@ export const usePublicJobs = (filters: ExploreFilters) => {
     placeholderData: keepPreviousData,
   });
 
-  const jobs = useMemo(
-    () => query.data?.pages.flatMap((p) => p.content) ?? [],
-    [query.data],
-  );
+  const jobs = useMemo(() => query.data?.pages.flatMap((p) => p.content) ?? [], [query.data]);
 
   const latestPage = query.data?.pages[query.data.pages.length - 1];
   const totalElements = latestPage?.totalElements ?? 0;

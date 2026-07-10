@@ -24,6 +24,7 @@ UserJobGroup (per-user association)
 **`POST /jobs/search`** — `read:jobs`
 
 Request:
+
 ```json
 {
   "statuses": ["new", "applied"],
@@ -41,6 +42,7 @@ Request:
 All fields are optional. Defaults: `page=0`, `size=50`, `sortBy=SCORE`.
 
 Response:
+
 ```json
 {
   "content": [
@@ -75,9 +77,11 @@ Response:
 ```
 
 Filter notes:
+
 - `sources` — filter by job source; returns groups where at least one job matches any of the specified sources
 
 Response notes:
+
 - `sources` — sorted alphabetically by value, deduplicated across all jobs in group
 - `locations` — sorted alphabetically, nulls excluded, deduplicated
 - `salary` — first non-null salary found in the group
@@ -88,10 +92,10 @@ Response notes:
 
 ### Sort Options
 
-| Value | Sort Order |
-|-------|-----------|
-| `SCORE` | aiRelevanceScore DESC, id DESC |
-| `MATCHED` | matchedAt DESC, id DESC |
+| Value     | Sort Order                     |
+| --------- | ------------------------------ |
+| `SCORE`   | aiRelevanceScore DESC, id DESC |
+| `MATCHED` | matchedAt DESC, id DESC        |
 
 ---
 
@@ -100,6 +104,7 @@ Response notes:
 **`GET /jobs/groups/{groupId}`** — `read:jobs`
 
 Response:
+
 ```json
 {
   "groupId": "uuid",
@@ -127,6 +132,7 @@ Response:
 ```
 
 Notes:
+
 - `jobs` — all individual postings in this group
 - `coverLetter` and `recruiterMessage` — null until user generates them via outreach endpoints
 - Use `jobId` for outreach generation endpoints
@@ -138,6 +144,7 @@ Notes:
 **`PATCH /jobs/groups/{groupId}/status`** — `write:jobs`
 
 Request:
+
 ```json
 {
   "status": "applied"
@@ -153,6 +160,7 @@ Response: `UserJobGroupResponse` (same shape as search content items).
 **`PATCH /jobs/groups/status`** — `write:jobs`
 
 Request:
+
 ```json
 {
   "groupIds": ["uuid1", "uuid2"],
@@ -169,6 +177,7 @@ Response: `List<UserJobGroupResponse>`.
 **`POST /jobs/{jobId}/outreach/cover-letter`** — `write:jobs`
 
 Response:
+
 ```json
 {
   "coverLetter": "Dear hiring manager...",
@@ -189,6 +198,7 @@ Response:
 **`POST /jobs/{jobId}/outreach/recruiter-message`** — `write:jobs`
 
 Response:
+
 ```json
 {
   "recruiterMessage": "Hi, I saw your posting...",
@@ -211,6 +221,7 @@ Response:
 Query params: `since` (optional Instant) — only rematch jobs updated after this timestamp.
 
 Response:
+
 ```json
 {
   "jobsQueued": 42
@@ -226,6 +237,7 @@ Both enums are available via public endpoints (no auth required).
 ### JobSource — `GET /public/jobs/sources`
 
 Response:
+
 ```json
 [
   { "id": "dou", "displayName": "DOU" },
@@ -239,6 +251,7 @@ Response:
 ### UserJobStatus — `GET /public/jobs/statuses`
 
 Response:
+
 ```json
 [
   { "id": "new", "displayName": "New" },
@@ -266,6 +279,7 @@ Response:
 ## Error Responses
 
 All errors follow the standard format:
+
 ```json
 {
   "status": 404,
@@ -275,6 +289,7 @@ All errors follow the standard format:
 ```
 
 Common status codes:
+
 - `400` — validation error (invalid request body)
 - `404` — group/job not found for the authenticated user
 - `503` — AI service unavailable (outreach generation)

@@ -12,10 +12,10 @@ import {
   SettingOutlined,
   SunOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Flex, Layout, Menu, theme,Typography } from "antd";
+import { Badge, Button, Flex, Layout, Menu, theme, Typography } from "antd";
 
 import { AppVersion } from "@/components/AppVersion";
-import { PERMISSIONS,useAuth } from "@/hooks/useAuth";
+import { PERMISSIONS, useAuth } from "@/hooks/useAuth";
 
 export const SIDEBAR_WIDTH = 220;
 export const SIDEBAR_COLLAPSED_WIDTH = 60;
@@ -93,7 +93,15 @@ export const Sidebar = ({
             <Flex align="center" gap={10}>
               <AimOutlined style={{ fontSize: 22, color: token.colorPrimary }} />
               {!collapsed && (
-                <span style={{ fontSize: 16, fontWeight: 700, whiteSpace: "nowrap", color: token.colorText, letterSpacing: -0.3 }}>
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                    color: token.colorText,
+                    letterSpacing: -0.3,
+                  }}
+                >
                   Job Hunter
                 </span>
               )}
@@ -116,30 +124,29 @@ export const Sidebar = ({
           />
         </div>
 
-        <Flex
-          vertical
-          align={collapsed ? "center" : "start"}
-          gap={8}
-          style={{ padding: "0 16px" }}
-        >
+        <Flex vertical align={collapsed ? "center" : "start"} gap={8} style={{ padding: "0 16px" }}>
           {isConfigured && isAuthenticated && !collapsed && user?.email && (
-            <Typography.Text
-              type="secondary"
-              ellipsis
-              style={{ fontSize: 12, maxWidth: "100%" }}
-            >
+            <Typography.Text type="secondary" ellipsis style={{ fontSize: 12, maxWidth: "100%" }}>
               {user.email}
             </Typography.Text>
           )}
           {isConfigured && isAuthenticated && (
-            <Button type="text" size="small" icon={<LogoutOutlined />}
+            <Button
+              type="text"
+              size="small"
+              icon={<LogoutOutlined />}
               onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
             >
               {!collapsed && "Logout"}
             </Button>
           )}
           {isConfigured && !isAuthenticated && (
-            <Button type="text" size="small" icon={<LoginOutlined />} onClick={() => loginWithRedirect()}>
+            <Button
+              type="text"
+              size="small"
+              icon={<LoginOutlined />}
+              onClick={() => loginWithRedirect()}
+            >
               {!collapsed && "Sign In"}
             </Button>
           )}

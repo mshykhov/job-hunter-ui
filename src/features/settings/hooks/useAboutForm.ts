@@ -1,7 +1,12 @@
 import { useCallback, useState } from "react";
 
 import type { Preferences } from "../types";
-import { useGeneratePreferences, useOptimizeAbout, useSaveAbout, useUploadAbout } from "./usePreferences";
+import {
+  useGeneratePreferences,
+  useOptimizeAbout,
+  useSaveAbout,
+  useUploadAbout,
+} from "./usePreferences";
 import { useSavedFlash } from "./useSavedFlash";
 
 export const useAboutForm = (preferences: Preferences | undefined) => {
@@ -34,20 +39,26 @@ export const useAboutForm = (preferences: Preferences | undefined) => {
   const saveText = useCallback(() => {
     if (about?.trim()) {
       saveAboutMutation.mutate(about, {
-        onSuccess: () => { setDirty(false); flash(); },
+        onSuccess: () => {
+          setDirty(false);
+          flash();
+        },
       });
     }
   }, [about, saveAboutMutation, flash]);
 
-  const uploadFile = useCallback((file: File) => {
-    uploadAboutMutation.mutate(file, {
-      onSuccess: (newAbout) => {
-        setAbout(newAbout);
-        setDirty(false);
-        flash();
-      },
-    });
-  }, [uploadAboutMutation, flash]);
+  const uploadFile = useCallback(
+    (file: File) => {
+      uploadAboutMutation.mutate(file, {
+        onSuccess: (newAbout) => {
+          setAbout(newAbout);
+          setDirty(false);
+          flash();
+        },
+      });
+    },
+    [uploadAboutMutation, flash]
+  );
 
   const optimize = useCallback(() => {
     optimizeMutation.mutate(undefined, {

@@ -13,9 +13,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      __APP_VERSION__: JSON.stringify(
-        env.APP_VERSION || process.env.npm_package_version || "dev"
-      ),
+      __APP_VERSION__: JSON.stringify(env.APP_VERSION || process.env.npm_package_version || "dev"),
       "import.meta.env.API_URL": JSON.stringify(env.API_URL),
       "import.meta.env.AUTH0_ENABLED": JSON.stringify(env.AUTH0_ENABLED),
       "import.meta.env.AUTH0_DOMAIN": JSON.stringify(env.AUTH0_DOMAIN),

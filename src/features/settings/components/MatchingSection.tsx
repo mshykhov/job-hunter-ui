@@ -34,7 +34,9 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
           <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Excluded Keywords</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 13 }}>
+              Excluded Keywords
+            </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               Technologies or domains to avoid
             </Typography.Text>
@@ -48,7 +50,9 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
         </Col>
         <Col xs={24} lg={12}>
           <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Excluded Title Keywords</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 13 }}>
+              Excluded Title Keywords
+            </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               Words in job titles to skip
             </Typography.Text>
@@ -62,7 +66,9 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
         </Col>
         <Col xs={24} lg={12}>
           <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Excluded Companies</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 13 }}>
+              Excluded Companies
+            </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               Companies to exclude from results
             </Typography.Text>
@@ -106,7 +112,9 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
       >
         {form.matchWithAi ? (
           <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Custom Instructions</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 13 }}>
+              Custom Instructions
+            </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               Optional. Tell AI what matters to you beyond your profile and categories.
             </Typography.Text>
@@ -121,7 +129,8 @@ export const MatchingSection = ({ form, onChange }: MatchingSectionProps) => {
           </Flex>
         ) : (
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            When disabled, jobs are filtered only by excluded keywords, companies, and categories — no AI scoring.
+            When disabled, jobs are filtered only by excluded keywords, companies, and categories —
+            no AI scoring.
           </Typography.Text>
         )}
       </Card>

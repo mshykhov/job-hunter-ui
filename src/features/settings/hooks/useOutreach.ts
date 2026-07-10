@@ -41,7 +41,7 @@ export const useTestCoverLetter = () => {
     mutationFn: async (request: OutreachTestRequest) => {
       const { data } = await api.post<CoverLetterResponse>(
         API_PATHS.OUTREACH_TEST_COVER_LETTER,
-        request,
+        request
       );
       return data;
     },
@@ -53,7 +53,7 @@ export const useTestRecruiterMessage = () => {
     mutationFn: async (request: OutreachTestRequest) => {
       const { data } = await api.post<RecruiterMessageResponse>(
         API_PATHS.OUTREACH_TEST_RECRUITER_MESSAGE,
-        request,
+        request
       );
       return data;
     },

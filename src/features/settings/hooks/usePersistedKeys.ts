@@ -3,7 +3,9 @@ import { useCallback, useState } from "react";
 import { createStorage } from "@/lib/storage";
 
 const DEFAULT_ACTIVE_KEYS = ["about", "search", "matching"];
-const collapseStorage = createStorage<{ keys: string[] }>("job-prefs-collapse", 1, { keys: DEFAULT_ACTIVE_KEYS });
+const collapseStorage = createStorage<{ keys: string[] }>("job-prefs-collapse", 1, {
+  keys: DEFAULT_ACTIVE_KEYS,
+});
 
 export const usePersistedKeys = () => {
   const [keys, setKeysRaw] = useState<string[]>(() => collapseStorage.load().keys);

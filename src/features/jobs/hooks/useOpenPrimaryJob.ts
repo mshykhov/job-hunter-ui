@@ -6,7 +6,10 @@ import type { JobGroup, JobGroupDetail } from "@/features/jobs/types";
 import { sortJobsByDate } from "@/features/jobs/utils/jobDetailUtils";
 import { api, API_PATHS } from "@/lib/api";
 
-const pickPrimaryUrl = (detail: JobGroupDetail, primarySource: string | undefined): string | null => {
+const pickPrimaryUrl = (
+  detail: JobGroupDetail,
+  primarySource: string | undefined
+): string | null => {
   if (!detail.jobs.length) return null;
   const bySource = detail.jobs.find((j) => j.source === primarySource);
   return (bySource ?? sortJobsByDate(detail.jobs)[0]).url;
@@ -44,6 +47,6 @@ export const useOpenPrimaryJob = () => {
         tab?.close();
       }
     },
-    [queryClient],
+    [queryClient]
   );
 };

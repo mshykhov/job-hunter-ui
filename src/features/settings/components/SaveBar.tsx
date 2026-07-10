@@ -1,5 +1,5 @@
 import { CheckOutlined, SaveOutlined, UndoOutlined } from "@ant-design/icons";
-import { Button, Flex, theme,Typography } from "antd";
+import { Button, Flex, theme, Typography } from "antd";
 
 interface SaveBarProps {
   isDirty: boolean;
@@ -11,7 +11,15 @@ interface SaveBarProps {
   saveDisabledReason?: string;
 }
 
-export const SaveBar = ({ isDirty, saved, saving, onSave, onDiscard, saveDisabled, saveDisabledReason }: SaveBarProps) => {
+export const SaveBar = ({
+  isDirty,
+  saved,
+  saving,
+  onSave,
+  onDiscard,
+  saveDisabled,
+  saveDisabledReason,
+}: SaveBarProps) => {
   const { token } = theme.useToken();
 
   return (
@@ -26,14 +34,22 @@ export const SaveBar = ({ isDirty, saved, saving, onSave, onDiscard, saveDisable
           <Flex vertical gap={2}>
             <Typography.Text type="secondary">Unsaved changes</Typography.Text>
             {saveDisabled && saveDisabledReason && (
-              <Typography.Text type="danger" style={{ fontSize: 12 }}>{saveDisabledReason}</Typography.Text>
+              <Typography.Text type="danger" style={{ fontSize: 12 }}>
+                {saveDisabledReason}
+              </Typography.Text>
             )}
           </Flex>
           <Flex gap={8}>
             <Button icon={<UndoOutlined />} onClick={onDiscard}>
               Discard
             </Button>
-            <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={onSave} disabled={saveDisabled}>
+            <Button
+              type="primary"
+              icon={<SaveOutlined />}
+              loading={saving}
+              onClick={onSave}
+              disabled={saveDisabled}
+            >
               Save
             </Button>
           </Flex>

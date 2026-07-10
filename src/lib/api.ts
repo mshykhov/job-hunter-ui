@@ -1,4 +1,4 @@
-import axios, { type AxiosError,isAxiosError } from "axios";
+import axios, { type AxiosError, isAxiosError } from "axios";
 export { isAxiosError };
 import { API_URL } from "@/config/constants";
 import type { ApiError } from "@/types";
@@ -95,7 +95,12 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     const hadToken = !!originalRequest?.headers?.Authorization;
 
-    if (error.response?.status === 401 && hadToken && originalRequest && !originalRequest._retried) {
+    if (
+      error.response?.status === 401 &&
+      hadToken &&
+      originalRequest &&
+      !originalRequest._retried
+    ) {
       const pending = refreshTokenOnce();
       if (pending) {
         originalRequest._retried = true;

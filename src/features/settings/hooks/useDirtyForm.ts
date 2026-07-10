@@ -1,4 +1,4 @@
-import { useMemo,useState } from "react";
+import { useMemo, useState } from "react";
 
 export const useDirtyForm = <T>(initial: T) => {
   const [form, setForm] = useState<T>(initial);
@@ -11,7 +11,7 @@ export const useDirtyForm = <T>(initial: T) => {
 
   const isDirty = useMemo(
     () => JSON.stringify(form) !== JSON.stringify(prevInitial),
-    [form, prevInitial],
+    [form, prevInitial]
   );
 
   const update = <K extends keyof T>(key: K, value: T[K]) =>

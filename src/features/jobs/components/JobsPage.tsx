@@ -30,7 +30,7 @@ export const JobsPage = () => {
       matchedAfter: undefined,
       matchedWithin: debouncedFilters.matchedWithin ?? DEFAULT_MATCHED_RANGE,
     }),
-    [debouncedFilters],
+    [debouncedFilters]
   );
 
   const {
@@ -66,7 +66,7 @@ export const JobsPage = () => {
         onSuccess: (updated) => {
           if (reviewMode.isActive) reviewMode.advanceWithUpdate(updated);
         },
-      },
+      }
     );
   };
 

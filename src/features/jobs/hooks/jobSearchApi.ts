@@ -26,7 +26,7 @@ const buildRequestBody = (filters: JobGroupFilters, page: number) => {
 
 export const fetchJobGroupsPage = async (
   filters: JobGroupFilters,
-  page: number,
+  page: number
 ): Promise<PaginatedJobGroupsResponse> => {
   const body = buildRequestBody(filters, page);
   const { data } = await api.post<PaginatedJobGroupsResponse>(API_PATHS.JOBS_SEARCH, body);

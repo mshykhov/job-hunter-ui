@@ -1,5 +1,5 @@
 import { CopyOutlined, ThunderboltOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Input, message,Typography } from "antd";
+import { Button, Card, Flex, Input, message, Typography } from "antd";
 
 import type { CoverLetterResponse, OutreachSourceConfig, RecruiterMessageResponse } from "../types";
 
@@ -116,7 +116,9 @@ const TestResultCard = ({ title, content, onCopy }: TestResultCardProps) => (
   <Card size="small" style={{ background: "transparent" }}>
     <Flex vertical gap={4}>
       <Flex justify="space-between" align="center">
-        <Typography.Text strong style={{ fontSize: 12 }}>{title}</Typography.Text>
+        <Typography.Text strong style={{ fontSize: 12 }}>
+          {title}
+        </Typography.Text>
         <Button type="text" size="small" icon={<CopyOutlined />} onClick={onCopy} />
       </Flex>
       <Typography.Paragraph

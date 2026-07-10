@@ -18,10 +18,7 @@ export const useJobs = (filters: JobGroupFilters, refreshInterval: number) => {
     placeholderData: keepPreviousData,
   });
 
-  const jobs = useMemo(
-    () => query.data?.pages.flatMap((p) => p.content) ?? [],
-    [query.data],
-  );
+  const jobs = useMemo(() => query.data?.pages.flatMap((p) => p.content) ?? [], [query.data]);
 
   const latestPage = query.data?.pages[query.data.pages.length - 1];
   const statusCounts: Partial<Record<UserJobStatus, number>> = latestPage?.statusCounts ?? {};

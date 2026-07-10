@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll,afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const API_BASE = "http://localhost:8095";
 
@@ -29,7 +29,7 @@ describe("api interceptors", () => {
         http.get(`${API_BASE}/test`, ({ request }) => {
           capturedAuth = request.headers.get("authorization") ?? "";
           return HttpResponse.json({ ok: true });
-        }),
+        })
       );
 
       api.registerTokenGetter(() => Promise.resolve("my-token"));
@@ -44,7 +44,7 @@ describe("api interceptors", () => {
         http.get(`${API_BASE}/test`, ({ request }) => {
           capturedAuth = request.headers.get("authorization");
           return HttpResponse.json({ ok: true });
-        }),
+        })
       );
 
       api.registerTokenGetter(() => Promise.reject(new Error("expired")));
@@ -62,7 +62,7 @@ describe("api interceptors", () => {
           callCount++;
           if (callCount === 1) return new HttpResponse(null, { status: 401 });
           return HttpResponse.json({ result: "ok" });
-        }),
+        })
       );
 
       api.registerTokenGetter(() => Promise.resolve("old-token"));
@@ -80,7 +80,7 @@ describe("api interceptors", () => {
         http.get(`${API_BASE}/data`, () => {
           callCount++;
           return new HttpResponse(null, { status: 401 });
-        }),
+        })
       );
 
       const authHandler = vi.fn();
@@ -109,7 +109,7 @@ describe("api interceptors", () => {
           callCount++;
           if (callCount <= 2) return new HttpResponse(null, { status: 401 });
           return HttpResponse.json({ id: "b" });
-        }),
+        })
       );
 
       api.registerTokenGetter(() => Promise.resolve("old-token"));
@@ -127,9 +127,7 @@ describe("api interceptors", () => {
     });
 
     it("calls authErrorHandler when refresh fails", async () => {
-      server.use(
-        http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 401 })),
-      );
+      server.use(http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 401 })));
 
       const authHandler = vi.fn();
       api.registerTokenGetter(() => Promise.resolve("token"));
@@ -141,9 +139,7 @@ describe("api interceptors", () => {
     });
 
     it("calls authErrorHandler when no refresher is registered", async () => {
-      server.use(
-        http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 401 })),
-      );
+      server.use(http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 401 })));
 
       const authHandler = vi.fn();
       api.registerTokenGetter(() => Promise.resolve("token"));
@@ -155,7 +151,7 @@ describe("api interceptors", () => {
 
     it("does not trigger auth handler for requests without token", async () => {
       server.use(
-        http.get(`${API_BASE}/public/data`, () => new HttpResponse(null, { status: 401 })),
+        http.get(`${API_BASE}/public/data`, () => new HttpResponse(null, { status: 401 }))
       );
 
       const authHandler = vi.fn();
@@ -170,8 +166,8 @@ describe("api interceptors", () => {
     it("calls error handler with formatted message for non-401 errors", async () => {
       server.use(
         http.get(`${API_BASE}/data`, () =>
-          HttpResponse.json({ message: "Resource missing" }, { status: 404 }),
-        ),
+          HttpResponse.json({ message: "Resource missing" }, { status: 404 })
+        )
       );
 
       const errorHandler = vi.fn();
@@ -182,9 +178,7 @@ describe("api interceptors", () => {
     });
 
     it("skips error handler when skipErrorHandler is set", async () => {
-      server.use(
-        http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 500 })),
-      );
+      server.use(http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 500 })));
 
       const errorHandler = vi.fn();
       api.registerErrorHandler(errorHandler);
@@ -194,9 +188,7 @@ describe("api interceptors", () => {
     });
 
     it("does not call error handler for 401 errors (handled by auth flow)", async () => {
-      server.use(
-        http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 401 })),
-      );
+      server.use(http.get(`${API_BASE}/data`, () => new HttpResponse(null, { status: 401 })));
 
       const errorHandler = vi.fn();
       api.registerErrorHandler(errorHandler);
@@ -213,7 +205,7 @@ describe("api interceptors", () => {
         http.get(`${API_BASE}/test`, ({ request }) => {
           capturedAuth = request.headers.get("authorization");
           return HttpResponse.json({ ok: true });
-        }),
+        })
       );
 
       const cleanup = api.registerTokenGetter(() => Promise.resolve("token"));

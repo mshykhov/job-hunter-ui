@@ -63,7 +63,10 @@ export const JobFilters = ({ filters, onChange, statusCounts }: JobFiltersProps)
           value={activeStatus}
           options={statusOptions}
           onChange={(val) =>
-            onChange({ ...filters, statuses: val === ALL_STATUSES ? undefined : [val as UserJobStatus] })
+            onChange({
+              ...filters,
+              statuses: val === ALL_STATUSES ? undefined : [val as UserJobStatus],
+            })
           }
         />
         <Select

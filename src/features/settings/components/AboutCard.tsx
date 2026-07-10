@@ -78,7 +78,9 @@ export const AboutCard = ({
               message.error(`File must be smaller than ${CV_MAX_SIZE_MB}MB`);
               return Upload.LIST_IGNORE;
             }
-            setFileList([{ ...file, uid: file.uid, name: file.name, originFileObj: file } as UploadFile]);
+            setFileList([
+              { ...file, uid: file.uid, name: file.name, originFileObj: file } as UploadFile,
+            ]);
             return false;
           }}
           onChange={({ fileList: list }) => setFileList(list)}

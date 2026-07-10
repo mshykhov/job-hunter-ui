@@ -13,7 +13,12 @@ interface JobRowActionsProps {
   onStatusChange: (groupId: string, status: UserJobStatus) => void;
 }
 
-export const JobRowActions = ({ job, pending, onOpenPrimary, onStatusChange }: JobRowActionsProps) => {
+export const JobRowActions = ({
+  job,
+  pending,
+  onOpenPrimary,
+  onStatusChange,
+}: JobRowActionsProps) => {
   const act = (e: MouseEvent, fn: () => void) => {
     e.stopPropagation();
     fn();

@@ -37,11 +37,11 @@ describe("POST /preferences/about/optimize — API integration", () => {
         requestMethod = request.method;
         requestUrl = new URL(request.url).pathname;
         return HttpResponse.json({ about: "Optimized profile text" });
-      }),
+      })
     );
 
     const { data } = await api.api.post<{ about: string }>(
-      api.API_PATHS.PREFERENCES_ABOUT_OPTIMIZE,
+      api.API_PATHS.PREFERENCES_ABOUT_OPTIMIZE
     );
 
     expect(requestMethod).toBe("POST");
@@ -52,16 +52,13 @@ describe("POST /preferences/about/optimize — API integration", () => {
   it("propagates server errors", async () => {
     server.use(
       http.post(`${API_BASE}/preferences/about/optimize`, () => {
-        return new HttpResponse(
-          JSON.stringify({ status: 503, error: "AI service unavailable" }),
-          { status: 503 },
-        );
-      }),
+        return new HttpResponse(JSON.stringify({ status: 503, error: "AI service unavailable" }), {
+          status: 503,
+        });
+      })
     );
 
-    await expect(
-      api.api.post(api.API_PATHS.PREFERENCES_ABOUT_OPTIMIZE),
-    ).rejects.toThrow();
+    await expect(api.api.post(api.API_PATHS.PREFERENCES_ABOUT_OPTIMIZE)).rejects.toThrow();
   });
 });
 
@@ -73,7 +70,7 @@ describe("PUT /preferences/matching — request shape", () => {
       http.put(`${API_BASE}/preferences/matching`, async ({ request }) => {
         capturedBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json(capturedBody);
-      }),
+      })
     );
 
     const matching = {
@@ -101,7 +98,7 @@ describe("PUT /preferences/matching — request shape", () => {
       http.put(`${API_BASE}/preferences/matching`, async ({ request }) => {
         capturedBody = (await request.json()) as Record<string, unknown>;
         return HttpResponse.json(capturedBody);
-      }),
+      })
     );
 
     await api.api.put(api.API_PATHS.PREFERENCES_MATCHING, {
@@ -130,7 +127,7 @@ describe("POST /preferences/generate — response shape", () => {
     server.use(
       http.post(`${API_BASE}/preferences/generate`, () => {
         return HttpResponse.json(generateResponse);
-      }),
+      })
     );
 
     const { data } = await api.api.post(api.API_PATHS.PREFERENCES_GENERATE);

@@ -39,7 +39,11 @@ export const ExplorePage = () => {
             {totalElements} jobs{lastUpdated && ` · updated ${lastUpdated}`}
           </Typography.Text>
           <Tooltip title="Refresh">
-            <Button type="text" icon={<ReloadOutlined spin={isFetching} />} onClick={() => refetch()} />
+            <Button
+              type="text"
+              icon={<ReloadOutlined spin={isFetching} />}
+              onClick={() => refetch()}
+            />
           </Tooltip>
         </Flex>
       </div>

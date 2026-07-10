@@ -31,7 +31,7 @@ export const useSaveSearchPreferences = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
-        prev ? { ...prev, search: data } : undefined,
+        prev ? { ...prev, search: data } : undefined
       );
     },
   });
@@ -46,7 +46,7 @@ export const useSaveMatchingPreferences = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
-        prev ? { ...prev, matching: data } : undefined,
+        prev ? { ...prev, matching: data } : undefined
       );
     },
   });
@@ -61,7 +61,7 @@ export const useSaveTelegramPreferences = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
-        prev ? { ...prev, telegram: data } : undefined,
+        prev ? { ...prev, telegram: data } : undefined
       );
     },
   });
@@ -76,7 +76,7 @@ export const useSaveAbout = () => {
     },
     onSuccess: (about) => {
       queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
-        prev ? { ...prev, about } : undefined,
+        prev ? { ...prev, about } : undefined
       );
     },
   });
@@ -91,13 +91,13 @@ export const useUploadAbout = () => {
       const { data } = await api.put<{ about: string }>(
         API_PATHS.PREFERENCES_ABOUT_FILE,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } },
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
       return data.about;
     },
     onSuccess: (about) => {
       queryClient.setQueryData<Preferences>(QUERY_KEY, (prev) =>
-        prev ? { ...prev, about } : undefined,
+        prev ? { ...prev, about } : undefined
       );
     },
   });

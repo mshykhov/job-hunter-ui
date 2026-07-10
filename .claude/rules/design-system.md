@@ -4,6 +4,7 @@ paths:
   - "src/styles/global.css"
   - "design-system/**"
 ---
+
 # Design system
 
 - `design-system/` is the durable source of truth (design tokens + component preview

@@ -1,4 +1,4 @@
-import { useCallback,useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 import {
   CloseOutlined,
@@ -93,11 +93,7 @@ export const JobReviewCard = ({
 
   return (
     <Flex vertical className="review-card">
-      <Flex
-        justify="space-between"
-        align="center"
-        className="review-card-header"
-      >
+      <Flex justify="space-between" align="center" className="review-card-header">
         <Flex align="center" gap={8}>
           <Tooltip title={`Previous (${keyLabel("prevJob")} / ←)`}>
             <Button
@@ -108,7 +104,10 @@ export const JobReviewCard = ({
               onClick={onPrev}
             />
           </Tooltip>
-          <Typography.Text type="secondary" style={{ fontSize: 13, minWidth: 50, textAlign: "center" }}>
+          <Typography.Text
+            type="secondary"
+            style={{ fontSize: 13, minWidth: 50, textAlign: "center" }}
+          >
             {currentIndex + 1} / {total}
           </Typography.Text>
           <Tooltip title={`Next (${keyLabel("nextJob")} / →)`}>
@@ -123,36 +122,23 @@ export const JobReviewCard = ({
         </Flex>
 
         <Flex align="center" gap={4}>
-          <Popover
-            content={<ShortcutsHelp />}
-            trigger="click"
-            placement="bottomRight"
-          >
-            <Button
-              type="text"
-              size="small"
-              icon={<QuestionCircleOutlined />}
-            />
+          <Popover content={<ShortcutsHelp />} trigger="click" placement="bottomRight">
+            <Button type="text" size="small" icon={<QuestionCircleOutlined />} />
           </Popover>
-          <Button
-            type="text"
-            size="small"
-            icon={<CloseOutlined />}
-            onClick={onClose}
-          />
+          <Button type="text" size="small" icon={<CloseOutlined />} onClick={onClose} />
         </Flex>
       </Flex>
 
       <Spin spinning={!!loading}>
-      <div className="review-card-body">
-        <JobDetailContent
-          job={job}
-          detail={detail}
-          detailLoading={detailLoading}
-          onStatusChange={onStatusChange}
-          statusLoading={statusLoading}
-        />
-      </div>
+        <div className="review-card-body">
+          <JobDetailContent
+            job={job}
+            detail={detail}
+            detailLoading={detailLoading}
+            onStatusChange={onStatusChange}
+            statusLoading={statusLoading}
+          />
+        </div>
       </Spin>
     </Flex>
   );

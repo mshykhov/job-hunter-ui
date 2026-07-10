@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef,useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { matchShortcut } from "../keybindings";
 import { hasModifier, isTypingTarget } from "../keyboard";
@@ -21,7 +21,14 @@ export interface UseReviewModeReturn {
   currentJob: JobGroup | null;
   currentIndex: number;
   total: number;
-  enter: (jobs: JobGroup[], startJob: JobGroup, totalElements: number, filters: JobGroupFilters, hasMore: boolean, nextPage: number) => void;
+  enter: (
+    jobs: JobGroup[],
+    startJob: JobGroup,
+    totalElements: number,
+    filters: JobGroupFilters,
+    hasMore: boolean,
+    nextPage: number
+  ) => void;
   exit: () => void;
   goNext: () => void;
   goPrev: () => void;
@@ -71,7 +78,14 @@ export const useReviewMode = (): UseReviewModeReturn => {
   }, []);
 
   const enter = useCallback(
-    (jobs: JobGroup[], startJob: JobGroup, totalElements: number, filters: JobGroupFilters, hasMore: boolean, nextPage: number) => {
+    (
+      jobs: JobGroup[],
+      startJob: JobGroup,
+      totalElements: number,
+      filters: JobGroupFilters,
+      hasMore: boolean,
+      nextPage: number
+    ) => {
       if (jobs.length === 0) return;
       const index = jobs.findIndex((j) => j.id === startJob.id);
       setState({
@@ -83,7 +97,7 @@ export const useReviewMode = (): UseReviewModeReturn => {
         filters,
       });
     },
-    [],
+    []
   );
 
   const exit = useCallback(() => setState(null), []);
@@ -94,7 +108,7 @@ export const useReviewMode = (): UseReviewModeReturn => {
 
     if (s.index < s.jobs.length - 1) {
       const nextIndex = s.index + 1;
-      setState((prev) => prev ? { ...prev, index: nextIndex } : prev);
+      setState((prev) => (prev ? { ...prev, index: nextIndex } : prev));
 
       if (nextIndex >= s.jobs.length - PREFETCH_THRESHOLD && s.hasMore) {
         loadMore();

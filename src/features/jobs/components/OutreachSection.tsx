@@ -1,5 +1,5 @@
 import { CopyOutlined, ThunderboltOutlined } from "@ant-design/icons";
-import { Button, Collapse, Flex, message,Typography } from "antd";
+import { Button, Collapse, Flex, message, Typography } from "antd";
 
 import { useOutreachSettings } from "@/features/settings/hooks/useOutreach";
 
@@ -17,9 +17,7 @@ const CopyButton = ({ text }: { text: string }) => {
     message.success("Copied to clipboard");
   };
 
-  return (
-    <Button type="text" size="small" icon={<CopyOutlined />} onClick={handleCopy} />
-  );
+  return <Button type="text" size="small" icon={<CopyOutlined />} onClick={handleCopy} />;
 };
 
 export const OutreachSection = ({ job, groupId }: OutreachSectionProps) => {
@@ -40,7 +38,9 @@ export const OutreachSection = ({ job, groupId }: OutreachSectionProps) => {
       key: "cover-letter",
       label: (
         <Flex gap={12} align="center">
-          <Typography.Text strong style={{ fontSize: 13 }}>Cover Letter</Typography.Text>
+          <Typography.Text strong style={{ fontSize: 13 }}>
+            Cover Letter
+          </Typography.Text>
           <Flex gap={4} onClick={(e) => e.stopPropagation()}>
             {job.coverLetter && <CopyButton text={job.coverLetter} />}
             <Button
@@ -71,7 +71,9 @@ export const OutreachSection = ({ job, groupId }: OutreachSectionProps) => {
       key: "recruiter-message",
       label: (
         <Flex gap={12} align="center">
-          <Typography.Text strong style={{ fontSize: 13 }}>Recruiter Message</Typography.Text>
+          <Typography.Text strong style={{ fontSize: 13 }}>
+            Recruiter Message
+          </Typography.Text>
           <Flex gap={4} onClick={(e) => e.stopPropagation()}>
             {job.recruiterMessage && <CopyButton text={job.recruiterMessage} />}
             <Button

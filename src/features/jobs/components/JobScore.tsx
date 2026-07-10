@@ -14,7 +14,12 @@ const bandClass = (score: number): string => {
 export const JobScore = ({ score }: JobScoreProps) => {
   if (score == null) {
     return (
-      <svg className="jobs-score jobs-score--none" viewBox="0 0 44 44" role="img" aria-label="No AI match score">
+      <svg
+        className="jobs-score jobs-score--none"
+        viewBox="0 0 44 44"
+        role="img"
+        aria-label="No AI match score"
+      >
         <circle className="jobs-score-track" cx="22" cy="22" r={RADIUS} />
       </svg>
     );

@@ -18,10 +18,10 @@ export const useGenerateCoverLetter = (jobId: string, groupId: string) => {
           ? {
               ...prev,
               jobs: prev.jobs.map((j) =>
-                j.jobId === jobId ? { ...j, coverLetter: data.coverLetter } : j,
+                j.jobId === jobId ? { ...j, coverLetter: data.coverLetter } : j
               ),
             }
-          : undefined,
+          : undefined
       );
     },
   });
@@ -31,7 +31,9 @@ export const useGenerateRecruiterMessage = (jobId: string, groupId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const { data } = await api.post<RecruiterMessageResponse>(API_PATHS.JOB_RECRUITER_MESSAGE(jobId));
+      const { data } = await api.post<RecruiterMessageResponse>(
+        API_PATHS.JOB_RECRUITER_MESSAGE(jobId)
+      );
       return data;
     },
     onSuccess: (data) => {
@@ -40,10 +42,10 @@ export const useGenerateRecruiterMessage = (jobId: string, groupId: string) => {
           ? {
               ...prev,
               jobs: prev.jobs.map((j) =>
-                j.jobId === jobId ? { ...j, recruiterMessage: data.recruiterMessage } : j,
+                j.jobId === jobId ? { ...j, recruiterMessage: data.recruiterMessage } : j
               ),
             }
-          : undefined,
+          : undefined
       );
     },
   });

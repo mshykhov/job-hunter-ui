@@ -211,7 +211,6 @@ body {
   opacity: 0.5;
 }
 
-
 /* Settings save bar */
 .settings-save-bar {
   position: sticky;
@@ -223,7 +222,9 @@ body {
   opacity: 0;
   transform: translateY(8px);
   pointer-events: none;
-  transition: opacity 0.25s, transform 0.25s;
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
   z-index: 10;
 }
 

@@ -1,8 +1,8 @@
-import { useRef,useState } from "react";
+import { useRef, useState } from "react";
 
 import { ClearOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { InputRef } from "antd";
-import { Flex,Input, Tag } from "antd";
+import { Flex, Input, Tag } from "antd";
 
 interface TagListInputProps {
   value: string[];
@@ -13,12 +13,14 @@ interface TagListInputProps {
 
 const parseText = (text: string): string[] => {
   const separator = text.includes("\n") ? /[\n,]+/ : /,+/;
-  return [...new Set(
-    text
-      .split(separator)
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean),
-  )];
+  return [
+    ...new Set(
+      text
+        .split(separator)
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean)
+    ),
+  ];
 };
 
 export const TagListInput = ({ value, onChange, placeholder, color }: TagListInputProps) => {
@@ -98,23 +100,14 @@ export const TagListInput = ({ value, onChange, placeholder, color }: TagListInp
         />
       ) : (
         <>
-          <Tag
-            onClick={showInput}
-            style={{ borderStyle: "dashed", cursor: "pointer" }}
-          >
+          <Tag onClick={showInput} style={{ borderStyle: "dashed", cursor: "pointer" }}>
             <PlusOutlined /> Add
           </Tag>
-          <Tag
-            onClick={enterEditMode}
-            style={{ cursor: "pointer" }}
-          >
+          <Tag onClick={enterEditMode} style={{ cursor: "pointer" }}>
             <EditOutlined /> Edit
           </Tag>
           {value.length >= 2 && (
-            <Tag
-              onClick={() => onChange([])}
-              style={{ cursor: "pointer" }}
-            >
+            <Tag onClick={() => onChange([])} style={{ cursor: "pointer" }}>
               <ClearOutlined /> Clear
             </Tag>
           )}

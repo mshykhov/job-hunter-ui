@@ -4,12 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api, API_PATHS, isAxiosError } from "@/lib/api";
 
-import type {
-  AiConfigForm,
-  AiProvider,
-  AiProvidersResponse,
-  AiSettingsResponse,
-} from "../types";
+import type { AiConfigForm, AiProvider, AiProvidersResponse, AiSettingsResponse } from "../types";
 import { EMPTY_AI_CONFIG } from "../types";
 
 export const useAiProviders = () => {
@@ -22,13 +17,8 @@ export const useAiProviders = () => {
   });
 };
 
-const deriveProvider = (
-  modelId: string,
-  providers: AiProvider[],
-): string | null => {
-  const provider = providers.find((p) =>
-    p.models.some((m) => m.id === modelId),
-  );
+const deriveProvider = (modelId: string, providers: AiProvider[]): string | null => {
+  const provider = providers.find((p) => p.models.some((m) => m.id === modelId));
   return provider?.id ?? null;
 };
 

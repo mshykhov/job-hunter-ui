@@ -10,10 +10,10 @@ describe("formatDescription", () => {
     });
 
     it("preserves complex HTML structure", () => {
-      const html = "<div><h2>Title</h2><p>Text</p><br><a href=\"https://example.com\">link</a></div>";
+      const html = '<div><h2>Title</h2><p>Text</p><br><a href="https://example.com">link</a></div>';
       const result = formatDescription(html);
       expect(result).toContain("<h2>Title</h2>");
-      expect(result).toContain("<a href=\"https://example.com\">link</a>");
+      expect(result).toContain('<a href="https://example.com">link</a>');
     });
   });
 

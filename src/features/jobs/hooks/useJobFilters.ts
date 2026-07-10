@@ -4,10 +4,17 @@ import { useSearchParams } from "react-router-dom";
 import { createStorage } from "@/lib/storage";
 
 import type { JobGroupFilters, UserJobSort, UserJobStatus } from "../types";
-import { USER_JOB_SORT,USER_JOB_STATUS } from "../types";
+import { USER_JOB_SORT, USER_JOB_STATUS } from "../types";
 
 const PARAM_KEYS = [
-  "statuses", "sources", "search", "remote", "minScore", "matchedAfter", "matchedWithin", "sortBy",
+  "statuses",
+  "sources",
+  "search",
+  "remote",
+  "minScore",
+  "matchedAfter",
+  "matchedWithin",
+  "sortBy",
 ] as const;
 
 const STATUS_VALUES = new Set<string>(Object.values(USER_JOB_STATUS));
@@ -86,19 +93,16 @@ export const useJobFilters = () => {
     }
   }
 
-  const filters = hasFilterParams(searchParams)
-    ? parseFilters(searchParams)
-    : storage.load();
+  const filters = hasFilterParams(searchParams) ? parseFilters(searchParams) : storage.load();
 
   const setFilters = useCallback(
     (next: JobGroupFilters) => {
       storage.save(next);
-      setSearchParams(
-        (prev) => filtersToParams(next, new URLSearchParams(prev)),
-        { replace: true },
-      );
+      setSearchParams((prev) => filtersToParams(next, new URLSearchParams(prev)), {
+        replace: true,
+      });
     },
-    [setSearchParams],
+    [setSearchParams]
   );
 
   return { filters, setFilters };

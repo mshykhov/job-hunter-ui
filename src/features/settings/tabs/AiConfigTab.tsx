@@ -1,4 +1,4 @@
-import { useEffect, useMemo,useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Card, Flex, Input, Select, Skeleton, Typography } from "antd";
 
@@ -41,7 +41,7 @@ export const AiConfigTab = () => {
         value: p.id,
         label: p.recommended ? `${p.name}${RECOMMENDED_SUFFIX}` : p.name,
       })),
-    [providers],
+    [providers]
   );
 
   const modelOptions = useMemo(() => {
@@ -81,8 +81,8 @@ export const AiConfigTab = () => {
       <Card size="small" title="AI Provider">
         <Flex vertical gap={12}>
           <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            Configure the AI model used for job matching and preference normalization.
-            If not configured, only manual filtering is available.
+            Configure the AI model used for job matching and preference normalization. If not
+            configured, only manual filtering is available.
           </Typography.Text>
           <Flex vertical gap={4}>
             <Typography.Text style={{ fontSize: 13 }}>Provider</Typography.Text>

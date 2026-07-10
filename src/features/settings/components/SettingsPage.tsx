@@ -8,7 +8,11 @@ import { TelegramTab } from "../tabs/TelegramTab";
 
 export const SettingsPage = () => {
   const tabItems = [
-    { key: SETTINGS_TABS.JOB_PREFERENCES, label: "Job Preferences", children: <JobPreferencesTab /> },
+    {
+      key: SETTINGS_TABS.JOB_PREFERENCES,
+      label: "Job Preferences",
+      children: <JobPreferencesTab />,
+    },
     { key: SETTINGS_TABS.AI_CONFIG, label: "AI Configuration", children: <AiConfigTab /> },
     { key: SETTINGS_TABS.OUTREACH, label: "Outreach", children: <OutreachTab /> },
     { key: SETTINGS_TABS.TELEGRAM, label: "Telegram", children: <TelegramTab /> },

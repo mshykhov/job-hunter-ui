@@ -23,11 +23,13 @@ export const JobEntryLabel = ({ job }: JobEntryLabelProps) => (
           {job.salary}
         </Typography.Text>
       )}
-      {job.remote && <Tag color={REMOTE_TAG_COLOR} style={{ margin: 0 }}>Remote</Tag>}
+      {job.remote && (
+        <Tag color={REMOTE_TAG_COLOR} style={{ margin: 0 }}>
+          Remote
+        </Tag>
+      )}
     </div>
-    <span className="job-entry-label-date">
-      {formatRelativeDate(job.publishedAt)}
-    </span>
+    <span className="job-entry-label-date">{formatRelativeDate(job.publishedAt)}</span>
     <Button
       type="link"
       size="small"

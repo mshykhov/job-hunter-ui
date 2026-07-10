@@ -90,12 +90,7 @@ export const JobsToolbar = ({
             <Button type="text" icon={<QuestionCircleOutlined />} />
           </Tooltip>
         </Popover>
-        <Button
-          type="text"
-          icon={<ReadOutlined />}
-          onClick={onReview}
-          disabled={reviewDisabled}
-        >
+        <Button type="text" icon={<ReadOutlined />} onClick={onReview} disabled={reviewDisabled}>
           Review
         </Button>
         <Popover

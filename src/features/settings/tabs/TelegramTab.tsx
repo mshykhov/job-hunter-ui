@@ -1,4 +1,4 @@
-import { useCallback,useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Card, Checkbox, Flex, Input, Skeleton, Switch, Typography } from "antd";
 
@@ -22,7 +22,7 @@ export const TelegramTab = () => {
   const update = useCallback(
     <K extends keyof TelegramPreferences>(key: K, value: TelegramPreferences[K]) =>
       setForm((prev) => ({ ...prev, [key]: value })),
-    [setForm],
+    [setForm]
   );
 
   useEffect(() => {
@@ -38,7 +38,9 @@ export const TelegramTab = () => {
       <Card size="small" title="Bot Connection">
         <Flex vertical gap={12}>
           <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Chat ID</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 13 }}>
+              Chat ID
+            </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
               Your Telegram chat ID for receiving notifications
             </Typography.Text>
@@ -50,7 +52,9 @@ export const TelegramTab = () => {
             />
           </Flex>
           <Flex vertical gap={4}>
-            <Typography.Text strong style={{ fontSize: 13 }}>Username</Typography.Text>
+            <Typography.Text strong style={{ fontSize: 13 }}>
+              Username
+            </Typography.Text>
             <Input
               placeholder="e.g. myuser"
               value={form.username ?? ""}

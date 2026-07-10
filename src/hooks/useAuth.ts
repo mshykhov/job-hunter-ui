@@ -15,7 +15,9 @@ export interface AuthContextValue {
   user?: { email?: string; name?: string; picture?: string };
   loginWithRedirect: () => Promise<void>;
   logout: (options?: { logoutParams?: { returnTo?: string } }) => Promise<void>;
-  getAccessTokenSilently: (options?: { cacheMode?: "on" | "off" | "cache-only" }) => Promise<string>;
+  getAccessTokenSilently: (options?: {
+    cacheMode?: "on" | "off" | "cache-only";
+  }) => Promise<string>;
 }
 
 export const noopAuth: AuthContextValue = {

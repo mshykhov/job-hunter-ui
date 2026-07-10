@@ -9,7 +9,13 @@ import {
 } from "@ant-design/icons";
 import { Button, Divider, Flex, Space, Tag, Typography } from "antd";
 
-import { formatRelativeDate, getSourceColor, REMOTE_TAG_COLOR, STATUS_COLORS, STATUS_LABELS } from "../constants";
+import {
+  formatRelativeDate,
+  getSourceColor,
+  REMOTE_TAG_COLOR,
+  STATUS_COLORS,
+  STATUS_LABELS,
+} from "../constants";
 import { useKeybindings } from "../hooks/useKeybindings";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { JobGroup, JobGroupDetail, UserJobStatus } from "../types";
@@ -37,19 +43,13 @@ export const JobDetailContent = ({
   const postingCount = detail?.jobs?.length ?? job.jobCount;
   return (
     <Flex vertical style={{ height: "100%", overflow: "hidden" }}>
-      <Flex
-        vertical
-        gap={12}
-        className="job-detail-header"
-      >
+      <Flex vertical gap={12} className="job-detail-header">
         <Flex justify="space-between" align="flex-start" gap={12}>
           <div style={{ minWidth: 0 }}>
             <Typography.Title level={5} style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
               {job.title}
             </Typography.Title>
-            {job.company && (
-              <Typography.Text type="secondary">{job.company}</Typography.Text>
-            )}
+            {job.company && <Typography.Text type="secondary">{job.company}</Typography.Text>}
           </div>
 
           {job.aiRelevanceScore != null && (
@@ -71,9 +71,7 @@ export const JobDetailContent = ({
           ))}
           <Tag color={STATUS_COLORS[job.status]}>{STATUS_LABELS[job.status]}</Tag>
           {job.remote && <Tag color={REMOTE_TAG_COLOR}>Remote</Tag>}
-          {postingCount > 1 && (
-            <Tag>{postingCount} postings</Tag>
-          )}
+          {postingCount > 1 && <Tag>{postingCount} postings</Tag>}
         </Flex>
 
         <Space size="small">
@@ -143,9 +141,7 @@ export const JobDetailContent = ({
                 <RobotOutlined />
                 AI Reasoning
               </div>
-              <p className="job-detail-reasoning-text">
-                {detail.aiReasoning}
-              </p>
+              <p className="job-detail-reasoning-text">{detail.aiReasoning}</p>
             </div>
             <Divider style={{ margin: "12px 0" }} />
           </>
@@ -156,11 +152,7 @@ export const JobDetailContent = ({
           <Tag>{postingCount}</Tag>
         </div>
 
-        <JobGroupJobs
-          jobs={detail?.jobs ?? []}
-          groupId={job.groupId}
-          loading={detailLoading}
-        />
+        <JobGroupJobs jobs={detail?.jobs ?? []} groupId={job.groupId} loading={detailLoading} />
       </div>
     </Flex>
   );

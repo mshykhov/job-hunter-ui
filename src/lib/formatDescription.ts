@@ -1,14 +1,12 @@
 import DOMPurify from "dompurify";
 
-const HTML_TAG_PATTERN = /<(?:p|div|br|ul|ol|li|h[1-6]|table|tr|td|th|strong|em|b|i|a|span|section|article|header|footer|blockquote)\b[^>]*>/i;
+const HTML_TAG_PATTERN =
+  /<(?:p|div|br|ul|ol|li|h[1-6]|table|tr|td|th|strong|em|b|i|a|span|section|article|header|footer|blockquote)\b[^>]*>/i;
 
 const isHtml = (text: string): boolean => HTML_TAG_PATTERN.test(text);
 
 const escapeHtml = (text: string): string =>
-  text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const formatPlainText = (text: string): string => {
   const escaped = escapeHtml(text);
@@ -49,9 +47,7 @@ const formatPlainText = (text: string): string => {
 };
 
 export const formatDescription = (description: string): string => {
-  const formatted = isHtml(description)
-    ? description
-    : formatPlainText(description);
+  const formatted = isHtml(description) ? description : formatPlainText(description);
 
   return DOMPurify.sanitize(formatted);
 };
