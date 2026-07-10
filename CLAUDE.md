@@ -66,12 +66,12 @@ src/
 │   └── ErrorBoundary.tsx
 ├── features/               # Feature modules — one folder per domain
 │   ├── jobs/
-│   │   ├── components/     # JobTable, JobFilters, JobReviewCard, JobDetailContent, JobGroupJobs
+│   │   ├── components/     # JobList/JobRow/JobScore, JobFilters, JobsToolbar, JobReviewCard, JobDetailContent
 │   │   ├── hooks/          # useJobs, useJobStatus, useJobFilters, useReviewMode
 │   │   ├── types.ts        # Job, JobStatus, JobFilters interfaces
 │   │   └── constants.ts    # Job-specific constants (status colors, etc.)
-│   ├── explore/            # Public job browser - reuses jobs' JobTable
-│   │   ├── components/     # ExplorePage, ExploreFilters
+│   ├── explore/            # Public job browser - rich-row list (reuses jobs styles/hooks)
+│   │   ├── components/     # ExplorePage, ExploreFilters, ExploreList, ExploreRow
 │   │   ├── hooks/          # useExploreFilters, usePublicJobs
 │   │   └── types.ts
 │   └── settings/

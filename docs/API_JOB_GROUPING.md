@@ -55,6 +55,7 @@ Response:
       "sources": ["djinni", "dou", "linkedin"],
       "locations": ["Berlin", "Kyiv"],
       "salary": "5000 USD",
+      "primaryUrl": "https://djinni.co/jobs/123",
       "publishedAt": "2026-01-15T00:00:00Z",
       "matchedAt": "2026-01-20T12:00:00Z",
       "createdAt": "2026-01-15T00:00:00Z",
@@ -80,6 +81,7 @@ Response notes:
 - `sources` — sorted alphabetically by value, deduplicated across all jobs in group
 - `locations` — sorted alphabetically, nulls excluded, deduplicated
 - `salary` — first non-null salary found in the group
+- `primaryUrl` — canonical posting url for one-click open; from the first sorted source, falling back to the first posting; null only for an empty group
 - `publishedAt` — earliest publish date across all jobs in group
 - `statusCounts` — totals across ALL groups (not just current page), useful for tab badges
 - Max page size: 100
@@ -257,6 +259,7 @@ Response:
 6. **`statusCounts` added** — search response includes group counts by status for all matching groups
 7. **`jobCount` added** — each group shows how many individual postings it contains
 8. **Aggregated fields** — `locations`, `sources`, `salary`, `publishedAt` are computed across all jobs in the group
+9. **`primaryUrl` added** — canonical posting url so the UI opens the original in one click without fetching the group detail (api v0.10.0)
 
 ---
 
