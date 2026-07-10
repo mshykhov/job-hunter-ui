@@ -23,36 +23,104 @@
     margin: 0 0 12px;
     font-weight: 600;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
+  .list {
     background: #1a1a1e;
     border: 1px solid #2a2a2e;
     border-radius: 6px;
     overflow: hidden;
-    font-variant-numeric: tabular-nums;
   }
-  thead th {
-    background: #1f1f23;
-    text-align: left;
-    padding: 10px 12px;
-    font-size: 12px;
-    color: #8a8a93;
-    font-weight: 600;
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1.3fr) 190px;
+    grid-template-areas: "ring main meta trail";
+    align-items: center;
+    column-gap: 16px;
+    padding: 12px 16px 12px 38px;
+    border-top: 1px solid #26262b;
+    cursor: pointer;
+    transition: background 0.15s ease;
   }
-  tbody td {
-    padding: 12px;
-    border-top: 1px solid #2a2a2e;
+  .row:first-child {
+    border-top: none;
   }
-  tbody tr:hover {
+  .row:hover {
     background: rgba(255, 255, 255, 0.04);
   }
-  .title {
+  /* Active keyboard cursor - the row the shortcuts act on */
+  .row--selected {
+    background: rgba(79, 70, 229, 0.16);
+    box-shadow: inset 3px 0 0 #4f46e5;
+  }
+  .row-index {
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    text-align: right;
+    font-size: 10px;
+    line-height: 1;
+    color: #56565e;
+    font-variant-numeric: tabular-nums;
+  }
+  .ring {
+    grid-area: ring;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-hi {
+    border: 2px solid #52c41a;
+    color: #52c41a;
+  }
+  .ring-mid {
+    border: 2px solid #d4b106;
+    color: #d4b106;
+  }
+  .main {
+    grid-area: main;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .company {
-    color: #8a8a93;
     font-size: 13px;
+    color: #8a8a93;
+  }
+  .company b {
+    color: #e6e6e8;
+    font-weight: 500;
+  }
+  .meta {
+    grid-area: meta;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 13px;
+  }
+  .trail {
+    grid-area: trail;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
   }
   .tag {
     display: inline-block;
@@ -67,76 +135,97 @@
     border-color: #642ab5;
     background: rgba(114, 46, 209, 0.12);
   }
-  .t-eu {
+  .t-dou {
     color: #ffa940;
     border-color: #ad4e00;
     background: rgba(212, 107, 8, 0.12);
+  }
+  .t-eu {
+    color: #ffc069;
+    border-color: #ad6800;
+    background: rgba(212, 136, 6, 0.12);
   }
   .t-new {
     color: #4da3ff;
     border-color: #15417e;
     background: rgba(22, 119, 255, 0.12);
   }
-  .score {
-    font-weight: 600;
-  }
-  .s-hi {
-    color: #52c41a;
-  }
-  .s-mid {
-    color: #d4b106;
+  .t-irrelevant {
+    color: #8a8a93;
+    border-color: #3a3a40;
+    background: rgba(255, 255, 255, 0.04);
   }
   .remote {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: #52c41a;
+  }
+  .salary {
+    color: #e6e6e8;
+    font-variant-numeric: tabular-nums;
   }
   .dim {
     color: #8a8a93;
   }
+  .time {
+    font-size: 12px;
+    color: #56565e;
+    white-space: nowrap;
+  }
 </style>
 <h2>Job row · list</h2>
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Title</th>
-      <th>Company</th>
-      <th>Source</th>
-      <th>Remote</th>
-      <th>Score</th>
-      <th>Status</th>
-      <th>Matched</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="dim">2</td>
-      <td class="title">Java Full Stack Developer</td>
-      <td class="company">Miratech</td>
-      <td><span class="tag t-eu">EuRemoteJobs</span></td>
-      <td class="remote">&#10003;</td>
-      <td class="score s-hi">82%</td>
-      <td><span class="tag t-new">New</span></td>
-      <td class="dim">12h ago</td>
-    </tr>
-    <tr>
-      <td class="dim">3</td>
-      <td class="title">Senior Java IVR Application Developer</td>
-      <td class="company">Miratech</td>
-      <td><span class="tag t-eu">EuRemoteJobs</span> <span class="dim">+1</span></td>
-      <td class="remote">&#10003;</td>
-      <td class="score s-mid">72%</td>
-      <td><span class="tag t-new">New</span></td>
-      <td class="dim">12h ago</td>
-    </tr>
-    <tr>
-      <td class="dim">1</td>
-      <td class="title">Software Engineer (Java)</td>
-      <td class="company">Kozak Agency</td>
-      <td><span class="tag t-djinni">Djinni</span></td>
-      <td class="remote">&#10003;</td>
-      <td class="score s-mid">62%</td>
-      <td><span class="tag t-new">New</span></td>
-      <td class="dim">1h ago</td>
-    </tr>
-  </tbody>
-</table>
+<div class="list">
+  <div class="row row--selected">
+    <span class="row-index">1</span>
+    <span class="ring ring-hi">94</span>
+    <div class="main">
+      <div class="title">Software Engineer (Java)</div>
+      <div class="company"><b>Ajax Systems</b> · 3 postings</div>
+    </div>
+    <div class="meta">
+      <span class="tag t-dou">DOU</span>
+      <span class="dim">Kyiv +1</span>
+    </div>
+    <div class="trail">
+      <span class="tag t-new">New</span>
+      <span class="time">5h ago</span>
+    </div>
+  </div>
+  <div class="row">
+    <span class="row-index">2</span>
+    <span class="ring ring-hi">82</span>
+    <div class="main">
+      <div class="title">Back-End Engineer (Java, Node.js)</div>
+      <div class="company"><b>ORIL</b> · 2 postings</div>
+    </div>
+    <div class="meta">
+      <span class="tag t-djinni">Djinni</span>
+      <span class="tag t-dou">DOU</span>
+      <span class="remote">&#10003; Remote</span>
+      <span class="dim">Львів</span>
+    </div>
+    <div class="trail">
+      <span class="tag t-new">New</span>
+      <span class="time">13h ago</span>
+    </div>
+  </div>
+  <div class="row">
+    <span class="row-index">3</span>
+    <span class="ring ring-mid">72</span>
+    <div class="main">
+      <div class="title">Senior Sales Engineer &#8211; DevTools</div>
+      <div class="company"><b>Perforce</b></div>
+    </div>
+    <div class="meta">
+      <span class="tag t-eu">EuRemoteJobs</span>
+      <span class="remote">&#10003; Remote</span>
+      <span class="salary">$5500</span>
+      <span class="dim">US</span>
+    </div>
+    <div class="trail">
+      <span class="tag t-irrelevant">Irrelevant</span>
+      <span class="time">1d ago</span>
+    </div>
+  </div>
+</div>
