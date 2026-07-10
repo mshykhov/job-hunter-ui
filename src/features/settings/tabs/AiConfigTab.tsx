@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { Card, Flex, Input, Select, Skeleton, Typography } from "antd";
+import { Card, Flex, Input, Select, Skeleton, Tag, Typography } from "antd";
 
+import { ModelSpecCard } from "../components/ModelSpecCard";
 import { SaveBar } from "../components/SaveBar";
 import { useAiConfig, useAiProviders } from "../hooks/useAiConfig";
 import { useDirtyForm } from "../hooks/useDirtyForm";
@@ -49,6 +50,14 @@ export const AiConfigTab = () => {
     return (provider?.models ?? []).map((m) => ({ value: m.id, label: buildModelLabel(m) }));
   }, [providers, form.provider]);
 
+  const selectedModel = useMemo(
+    () =>
+      (providers ?? [])
+        .find((p) => p.id === form.provider)
+        ?.models.find((m) => m.id === form.model) ?? null,
+    [providers, form.provider, form.model]
+  );
+
   const handleProviderChange = (value: string | null) => {
     update("provider", value);
     update("model", null);
@@ -78,7 +87,15 @@ export const AiConfigTab = () => {
 
   return (
     <Flex vertical gap={16}>
-      <Card size="small" title="AI Provider">
+      <Card
+        size="small"
+        title="AI Provider"
+        extra={
+          <Tag color={isConfigured ? "success" : "default"}>
+            {isConfigured ? "Configured" : "Not configured"}
+          </Tag>
+        }
+      >
         <Flex vertical gap={12}>
           <Typography.Text type="secondary" style={{ fontSize: 13 }}>
             Configure the AI model used for job matching and preference normalization. If not
@@ -126,6 +143,12 @@ export const AiConfigTab = () => {
               </Typography.Text>
             )}
           </Flex>
+          {selectedModel && (
+            <Flex vertical gap={8}>
+              <Typography.Text style={{ fontSize: 13 }}>Model details</Typography.Text>
+              <ModelSpecCard model={selectedModel} />
+            </Flex>
+          )}
         </Flex>
       </Card>
       <SaveBar

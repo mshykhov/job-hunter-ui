@@ -679,3 +679,20 @@ body {
   color: var(--ant-color-text-tertiary);
   background: transparent;
 }
+
+/* AI model spec tiles */
+.settings-model-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  background: var(--ant-color-border-secondary);
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 520px;
+}
+
+.settings-model-spec {
+  padding: 10px 14px;
+  background: var(--ant-color-fill-quaternary);
+}
