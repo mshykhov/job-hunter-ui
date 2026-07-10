@@ -1,3 +1,4 @@
+import type { ShortcutActionId } from "./keybindings";
 import type { UserJobStatus } from "./types";
 import { USER_JOB_STATUS } from "./types";
 
@@ -16,9 +17,8 @@ export const isTypingTarget = (target: EventTarget | null): boolean => {
 export const hasModifier = (e: KeyboardEvent): boolean =>
   e.ctrlKey || e.metaKey || e.altKey;
 
-export const STATUS_KEYS: Record<string, UserJobStatus> = {
-  KeyA: USER_JOB_STATUS.APPLIED,
-  KeyD: USER_JOB_STATUS.IRRELEVANT,
-  KeyX: USER_JOB_STATUS.IRRELEVANT,
-  KeyR: USER_JOB_STATUS.NEW,
+export const STATUS_ACTIONS: Partial<Record<ShortcutActionId, UserJobStatus>> = {
+  markApplied: USER_JOB_STATUS.APPLIED,
+  markIrrelevant: USER_JOB_STATUS.IRRELEVANT,
+  resetStatus: USER_JOB_STATUS.NEW,
 };

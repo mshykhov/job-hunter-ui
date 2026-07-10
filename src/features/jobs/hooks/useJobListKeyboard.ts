@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import { hasModifier, isTypingTarget, STATUS_KEYS } from "../keyboard";
+import { matchShortcut } from "../keybindings";
+import { hasModifier, isTypingTarget, STATUS_ACTIONS } from "../keyboard";
 import type { UserJobStatus } from "../types";
 
 interface UseJobListKeyboardArgs {
@@ -49,11 +50,13 @@ export const useJobListKeyboard = (args: UseJobListKeyboardArgs) => {
       } else if (e.key === "Escape") {
         setSelected(-1);
       } else if (current >= 0) {
-        const status = STATUS_KEYS[e.code];
+        const action = matchShortcut(e.code);
+        if (!action) return;
+        const status = STATUS_ACTIONS[action];
         if (status) {
           e.preventDefault();
           onStatus(current, status);
-        } else if (e.code === "KeyO") {
+        } else if (action === "openOriginal") {
           e.preventDefault();
           onOpenPrimary(current);
         }

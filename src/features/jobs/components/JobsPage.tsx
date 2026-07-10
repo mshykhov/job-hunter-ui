@@ -95,6 +95,7 @@ export const JobsPage = () => {
           onPrev={reviewMode.goPrev}
           onNext={reviewMode.goNext}
           onClose={reviewMode.exit}
+          onOpenPrimary={openPrimary}
           onStatusChange={handleStatusChange}
           statusLoading={statusMutation.isPending}
           loading={reviewMode.isPageLoading}

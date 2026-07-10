@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef,useState } from "react";
 
+import { matchShortcut } from "../keybindings";
 import { hasModifier, isTypingTarget } from "../keyboard";
 import type { JobGroup, JobGroupFilters } from "../types";
 import { fetchJobGroupsPage } from "./jobSearchApi";
@@ -132,10 +133,11 @@ export const useReviewMode = (): UseReviewModeReturn => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (hasModifier(e) || isTypingTarget(e.target)) return;
 
-      if (e.key === "ArrowRight" || e.code === "KeyE") {
+      const action = matchShortcut(e.code);
+      if (e.key === "ArrowRight" || action === "nextJob") {
         e.preventDefault();
         goNext();
-      } else if (e.key === "ArrowLeft" || e.code === "KeyQ") {
+      } else if (e.key === "ArrowLeft" || action === "prevJob") {
         e.preventDefault();
         goPrev();
       } else if (e.key === "Escape") {

@@ -6,9 +6,11 @@ import {
   QuestionCircleOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Popover, Spin, Typography } from "antd";
+import { Button, Flex, Popover, Spin, Tooltip, Typography } from "antd";
 
 import { useJobDetail } from "../hooks/useJobDetail";
+import { useKeybindings } from "../hooks/useKeybindings";
+import { matchShortcut } from "../keybindings";
 import { hasModifier, isTypingTarget } from "../keyboard";
 import type { JobGroup, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
@@ -24,6 +26,7 @@ interface JobReviewCardProps {
   onPrev: () => void;
   onNext: () => void;
   onClose: () => void;
+  onOpenPrimary: (job: JobGroup) => void;
   onStatusChange: (groupId: string, status: UserJobStatus) => void;
   statusLoading: boolean;
   loading?: boolean;
@@ -38,11 +41,13 @@ export const JobReviewCard = ({
   onPrev,
   onNext,
   onClose,
+  onOpenPrimary,
   onStatusChange,
   statusLoading,
   loading,
 }: JobReviewCardProps) => {
   const { data: detail, isLoading: detailLoading } = useJobDetail(job.groupId);
+  const { keyLabel } = useKeybindings();
 
   const handleApply = useCallback(() => {
     if (job.status !== USER_JOB_STATUS.APPLIED) {
@@ -66,21 +71,25 @@ export const JobReviewCard = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (hasModifier(e) || isTypingTarget(e.target)) return;
 
-      if (e.code === "KeyA") {
+      const action = matchShortcut(e.code);
+      if (action === "markApplied") {
         e.preventDefault();
         handleApply();
-      } else if (e.code === "KeyD" || e.code === "KeyX") {
+      } else if (action === "markIrrelevant") {
         e.preventDefault();
         handleDecline();
-      } else if (e.code === "KeyR") {
+      } else if (action === "resetStatus") {
         e.preventDefault();
         handleReset();
+      } else if (action === "openOriginal") {
+        e.preventDefault();
+        onOpenPrimary(job);
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleApply, handleDecline, handleReset]);
+  }, [handleApply, handleDecline, handleReset, onOpenPrimary, job]);
 
   return (
     <Flex vertical className="review-card">
@@ -90,23 +99,27 @@ export const JobReviewCard = ({
         className="review-card-header"
       >
         <Flex align="center" gap={8}>
-          <Button
-            type="text"
-            size="small"
-            icon={<LeftOutlined />}
-            disabled={!hasPrev}
-            onClick={onPrev}
-          />
+          <Tooltip title={`Previous (${keyLabel("prevJob")} / ←)`}>
+            <Button
+              type="text"
+              size="small"
+              icon={<LeftOutlined />}
+              disabled={!hasPrev}
+              onClick={onPrev}
+            />
+          </Tooltip>
           <Typography.Text type="secondary" style={{ fontSize: 13, minWidth: 50, textAlign: "center" }}>
             {currentIndex + 1} / {total}
           </Typography.Text>
-          <Button
-            type="text"
-            size="small"
-            icon={<RightOutlined />}
-            disabled={!hasNext}
-            onClick={onNext}
-          />
+          <Tooltip title={`Next (${keyLabel("nextJob")} / →)`}>
+            <Button
+              type="text"
+              size="small"
+              icon={<RightOutlined />}
+              disabled={!hasNext}
+              onClick={onNext}
+            />
+          </Tooltip>
         </Flex>
 
         <Flex align="center" gap={4}>

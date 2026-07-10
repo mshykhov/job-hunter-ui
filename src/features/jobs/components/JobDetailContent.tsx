@@ -10,6 +10,7 @@ import {
 import { Button, Divider, Flex, Space, Tag, Typography } from "antd";
 
 import { formatRelativeDate, getSourceColor, REMOTE_TAG_COLOR, STATUS_COLORS, STATUS_LABELS } from "../constants";
+import { useKeybindings } from "../hooks/useKeybindings";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { JobGroup, JobGroupDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
@@ -32,6 +33,7 @@ export const JobDetailContent = ({
   statusLoading,
 }: JobDetailContentProps) => {
   const sourceNames = useSourceNames();
+  const { keyLabel } = useKeybindings();
   const postingCount = detail?.jobs?.length ?? job.jobCount;
   return (
     <Flex vertical style={{ height: "100%", overflow: "hidden" }}>
@@ -83,7 +85,7 @@ export const JobDetailContent = ({
             onClick={() => onStatusChange(job.groupId, USER_JOB_STATUS.APPLIED)}
             disabled={job.status === USER_JOB_STATUS.APPLIED}
           >
-            Applied
+            Applied <kbd className="jobs-kbd-hint">{keyLabel("markApplied")}</kbd>
           </Button>
           <Button
             size="small"
@@ -92,7 +94,7 @@ export const JobDetailContent = ({
             onClick={() => onStatusChange(job.groupId, USER_JOB_STATUS.IRRELEVANT)}
             disabled={job.status === USER_JOB_STATUS.IRRELEVANT}
           >
-            Irrelevant
+            Irrelevant <kbd className="jobs-kbd-hint">{keyLabel("markIrrelevant")}</kbd>
           </Button>
           <Button
             size="small"
@@ -101,7 +103,7 @@ export const JobDetailContent = ({
             onClick={() => onStatusChange(job.groupId, USER_JOB_STATUS.NEW)}
             disabled={job.status === USER_JOB_STATUS.NEW}
           >
-            Reset
+            Reset <kbd className="jobs-kbd-hint">{keyLabel("resetStatus")}</kbd>
           </Button>
         </Space>
       </Flex>

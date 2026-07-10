@@ -666,3 +666,15 @@ body {
       "trail";
   }
 }
+
+/* Keyboard hint badge inside action buttons */
+.jobs-kbd-hint {
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 4px;
+  border: 1px solid var(--ant-color-border);
+  border-radius: 3px;
+  color: var(--ant-color-text-tertiary);
+  background: transparent;
+}

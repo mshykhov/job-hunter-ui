@@ -84,8 +84,10 @@ export const Sidebar = ({
       <Flex vertical justify="space-between" style={{ height: "100%", padding: "12px 0" }}>
         <div>
           <Flex
+            vertical={collapsed}
             align="center"
             justify={collapsed ? "center" : "space-between"}
+            gap={collapsed ? 8 : 0}
             style={{ padding: "0 16px", marginBottom: 24 }}
           >
             <Flex align="center" gap={10}>
@@ -96,14 +98,12 @@ export const Sidebar = ({
                 </span>
               )}
             </Flex>
-            {!collapsed && (
-              <Button
-                type="text"
-                size="small"
-                icon={<MenuFoldOutlined />}
-                onClick={() => onCollapse(true)}
-              />
-            )}
+            <Button
+              type="text"
+              size="small"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => onCollapse(!collapsed)}
+            />
           </Flex>
 
           <Menu
@@ -142,14 +142,6 @@ export const Sidebar = ({
             <Button type="text" size="small" icon={<LoginOutlined />} onClick={() => loginWithRedirect()}>
               {!collapsed && "Sign In"}
             </Button>
-          )}
-          {collapsed && (
-            <Button
-              type="text"
-              size="small"
-              icon={<MenuUnfoldOutlined />}
-              onClick={() => onCollapse(false)}
-            />
           )}
           <Button
             type="text"
