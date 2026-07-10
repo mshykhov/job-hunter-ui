@@ -1,9 +1,7 @@
 import { useCallback } from "react";
 
 import { FilterOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
-import { App, Collapse, Flex, Skeleton } from "antd";
-
-import { useRematch } from "@/features/jobs/hooks/useRematch";
+import { Collapse, Flex, Skeleton } from "antd";
 
 import { AboutCard } from "../components/AboutCard";
 import { MatchingSection } from "../components/MatchingSection";
@@ -12,17 +10,21 @@ import { SearchSection } from "../components/SearchSection";
 import { useAboutForm } from "../hooks/useAboutForm";
 import { useDirtyForm } from "../hooks/useDirtyForm";
 import { usePersistedKeys } from "../hooks/usePersistedKeys";
-import { usePreferences, useSaveMatchingPreferences,useSaveSearchPreferences } from "../hooks/usePreferences";
+import {
+  usePreferences,
+  useSaveMatchingPreferences,
+  useSaveSearchPreferences,
+} from "../hooks/usePreferences";
+import { useRematchPrompt } from "../hooks/useRematchPrompt";
 import { useSavedFlash } from "../hooks/useSavedFlash";
-import type { MatchingPreferences,SearchPreferences } from "../types";
+import type { MatchingPreferences, SearchPreferences } from "../types";
 import { EMPTY_PREFERENCES } from "../types";
 
 export const JobPreferencesTab = () => {
-  const { modal } = App.useApp();
   const { data: preferences, isLoading } = usePreferences();
   const saveSearchMutation = useSaveSearchPreferences();
   const saveMatchingMutation = useSaveMatchingPreferences();
-  const rematchMutation = useRematch();
+  const suggestRematch = useRematchPrompt();
 
   const initial = preferences ?? EMPTY_PREFERENCES;
   const aboutForm = useAboutForm(preferences);
@@ -32,38 +34,6 @@ export const JobPreferencesTab = () => {
   const matchingSaved = useSavedFlash();
 
   const { keys: activeKeys, setKeys: setActiveKeys } = usePersistedKeys();
-
-  const suggestRematch = useCallback(() => {
-    let hours = 12;
-    modal.confirm({
-      title: "Re-match jobs?",
-      content: (
-        <Flex vertical gap={8}>
-          <span>Your preferences have changed. Re-match jobs with the updated settings?</span>
-          <Flex align="center" gap={8}>
-            <span>Period:</span>
-            <select
-              defaultValue="12"
-              onChange={(e) => { hours = Number(e.target.value); }}
-              style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #d9d9d9" }}
-            >
-              <option value="6">Last 6 hours</option>
-              <option value="12">Last 12 hours</option>
-              <option value="24">Last 24 hours</option>
-              <option value="48">Last 2 days</option>
-              <option value="72">Last 3 days</option>
-            </select>
-          </Flex>
-        </Flex>
-      ),
-      okText: "Rematch",
-      cancelText: "Skip",
-      onOk: () => {
-        const since = new Date(Date.now() - hours * 3_600_000).toISOString();
-        rematchMutation.mutate(since);
-      },
-    });
-  }, [modal, rematchMutation]);
 
   const handleGenerate = useCallback(() => {
     aboutForm.generateMutation.mutate(undefined, {
@@ -86,13 +56,13 @@ export const JobPreferencesTab = () => {
   const updateSearch = useCallback(
     <K extends keyof SearchPreferences>(key: K, value: SearchPreferences[K]) =>
       searchForm.setForm((prev) => ({ ...prev, [key]: value })),
-    [searchForm],
+    [searchForm]
   );
 
   const updateMatching = useCallback(
     <K extends keyof MatchingPreferences>(key: K, value: MatchingPreferences[K]) =>
       matchingForm.setForm((prev) => ({ ...prev, [key]: value })),
-    [matchingForm],
+    [matchingForm]
   );
 
   if (isLoading) return <Skeleton active paragraph={{ rows: 14 }} />;
@@ -134,7 +104,14 @@ export const JobPreferencesTab = () => {
                 isDirty={searchForm.isDirty}
                 saved={searchSaved.saved}
                 saving={saveSearchMutation.isPending}
-                onSave={() => saveSearchMutation.mutate(searchForm.form, { onSuccess: () => { searchSaved.flash(); suggestRematch(); } })}
+                onSave={() =>
+                  saveSearchMutation.mutate(searchForm.form, {
+                    onSuccess: () => {
+                      searchSaved.flash();
+                      suggestRematch();
+                    },
+                  })
+                }
                 onDiscard={searchForm.reset}
               />
             </Flex>
@@ -151,7 +128,14 @@ export const JobPreferencesTab = () => {
                 isDirty={matchingForm.isDirty}
                 saved={matchingSaved.saved}
                 saving={saveMatchingMutation.isPending}
-                onSave={() => saveMatchingMutation.mutate(matchingForm.form, { onSuccess: () => { matchingSaved.flash(); suggestRematch(); } })}
+                onSave={() =>
+                  saveMatchingMutation.mutate(matchingForm.form, {
+                    onSuccess: () => {
+                      matchingSaved.flash();
+                      suggestRematch();
+                    },
+                  })
+                }
                 onDiscard={matchingForm.reset}
               />
             </Flex>

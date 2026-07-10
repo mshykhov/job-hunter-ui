@@ -1,8 +1,9 @@
 import { DollarOutlined, EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import { Button, Tag, Typography } from "antd";
 
-import { formatRelativeDate, REMOTE_TAG_COLOR } from "../constants";
+import { REMOTE_TAG_COLOR } from "../constants";
 import type { GroupJob } from "../types";
+import { formatRelativeDate } from "../utils/formatRelativeDate";
 
 interface JobEntryLabelProps {
   job: GroupJob;

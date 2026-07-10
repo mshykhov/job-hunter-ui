@@ -3,8 +3,9 @@ import type { MouseEvent } from "react";
 import { CheckCircleOutlined, ExportOutlined } from "@ant-design/icons";
 import { Button, Tag, Tooltip, Typography } from "antd";
 
-import { formatRelativeDate, getSourceColor } from "@/features/jobs/constants";
+import { getSourceColor } from "@/features/jobs/constants";
 import type { PublicJob } from "@/features/jobs/types";
+import { formatRelativeDate } from "@/features/jobs/utils/formatRelativeDate";
 import { formatDescription } from "@/lib/formatDescription";
 
 interface ExploreRowProps {

@@ -3,13 +3,9 @@ import { useEffect, useRef } from "react";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { Tag, Tooltip, Typography } from "antd";
 
-import {
-  formatRelativeDate,
-  getSourceColor,
-  STATUS_COLORS,
-  STATUS_LABELS,
-} from "@/features/jobs/constants";
+import { getSourceColor, STATUS_COLORS, STATUS_LABELS } from "@/features/jobs/constants";
 import type { JobGroup, UserJobStatus } from "@/features/jobs/types";
+import { formatRelativeDate } from "@/features/jobs/utils/formatRelativeDate";
 import { getScoreLabel } from "@/features/jobs/utils/jobDetailUtils";
 
 import { JobRowActions } from "./JobRowActions";

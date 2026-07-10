@@ -9,17 +9,12 @@ import {
 } from "@ant-design/icons";
 import { Button, Divider, Flex, Space, Tag, Typography } from "antd";
 
-import {
-  formatRelativeDate,
-  getSourceColor,
-  REMOTE_TAG_COLOR,
-  STATUS_COLORS,
-  STATUS_LABELS,
-} from "../constants";
+import { getSourceColor, REMOTE_TAG_COLOR, STATUS_COLORS, STATUS_LABELS } from "../constants";
 import { useKeybindings } from "../hooks/useKeybindings";
 import { useSourceNames } from "../hooks/useSourceNames";
 import type { JobGroup, JobGroupDetail, UserJobStatus } from "../types";
 import { USER_JOB_STATUS } from "../types";
+import { formatRelativeDate } from "../utils/formatRelativeDate";
 import { getScoreClass, getScoreLabel } from "../utils/jobDetailUtils";
 import { JobGroupJobs } from "./JobGroupJobs";
 
