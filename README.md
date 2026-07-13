@@ -11,7 +11,7 @@ React frontend for [Job Hunter](https://github.com/mshykhov/job-hunter). Dashboa
 | Vite           | Build tool                |
 | Ant Design 6   | Component library         |
 | TanStack Query | Server state management   |
-| Auth0          | Authentication (optional) |
+| Authentik (OIDC) | Authentication (optional) |
 | Axios          | HTTP client               |
 
 ## Architecture
@@ -50,7 +50,7 @@ src/
 ## Quick Start
 
 ```bash
-cp .env.example .env.local    # fill in API_URL, Auth0 config (optional)
+cp .env.example .env.local    # fill in API_URL, OIDC config (optional)
 npm install
 npm run dev                   # http://localhost:5173
 ```
@@ -60,12 +60,11 @@ npm run dev                   # http://localhost:5173
 | Variable          | Description                          | Required |
 | ----------------- | ------------------------------------ | -------- |
 | `API_URL`         | Kotlin API base URL                  | Yes      |
-| `AUTH0_DOMAIN`    | Auth0 tenant domain                  | No       |
-| `AUTH0_CLIENT_ID` | Auth0 SPA client ID                  | No       |
-| `AUTH0_AUDIENCE`  | Auth0 API audience                   | No       |
-| `AUTH0_ENABLED`   | Enable/disable auth (`true`/`false`) | No       |
+| `OIDC_AUTHORITY`  | OIDC issuer URL (Authentik app slug) | No       |
+| `OIDC_CLIENT_ID`  | OIDC public client ID                | No       |
+| `OIDC_ENABLED`    | Enable/disable auth (`true`/`false`) | No       |
 
-When Auth0 is not configured, all pages are accessible without authentication.
+When OIDC is not configured, all pages are accessible without authentication.
 
 ## Scripts
 

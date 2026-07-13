@@ -2,7 +2,7 @@
 
 **TL;DR:** React frontend for [Job Hunter](https://github.com/mshykhov/job-hunter). Dashboard for browsing, filtering, and managing job vacancies collected by scrapers.
 
-> **Stack**: React 19, TypeScript, Vite, Ant Design, TanStack Query, Auth0
+> **Stack**: React 19, TypeScript, Vite, Ant Design, TanStack Query, Authentik (OIDC)
 
 ---
 
@@ -48,7 +48,7 @@ User's Browser
 | Jobs     | Yes  | Main dashboard - job table with filters + keyboard-driven review mode (triage) |
 | Settings | Yes  | User preferences - 4 tabs: Job Preferences, AI Config, Outreach, Telegram      |
 
-Unauthenticated users land on `/explore`; sign-in is an Auth0 redirect from the sidebar (no dedicated login page).
+Unauthenticated users land on `/explore`; sign-in is an OIDC redirect (Authentik) from the sidebar (no dedicated login page).
 
 ---
 
@@ -87,7 +87,7 @@ src/
 │   ├── api.ts              # Axios instance with auth interceptor
 │   └── queryClient.ts      # TanStack Query client config
 ├── config/
-│   └── constants.ts        # Env vars, API_URL, Auth0 config
+│   └── constants.ts        # Env vars, API_URL, OIDC config
 ├── types/                  # Shared types (ApiError, Pagination)
 │   └── index.ts
 ├── styles/                 # Global styles, theme tokens
@@ -198,9 +198,8 @@ src/
 | Variable          | Description                    | Required |
 | ----------------- | ------------------------------ | -------- |
 | `API_URL`         | Kotlin API base URL            | Yes      |
-| `AUTH0_DOMAIN`    | Auth0 tenant domain            | Yes      |
-| `AUTH0_CLIENT_ID` | Auth0 SPA client ID            | Yes      |
-| `AUTH0_AUDIENCE`  | Auth0 API audience             | Yes      |
+| `OIDC_AUTHORITY`  | OIDC issuer URL                | Yes      |
+| `OIDC_CLIENT_ID`  | OIDC public client ID          | Yes      |
 | `APP_VERSION`     | Build version (injected by CI) | No       |
 
 ### Config Priority
@@ -222,8 +221,8 @@ npm run dev
 ### Preview with a mocked API (no backend)
 
 `npm run dev:mock` runs the full app at `:5173` with the API served by MSW - no
-backend, no Auth0. It uses `--mode mock` -> `.env.mock` (`VITE_ENABLE_MOCKS=true`,
-`AUTH0_ENABLED=false`); `main.tsx` starts the worker only when the flag is set, so
+backend, no IdP. It uses `--mode mock` -> `.env.mock` (`VITE_ENABLE_MOCKS=true`,
+`OIDC_ENABLED=false`); `main.tsx` starts the worker only when the flag is set, so
 plain `dev`/`build` are unaffected. Handlers and seeded fixtures live in `src/mocks/`
 (`handlers.ts`, `fixtures.ts`, `browser.ts`) and are the shared source of truth for
 mocking - reuse them in tests instead of duplicating. Use this to browse or screenshot
@@ -257,7 +256,7 @@ npm run build         # TypeScript type-check + build
 ### What NOT to Test
 
 - Ant Design components (already tested by the library)
-- Auth0 SDK internals (external dependency)
+- OIDC SDK internals (external dependency)
 - Pure routing/navigation
 - Presentation-only components without logic
 

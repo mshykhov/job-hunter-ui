@@ -15,10 +15,9 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_VERSION__: JSON.stringify(env.APP_VERSION || process.env.npm_package_version || "dev"),
       "import.meta.env.API_URL": JSON.stringify(env.API_URL),
-      "import.meta.env.AUTH0_ENABLED": JSON.stringify(env.AUTH0_ENABLED),
-      "import.meta.env.AUTH0_DOMAIN": JSON.stringify(env.AUTH0_DOMAIN),
-      "import.meta.env.AUTH0_CLIENT_ID": JSON.stringify(env.AUTH0_CLIENT_ID),
-      "import.meta.env.AUTH0_AUDIENCE": JSON.stringify(env.AUTH0_AUDIENCE),
+      "import.meta.env.OIDC_ENABLED": JSON.stringify(env.OIDC_ENABLED),
+      "import.meta.env.OIDC_AUTHORITY": JSON.stringify(env.OIDC_AUTHORITY),
+      "import.meta.env.OIDC_CLIENT_ID": JSON.stringify(env.OIDC_CLIENT_ID),
     },
   };
 });

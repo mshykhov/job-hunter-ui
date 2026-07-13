@@ -7,10 +7,9 @@ set -e
 cat > /usr/share/nginx/html/config.js << EOF
 window.__CONFIG__ = {
   API_URL: "${API_URL:-}",
-  AUTH0_ENABLED: "${AUTH0_ENABLED:-true}",
-  AUTH0_DOMAIN: "${AUTH0_DOMAIN:-}",
-  AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID:-}",
-  AUTH0_AUDIENCE: "${AUTH0_AUDIENCE:-}",
+  OIDC_ENABLED: "${OIDC_ENABLED:-true}",
+  OIDC_AUTHORITY: "${OIDC_AUTHORITY:-}",
+  OIDC_CLIENT_ID: "${OIDC_CLIENT_ID:-}",
 };
 EOF
 

@@ -1,35 +1,40 @@
 import type { ReactNode } from "react";
+import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 
-import { Auth0Provider } from "@auth0/auth0-react";
+import { WebStorageStateStore } from "oidc-client-ts";
 
-import { AUTH0_CONFIG, AUTH0_ENABLED } from "@/config/constants";
+import { OIDC_CONFIG, OIDC_ENABLED } from "@/config/constants";
 import { AuthContext, noopAuth } from "@/hooks/useAuth";
 
-import { Auth0Bridge } from "./Auth0Bridge";
+import { OidcBridge } from "./OidcBridge";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-const isAuth0Configured = AUTH0_ENABLED && !!AUTH0_CONFIG.domain && !!AUTH0_CONFIG.clientId;
+const isOidcConfigured = OIDC_ENABLED && !!OIDC_CONFIG.authority && !!OIDC_CONFIG.clientId;
+
+// Strip ?code=&state= left by the authorization code callback
+const onSigninCallback = () => {
+  window.history.replaceState({}, document.title, window.location.pathname);
+};
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  if (!isAuth0Configured) {
+  if (!isOidcConfigured) {
     return <AuthContext.Provider value={noopAuth}>{children}</AuthContext.Provider>;
   }
 
   return (
-    <Auth0Provider
-      domain={AUTH0_CONFIG.domain}
-      clientId={AUTH0_CONFIG.clientId}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: AUTH0_CONFIG.audience || undefined,
-      }}
-      useRefreshTokens={true}
-      cacheLocation="localstorage"
+    <OidcAuthProvider
+      authority={OIDC_CONFIG.authority}
+      client_id={OIDC_CONFIG.clientId}
+      redirect_uri={window.location.origin}
+      scope="openid profile email offline_access job-hunter-api"
+      automaticSilentRenew={true}
+      userStore={new WebStorageStateStore({ store: window.localStorage })}
+      onSigninCallback={onSigninCallback}
     >
-      <Auth0Bridge>{children}</Auth0Bridge>
-    </Auth0Provider>
+      <OidcBridge>{children}</OidcBridge>
+    </OidcAuthProvider>
   );
 };

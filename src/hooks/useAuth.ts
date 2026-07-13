@@ -27,7 +27,7 @@ export const noopAuth: AuthContextValue = {
   permissions: [],
   loginWithRedirect: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  getAccessTokenSilently: () => Promise.reject(new Error("Auth0 not configured")),
+  getAccessTokenSilently: () => Promise.reject(new Error("OIDC not configured")),
 };
 
 export const AuthContext = createContext<AuthContextValue>(noopAuth);

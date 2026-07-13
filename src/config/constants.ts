@@ -12,12 +12,11 @@ const getConfig = (key: string, defaultValue = ""): string => {
 
 export const API_URL = getConfig("API_URL", "http://localhost:8095");
 
-export const AUTH0_ENABLED = getConfig("AUTH0_ENABLED", "true") === "true";
+export const OIDC_ENABLED = getConfig("OIDC_ENABLED", "true") === "true";
 
-export const AUTH0_CONFIG = {
-  domain: getConfig("AUTH0_DOMAIN"),
-  clientId: getConfig("AUTH0_CLIENT_ID"),
-  audience: getConfig("AUTH0_AUDIENCE"),
+export const OIDC_CONFIG = {
+  authority: getConfig("OIDC_AUTHORITY"),
+  clientId: getConfig("OIDC_CLIENT_ID"),
 } as const;
 
 export const APP_VERSION = __APP_VERSION__;
