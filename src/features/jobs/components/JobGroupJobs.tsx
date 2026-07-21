@@ -60,13 +60,17 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
           </Button>
         </Flex>
         <OutreachSection job={job} groupId={groupId} />
-        {job.description && (
+        {job.description ? (
           <div
             className="job-description"
             style={{ fontSize: 13, maxHeight: 400, overflow: "auto" }}
             // eslint-disable-next-line react/no-danger -- sanitized via DOMPurify
             dangerouslySetInnerHTML={{ __html: formatDescription(job.description) }}
           />
+        ) : (
+          <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+            No description available
+          </Typography.Text>
         )}
       </Flex>
     );
