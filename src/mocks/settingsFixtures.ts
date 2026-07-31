@@ -104,11 +104,11 @@ export const AI_PROVIDERS_MOCK = {
       requiresApiKey: true,
       models: [
         {
-          id: "gemini-2.5-flash-lite",
-          name: "Gemini 2.5 Flash Lite",
-          inputCostPer1M: 0.1,
-          outputCostPer1M: 0.4,
-          cachedInputCostPer1M: null,
+          id: "gemini-2.5-flash",
+          name: "Gemini 2.5 Flash",
+          inputCostPer1M: 0.3,
+          outputCostPer1M: 2.5,
+          cachedInputCostPer1M: 0.03,
           contextWindow: 1000000,
           recommended: false,
         },
