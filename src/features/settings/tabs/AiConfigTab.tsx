@@ -1,154 +1,112 @@
-import { useEffect, useMemo, useState } from "react";
+import { PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Flex, Skeleton, Typography } from "antd";
 
-import { Card, Flex, Input, Select, Skeleton, Tag, Typography } from "antd";
-
-import { ModelSpecCard } from "../components/ModelSpecCard";
+import { ProviderChainCard } from "../components/ProviderChainCard";
 import { SaveBar } from "../components/SaveBar";
-import { useAiConfig, useAiProviders } from "../hooks/useAiConfig";
+import { useAiProviderChain, useAiProviders } from "../hooks/useAiConfig";
 import { useDirtyForm } from "../hooks/useDirtyForm";
-import type { AiConfigForm, AiModel } from "../types";
+import { useSavedFlash } from "../hooks/useSavedFlash";
+import type { AiProvider, AiProviderChainEntryForm, SaveAiProviderChainRequest } from "../types";
+import { createChainEntry } from "../types";
 
-const formatCost = (cost: number) => `$${cost.toFixed(2)}`;
+const getSaveDisabledReason = (
+  entries: AiProviderChainEntryForm[],
+  providers: AiProvider[],
+  storedKeyHints: Record<string, string>
+): string | null => {
+  if (entries.length === 0) return "Add at least one provider to save a chain";
+  if (entries.some((e) => !e.provider)) return "Select a provider for every entry";
+  if (entries.some((e) => !e.modelId)) return "Select a model for every entry";
 
-const formatContextWindow = (tokens: number) => {
-  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`;
-  return `${(tokens / 1_000).toFixed(0)}K`;
+  const providerIds = entries.map((e) => e.provider);
+  if (new Set(providerIds).size !== providerIds.length) {
+    return "Each provider may appear at most once in the chain";
+  }
+
+  const missing = entries.find((e) => {
+    const provider = providers.find((p) => p.id === e.provider);
+    return !!provider?.requiresApiKey && !storedKeyHints[provider.id] && !e.apiKey.trim();
+  });
+  if (missing) {
+    const name = providers.find((p) => p.id === missing.provider)?.name ?? missing.provider;
+    return `API key is required for ${name}`;
+  }
+
+  return null;
 };
 
-const RECOMMENDED_SUFFIX = " ★ Recommended";
-
-const buildModelLabel = (m: AiModel) => {
-  const cost = `${formatCost(m.inputCostPer1M)}/${formatCost(m.outputCostPer1M)} per 1M tokens`;
-  const ctx = `${formatContextWindow(m.contextWindow)} ctx`;
-  const rec = m.recommended ? RECOMMENDED_SUFFIX : "";
-  return `${m.name} — ${cost}, ${ctx}${rec}`;
-};
+const toSaveRequest = (entries: AiProviderChainEntryForm[]): SaveAiProviderChainRequest => ({
+  chain: entries.map((entry, index) => {
+    if (!entry.provider || !entry.modelId) {
+      throw new Error("Cannot save an incomplete chain entry");
+    }
+    return {
+      priority: index + 1,
+      provider: entry.provider,
+      modelId: entry.modelId,
+      apiKey: entry.apiKey.trim() || undefined,
+      enabled: entry.enabled,
+    };
+  }),
+});
 
 export const AiConfigTab = () => {
   const { data: providers, isLoading: providersLoading } = useAiProviders();
-  const { initial, apiKeyHint, settingsLoading, save } = useAiConfig(providers);
-  const { form, update, isDirty, reset } = useDirtyForm<AiConfigForm>(initial);
-  const [saved, setSaved] = useState(false);
+  const { initial, storedKeyHints, isLoading: chainLoading, save } = useAiProviderChain();
+  const { form, setForm, isDirty, reset } = useDirtyForm<AiProviderChainEntryForm[]>(initial);
+  const { saved, flash } = useSavedFlash();
 
-  useEffect(() => {
-    if (!saved) return;
-    const timer = setTimeout(() => setSaved(false), 2500);
-    return () => clearTimeout(timer);
-  }, [saved]);
+  const updateEntry = (index: number, patch: Partial<AiProviderChainEntryForm>) =>
+    setForm((prev) => prev.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)));
 
-  const providerOptions = useMemo(
-    () =>
-      (providers ?? []).map((p) => ({
-        value: p.id,
-        label: p.recommended ? `${p.name}${RECOMMENDED_SUFFIX}` : p.name,
-      })),
-    [providers]
-  );
+  const moveEntry = (index: number, direction: -1 | 1) =>
+    setForm((prev) => {
+      const target = index + direction;
+      if (target < 0 || target >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
 
-  const modelOptions = useMemo(() => {
-    const provider = (providers ?? []).find((p) => p.id === form.provider);
-    return (provider?.models ?? []).map((m) => ({ value: m.id, label: buildModelLabel(m) }));
-  }, [providers, form.provider]);
+  const removeEntry = (index: number) => setForm((prev) => prev.filter((_, i) => i !== index));
 
-  const selectedModel = useMemo(
-    () =>
-      (providers ?? [])
-        .find((p) => p.id === form.provider)
-        ?.models.find((m) => m.id === form.model) ?? null,
-    [providers, form.provider, form.model]
-  );
+  const addEntry = () => setForm((prev) => [...prev, createChainEntry()]);
 
-  const handleProviderChange = (value: string | null) => {
-    update("provider", value);
-    update("model", null);
-  };
-
-  const hasModel = !!form.model;
-  const hasApiKey = !!form.apiKey.trim();
-  const isConfigured = !!apiKeyHint;
-  const needsApiKey = !isConfigured && !hasApiKey;
-
-  let saveDisabled = false;
-  let saveDisabledReason: string | undefined;
-  if (!hasModel) {
-    saveDisabled = true;
-    saveDisabledReason = "Select a model to save";
-  } else if (needsApiKey) {
-    saveDisabled = true;
-    saveDisabledReason = "API key is required";
-  }
+  const saveDisabledReason = getSaveDisabledReason(form, providers ?? [], storedKeyHints);
+  const saveDisabled = !!saveDisabledReason;
+  const addDisabled = form.length >= (providers ?? []).length;
 
   const handleSave = async () => {
-    await save.mutateAsync(form);
-    setSaved(true);
+    await save.mutateAsync(toSaveRequest(form));
+    flash();
   };
 
-  if (providersLoading || settingsLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
+  if (providersLoading || chainLoading) return <Skeleton active paragraph={{ rows: 6 }} />;
 
   return (
     <Flex vertical gap={16}>
       <Card
         size="small"
-        title="AI Provider"
+        title="AI Provider Chain"
         extra={
-          <Tag color={isConfigured ? "success" : "default"}>
-            {isConfigured ? "Configured" : "Not configured"}
-          </Tag>
+          <Button size="small" icon={<PlusOutlined />} onClick={addEntry} disabled={addDisabled}>
+            Add provider
+          </Button>
         }
       >
         <Flex vertical gap={12}>
           <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-            Configure the AI model used for job matching and preference normalization. If not
-            configured, only manual filtering is available.
+            Providers are tried in order for job matching and preference normalization. If an entry
+            fails or is disabled, the next one in the chain is used.
           </Typography.Text>
-          <Flex vertical gap={4}>
-            <Typography.Text style={{ fontSize: 13 }}>Provider</Typography.Text>
-            <Select
-              placeholder="Select provider"
-              value={form.provider}
-              onChange={handleProviderChange}
-              options={providerOptions}
-              allowClear
-              style={{ maxWidth: 280 }}
-            />
-          </Flex>
-          <Flex vertical gap={4}>
-            <Typography.Text style={{ fontSize: 13 }}>Model</Typography.Text>
-            <Select
-              placeholder={form.provider ? "Select model" : "Select provider first"}
-              value={form.model}
-              onChange={(v) => update("model", v)}
-              options={modelOptions}
-              disabled={!form.provider}
-              allowClear
-              style={{ maxWidth: 520 }}
-            />
-          </Flex>
-          <Flex vertical gap={4}>
-            <Typography.Text style={{ fontSize: 13 }}>API Key</Typography.Text>
-            <Input.Password
-              placeholder={apiKeyHint ?? "sk-..."}
-              value={form.apiKey}
-              onChange={(e) => update("apiKey", e.target.value)}
-              style={{ maxWidth: 400 }}
-            />
-            {isConfigured && !hasApiKey && (
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                Key is set ({apiKeyHint}). Leave empty to keep current key.
-              </Typography.Text>
-            )}
-            {!isConfigured && (
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                Required for AI-powered features.
-              </Typography.Text>
-            )}
-          </Flex>
-          {selectedModel && (
-            <Flex vertical gap={8}>
-              <Typography.Text style={{ fontSize: 13 }}>Model details</Typography.Text>
-              <ModelSpecCard model={selectedModel} />
-            </Flex>
-          )}
+          <ProviderChainCard
+            entries={form}
+            providers={providers ?? []}
+            storedKeyHints={storedKeyHints}
+            onChange={updateEntry}
+            onMove={moveEntry}
+            onRemove={removeEntry}
+          />
         </Flex>
       </Card>
       <SaveBar
@@ -158,7 +116,7 @@ export const AiConfigTab = () => {
         onSave={handleSave}
         onDiscard={reset}
         saveDisabled={saveDisabled}
-        saveDisabledReason={saveDisabledReason}
+        saveDisabledReason={saveDisabledReason ?? undefined}
       />
     </Flex>
   );
