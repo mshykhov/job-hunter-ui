@@ -1,12 +1,14 @@
 export type {
-  AiConfigForm,
   AiModel,
   AiProvider,
+  AiProviderChainEntry,
+  AiProviderChainEntryForm,
+  AiProviderChainResponse,
   AiProvidersResponse,
-  AiSettingsResponse,
-  SaveAiSettingsRequest,
+  SaveAiProviderChainEntryRequest,
+  SaveAiProviderChainRequest,
 } from "./types/ai";
-export { EMPTY_AI_CONFIG } from "./types/ai";
+export { createChainEntry } from "./types/ai";
 export type {
   CoverLetterResponse,
   OutreachJobInfo,

@@ -2,10 +2,14 @@ import { useMemo } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { api, API_PATHS, isAxiosError } from "@/lib/api";
+import { api, API_PATHS } from "@/lib/api";
 
-import type { AiConfigForm, AiProvider, AiProvidersResponse, AiSettingsResponse } from "../types";
-import { EMPTY_AI_CONFIG } from "../types";
+import type {
+  AiProviderChainEntryForm,
+  AiProviderChainResponse,
+  AiProvidersResponse,
+  SaveAiProviderChainRequest,
+} from "../types";
 
 export const useAiProviders = () => {
   return useQuery({
@@ -17,57 +21,46 @@ export const useAiProviders = () => {
   });
 };
 
-const deriveProvider = (modelId: string, providers: AiProvider[]): string | null => {
-  const provider = providers.find((p) => p.models.some((m) => m.id === modelId));
-  return provider?.id ?? null;
-};
+const CHAIN_QUERY_KEY = ["ai-provider-chain"];
 
-export const useAiSettings = () => {
-  return useQuery<AiSettingsResponse | null>({
-    queryKey: ["ai-settings"],
+export const useAiProviderChain = () => {
+  const queryClient = useQueryClient();
+
+  const { data: chain, isLoading } = useQuery({
+    queryKey: CHAIN_QUERY_KEY,
     queryFn: async () => {
-      try {
-        const { data } = await api.get<AiSettingsResponse>(API_PATHS.AI_SETTINGS, {
-          skipErrorHandler: true,
-        });
-        return data;
-      } catch (error) {
-        if (isAxiosError(error) && error.response?.status === 404) {
-          return null;
-        }
-        throw error;
-      }
+      const { data } = await api.get<AiProviderChainResponse>(API_PATHS.AI_PROVIDER_CHAIN);
+      return data.chain;
     },
   });
-};
 
-export const useAiConfig = (providers: AiProvider[] | undefined) => {
-  const queryClient = useQueryClient();
-  const { data: settings, isLoading: settingsLoading } = useAiSettings();
+  const initial = useMemo(
+    (): AiProviderChainEntryForm[] =>
+      (chain ?? []).map((entry) => ({
+        key: entry.provider,
+        provider: entry.provider,
+        modelId: entry.modelId,
+        apiKey: "",
+        enabled: entry.enabled,
+      })),
+    [chain]
+  );
 
-  const initial = useMemo((): AiConfigForm => {
-    if (!settings || !providers) return EMPTY_AI_CONFIG;
-    return {
-      provider: deriveProvider(settings.modelId, providers),
-      model: settings.modelId,
-      apiKey: "",
-    };
-  }, [settings, providers]);
+  const storedKeyHints = useMemo(
+    (): Record<string, string> =>
+      Object.fromEntries((chain ?? []).map((entry) => [entry.provider, entry.apiKeyHint])),
+    [chain]
+  );
 
-  const apiKeyHint = settings?.apiKeyHint ?? null;
-
-  const saveMutation = useMutation({
-    mutationFn: async (form: AiConfigForm) => {
-      const { data } = await api.put<AiSettingsResponse>(API_PATHS.AI_SETTINGS, {
-        apiKey: form.apiKey,
-        modelId: form.model,
-      });
+  const save = useMutation({
+    mutationFn: async (request: SaveAiProviderChainRequest) => {
+      const { data } = await api.put<AiProviderChainResponse>(API_PATHS.AI_PROVIDER_CHAIN, request);
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-settings"] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(CHAIN_QUERY_KEY, data.chain);
     },
   });
 
-  return { initial, apiKeyHint, settingsLoading, save: saveMutation };
+  return { initial, storedKeyHints, isLoading, save };
 };

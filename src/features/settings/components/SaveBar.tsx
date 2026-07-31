@@ -30,7 +30,7 @@ export const SaveBar = ({
           <Typography.Text style={{ color: token.colorSuccess }}>Saved</Typography.Text>
         </Flex>
       ) : (
-        <Flex align="center" justify="space-between">
+        <Flex align="center" justify="space-between" wrap="wrap" gap={8}>
           <Flex vertical gap={2}>
             <Typography.Text type="secondary">Unsaved changes</Typography.Text>
             {saveDisabled && saveDisabledReason && (

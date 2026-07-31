@@ -148,7 +148,7 @@ export const API_PATHS = {
   PREFERENCES_ABOUT_OPTIMIZE: "/preferences/about/optimize",
   PREFERENCES_GENERATE: "/preferences/generate",
   AI_PROVIDERS: "/settings/ai-providers",
-  AI_SETTINGS: "/settings/ai",
+  AI_PROVIDER_CHAIN: "/settings/ai/providers",
   OUTREACH_SETTINGS: "/settings/outreach",
   OUTREACH_TEST_COVER_LETTER: "/settings/outreach/test/cover-letter",
   OUTREACH_TEST_RECRUITER_MESSAGE: "/settings/outreach/test/recruiter-message",

@@ -5,8 +5,8 @@ import type { JobGroup, PaginatedJobGroupsResponse, UserJobStatus } from "@/feat
 
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
 import {
+  AI_PROVIDER_CHAIN_MOCK,
   AI_PROVIDERS_MOCK,
-  AI_SETTINGS_MOCK,
   OUTREACH_MOCK,
   PREFERENCES_MOCK,
 } from "./settingsFixtures";
@@ -149,9 +149,29 @@ export const handlers = [
   ),
 
   http.get(url("/settings/ai-providers"), () => HttpResponse.json(AI_PROVIDERS_MOCK)),
-  http.get(url("/settings/ai"), () => HttpResponse.json(AI_SETTINGS_MOCK)),
-  http.put(url("/settings/ai"), async ({ request }) => {
-    const body = (await request.json()) as { modelId: string };
-    return HttpResponse.json({ modelId: body.modelId, apiKeyHint: "sk-ant-...saved" });
+  http.get(url("/settings/ai/providers"), () => HttpResponse.json(AI_PROVIDER_CHAIN_MOCK)),
+  http.put(url("/settings/ai/providers"), async ({ request }) => {
+    const body = (await request.json()) as {
+      chain: {
+        priority: number;
+        provider: string;
+        modelId: string;
+        apiKey?: string;
+        enabled: boolean;
+      }[];
+    };
+    const storedHints = new Map(
+      AI_PROVIDER_CHAIN_MOCK.chain.map((e) => [e.provider, e.apiKeyHint])
+    );
+    AI_PROVIDER_CHAIN_MOCK.chain = body.chain.map((entry) => ({
+      priority: entry.priority,
+      provider: entry.provider,
+      modelId: entry.modelId,
+      apiKeyHint: entry.apiKey?.trim()
+        ? "sk-...saved"
+        : (storedHints.get(entry.provider) ?? "No API key required"),
+      enabled: entry.enabled,
+    }));
+    return HttpResponse.json(AI_PROVIDER_CHAIN_MOCK);
   }),
 ];
