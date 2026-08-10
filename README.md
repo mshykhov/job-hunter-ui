@@ -86,6 +86,19 @@ docker build -t job-hunter-ui .
 docker run -p 8080:8080 -e API_URL=http://api:8095 job-hunter-ui
 ```
 
+## Agent Configuration
+
+`.rulesync/` is the canonical source for repository instructions, scoped rules, and
+release skills. `CLAUDE.md`, `AGENTS.md`, `.claude/`, and `.agents/` contain generated
+target projections and must not be edited directly.
+
+```bash
+npm ci
+npm run rulesync:dry-run
+npm run rulesync:generate
+npm run rulesync:verify
+```
+
 ## License
 
 MIT

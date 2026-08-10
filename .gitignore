@@ -28,3 +28,5 @@ dist-ssr
 .claude/*
 !.claude/rules/
 !.claude/rules/**
+!.claude/skills/
+!.claude/skills/**

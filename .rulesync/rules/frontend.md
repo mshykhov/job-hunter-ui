@@ -1,8 +1,9 @@
 ---
-paths:
-  - src/**/*.ts
-  - src/**/*.tsx
-  - src/**/*.css
+root: false
+globs:
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
+  - 'src/**/*.css'
 ---
 # Frontend conventions
 

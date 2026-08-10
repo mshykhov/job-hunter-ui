@@ -1,8 +1,9 @@
 ---
-paths:
-  - src/styles/theme.ts
-  - src/styles/global.css
-  - design-system/**
+root: false
+globs:
+  - 'src/styles/theme.ts'
+  - 'src/styles/global.css'
+  - 'design-system/**'
 ---
 # Design system
 

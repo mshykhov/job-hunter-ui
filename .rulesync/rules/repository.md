@@ -1,3 +1,6 @@
+---
+root: true
+---
 # Job Hunter UI
 
 React dashboard for exploring, filtering, and managing vacancies collected by the
