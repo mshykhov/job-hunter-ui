@@ -30,3 +30,6 @@ dist-ssr
 !.claude/rules/**
 !.claude/skills/
 !.claude/skills/**
+
+# Isolated feature worktrees
+.worktrees/
