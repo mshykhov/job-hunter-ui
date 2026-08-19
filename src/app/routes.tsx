@@ -2,10 +2,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AutomationPage } from "@/features/automation/components/AutomationPage";
 import { ExplorePage } from "@/features/explore/components/ExplorePage";
 import { JobsPage } from "@/features/jobs/components/JobsPage";
 import { SettingsPage } from "@/features/settings/components/SettingsPage";
-import { useAuth } from "@/hooks/useAuth";
+import { PERMISSIONS, useAuth } from "@/hooks/useAuth";
 
 interface AppRoutesProps {
   isDark: boolean;
@@ -29,6 +30,14 @@ export const AppRoutes = ({ isDark, onThemeToggle }: AppRoutesProps) => {
           element={
             <ProtectedRoute>
               <JobsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="automation"
+          element={
+            <ProtectedRoute requiredPermission={PERMISSIONS.READ_AUTOMATION}>
+              <AutomationPage />
             </ProtectedRoute>
           }
         />

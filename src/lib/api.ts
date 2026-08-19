@@ -155,5 +155,6 @@ export const API_PATHS = {
   JOB_COVER_LETTER: (jobId: string) => `/jobs/${jobId}/outreach/cover-letter`,
   JOB_RECRUITER_MESSAGE: (jobId: string) => `/jobs/${jobId}/outreach/recruiter-message`,
   JOBS_REMATCH: "/jobs/rematch",
+  AUTOMATION_STATUS: "/automation/status",
   HEALTH: "/actuator/health",
 } as const;

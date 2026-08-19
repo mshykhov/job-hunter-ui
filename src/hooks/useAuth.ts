@@ -5,6 +5,7 @@ export const PERMISSIONS = {
   WRITE_JOBS: "write:jobs",
   READ_PREFERENCES: "read:preferences",
   WRITE_PREFERENCES: "write:preferences",
+  READ_AUTOMATION: "read:automation",
 } as const;
 
 export interface AuthContextValue {
