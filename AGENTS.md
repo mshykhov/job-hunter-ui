@@ -21,18 +21,21 @@ Stack: React 19, TypeScript, Vite, Ant Design 6, TanStack Query, Axios, React Ro
 - `/explore` is the public vacancy browser.
 - `/jobs` is the authenticated dashboard with filters and review mode.
 - `/settings` manages job preferences, provider configuration, outreach, and Telegram.
+- `/automation` shows sanitized runner health only to the configured owner with
+  `read:automation`.
 - The root route selects `/jobs` when authentication is disabled or already complete;
   otherwise it selects `/explore`.
 - Sign-in is an OIDC redirect from the application shell, not a separate login page.
 
-The UI reads jobs and criteria from the Kotlin REST API, writes user preferences and
-job status changes, and displays the API and UI versions in the application shell.
+The UI reads jobs, criteria, and owner-only automation health from the Kotlin REST
+API, writes user preferences and job status changes, and displays the API and UI
+versions in the application shell.
 
 ## Structure
 
 - `src/app/` owns routing and providers.
 - `src/components/` contains truly shared components.
-- `src/features/` groups the explore, jobs, and settings domains.
+- `src/features/` groups the automation, explore, jobs, and settings domains.
 - `src/hooks/` contains shared hooks.
 - `src/lib/` owns the API client, query client, storage, and infrastructure helpers.
 - `src/config/` resolves runtime and build-time configuration.

@@ -2,7 +2,9 @@ import { http, HttpResponse } from "msw";
 
 import { API_URL } from "@/config/constants";
 import type { JobGroup, PaginatedJobGroupsResponse, UserJobStatus } from "@/features/jobs/types";
+import type { SaveAiProviderChainRequest } from "@/features/settings/types";
 
+import { AUTOMATION_STATUS_MOCK } from "./automationFixture";
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
 import {
   AI_PROVIDER_CHAIN_MOCK,
@@ -128,6 +130,7 @@ export const handlers = [
 
   http.get(url("/public/version"), () => HttpResponse.json({ version: "dev-mock" })),
   http.get(url("/actuator/health"), () => HttpResponse.json({ status: "UP" })),
+  http.get(url("/automation/status"), () => HttpResponse.json(AUTOMATION_STATUS_MOCK)),
 
   http.get(url("/preferences"), () => HttpResponse.json(PREFERENCES_MOCK)),
   http.put(url("/preferences/search"), async ({ request }) =>
@@ -151,15 +154,7 @@ export const handlers = [
   http.get(url("/settings/ai-providers"), () => HttpResponse.json(AI_PROVIDERS_MOCK)),
   http.get(url("/settings/ai/providers"), () => HttpResponse.json(AI_PROVIDER_CHAIN_MOCK)),
   http.put(url("/settings/ai/providers"), async ({ request }) => {
-    const body = (await request.json()) as {
-      chain: {
-        priority: number;
-        provider: string;
-        modelId: string;
-        apiKey?: string;
-        enabled: boolean;
-      }[];
-    };
+    const body = (await request.json()) as SaveAiProviderChainRequest;
     const storedHints = new Map(
       AI_PROVIDER_CHAIN_MOCK.chain.map((e) => [e.provider, e.apiKeyHint])
     );

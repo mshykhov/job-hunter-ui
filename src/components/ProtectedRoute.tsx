@@ -7,12 +7,15 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  requiredPermission?: string;
 }
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, isConfigured } = useAuth();
+export const ProtectedRoute = ({ children, requiredPermission }: ProtectedRouteProps) => {
+  const { isAuthenticated, isLoading, isConfigured, permissions } = useAuth();
 
-  if (!isConfigured) return <>{children}</>;
+  if (!isConfigured) {
+    return requiredPermission ? <Navigate to="/explore" replace /> : <>{children}</>;
+  }
 
   if (isLoading) {
     return (
@@ -23,6 +26,10 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
+    return <Navigate to="/explore" replace />;
+  }
+
+  if (requiredPermission && !permissions.includes(requiredPermission)) {
     return <Navigate to="/explore" replace />;
   }
 

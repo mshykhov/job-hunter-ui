@@ -9,6 +9,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   MoonOutlined,
+  RobotOutlined,
   SettingOutlined,
   SunOutlined,
 } from "@ant-design/icons";
@@ -42,6 +43,7 @@ export const Sidebar = ({
 
   const canReadJobs = !isConfigured || permissions.includes(PERMISSIONS.READ_JOBS);
   const canReadPreferences = !isConfigured || permissions.includes(PERMISSIONS.READ_PREFERENCES);
+  const canReadAutomation = permissions.includes(PERMISSIONS.READ_AUTOMATION);
 
   const navItems = [
     { key: "/explore", icon: <CompassOutlined />, label: "Explore" },
@@ -61,13 +63,15 @@ export const Sidebar = ({
     ...(canReadPreferences
       ? [{ key: "/settings", icon: <SettingOutlined />, label: "Settings" }]
       : []),
+    ...(canReadAutomation
+      ? [{ key: "/automation", icon: <RobotOutlined />, label: "Automation" }]
+      : []),
   ];
 
   return (
     <Layout.Sider
       collapsible
       collapsed={collapsed}
-      onCollapse={onCollapse}
       trigger={null}
       width={SIDEBAR_WIDTH}
       collapsedWidth={SIDEBAR_COLLAPSED_WIDTH}
