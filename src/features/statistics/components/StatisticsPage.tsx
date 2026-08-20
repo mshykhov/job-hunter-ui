@@ -136,7 +136,11 @@ export const StatisticsPage = () => {
               </Flex>
             }
           >
-            <VacancyStatisticsChart points={data.points} exactSince={data.exactSince} />
+            <VacancyStatisticsChart
+              points={data.points}
+              exactSince={data.exactSince}
+              bucket={data.bucket}
+            />
           </Suspense>
         ) : null}
       </Card>

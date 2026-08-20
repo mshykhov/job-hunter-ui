@@ -12,7 +12,7 @@ import {
 import * as echarts from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 
-import type { VacancyStatisticsPoint } from "../types";
+import type { VacancyStatisticsPoint, VacancyStatsBucket } from "../types";
 import { vacancyStatisticsChartOption } from "./chartOptions";
 
 echarts.use([
@@ -28,9 +28,10 @@ echarts.use([
 interface VacancyStatisticsChartProps {
   points: VacancyStatisticsPoint[];
   exactSince: string | null;
+  bucket: VacancyStatsBucket;
 }
 
-const VacancyStatisticsChart = ({ points, exactSince }: VacancyStatisticsChartProps) => {
+const VacancyStatisticsChart = ({ points, exactSince, bucket }: VacancyStatisticsChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,8 +50,8 @@ const VacancyStatisticsChart = ({ points, exactSince }: VacancyStatisticsChartPr
     const element = containerRef.current;
     if (!element) return;
     const chart = echarts.getInstanceByDom(element);
-    chart?.setOption(vacancyStatisticsChartOption(points, exactSince), true);
-  }, [exactSince, points]);
+    chart?.setOption(vacancyStatisticsChartOption(points, exactSince, bucket), true);
+  }, [bucket, exactSince, points]);
 
   return (
     <div

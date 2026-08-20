@@ -12,6 +12,8 @@ interface SidebarState {
 }
 
 const storage = createStorage<SidebarState>("job-hunter-sidebar", 1, { collapsed: false });
+const initialSidebarCollapsed = () =>
+  window.matchMedia("(max-width: 576px)").matches || storage.load().collapsed;
 
 interface AppLayoutProps {
   isDark: boolean;
@@ -19,7 +21,7 @@ interface AppLayoutProps {
 }
 
 export const AppLayout = ({ isDark, onThemeToggle }: AppLayoutProps) => {
-  const [collapsed, setCollapsed] = useState(() => storage.load().collapsed);
+  const [collapsed, setCollapsed] = useState(initialSidebarCollapsed);
 
   useEffect(() => {
     storage.save({ collapsed });

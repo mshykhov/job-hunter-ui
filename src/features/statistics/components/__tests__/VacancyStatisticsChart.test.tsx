@@ -1,6 +1,8 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { VACANCY_STATS_BUCKET } from "../../types";
+
 const chart = { resize: vi.fn(), dispose: vi.fn(), setOption: vi.fn() };
 const core = vi.hoisted(() => ({
   init: vi.fn(() => chart),
@@ -35,13 +37,19 @@ describe("VacancyStatisticsChart", () => {
       },
     ];
     const { rerender, unmount } = render(
-      <VacancyStatisticsChart points={points} exactSince={null} />
+      <VacancyStatisticsChart points={points} exactSince={null} bucket={VACANCY_STATS_BUCKET.DAY} />
     );
     expect(core.init).toHaveBeenCalledTimes(1);
     expect(chart.setOption).toHaveBeenCalledTimes(1);
     resizeCallback?.();
     expect(chart.resize).toHaveBeenCalledTimes(1);
-    rerender(<VacancyStatisticsChart points={[...points]} exactSince="2026-08-20T00:00:00Z" />);
+    rerender(
+      <VacancyStatisticsChart
+        points={[...points]}
+        exactSince="2026-08-20T00:00:00Z"
+        bucket={VACANCY_STATS_BUCKET.WEEK}
+      />
+    );
     expect(chart.setOption).toHaveBeenCalledTimes(2);
     unmount();
     expect(observer.disconnect).toHaveBeenCalled();

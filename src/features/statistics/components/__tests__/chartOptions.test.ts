@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { VACANCY_STATS_BUCKET } from "../../types";
 import { vacancyStatisticsChartOption } from "../chartOptions";
 
 describe("vacancyStatisticsChartOption", () => {
@@ -16,11 +17,15 @@ describe("vacancyStatisticsChartOption", () => {
           medianScore: 81,
         },
       ],
-      null
+      null,
+      VACANCY_STATS_BUCKET.DAY
     );
 
     expect(option.yAxis).toHaveLength(2);
     expect(option.dataZoom).toHaveLength(2);
+    expect(option.xAxis).toEqual(
+      expect.objectContaining({ type: "time", minInterval: 24 * 60 * 60 * 1000 })
+    );
     expect(option.series).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ name: "All vacancies", data: [["2026-08-20T00:00:00Z", 14]] }),
@@ -59,7 +64,8 @@ describe("vacancyStatisticsChartOption", () => {
           medianScore: null,
         },
       ],
-      "2026-08-10T00:00:00Z"
+      "2026-08-10T00:00:00Z",
+      VACANCY_STATS_BUCKET.DAY
     );
     const series = option.series as {
       name: string;
