@@ -6,6 +6,7 @@ import { AutomationPage } from "@/features/automation/components/AutomationPage"
 import { ExplorePage } from "@/features/explore/components/ExplorePage";
 import { JobsPage } from "@/features/jobs/components/JobsPage";
 import { SettingsPage } from "@/features/settings/components/SettingsPage";
+import { StatisticsPage } from "@/features/statistics/components/StatisticsPage";
 import { PERMISSIONS, useAuth } from "@/hooks/useAuth";
 
 interface AppRoutesProps {
@@ -30,6 +31,14 @@ export const AppRoutes = ({ isDark, onThemeToggle }: AppRoutesProps) => {
           element={
             <ProtectedRoute>
               <JobsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="statistics"
+          element={
+            <ProtectedRoute requiredPermission={PERMISSIONS.READ_JOBS}>
+              <StatisticsPage />
             </ProtectedRoute>
           }
         />

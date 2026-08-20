@@ -17,6 +17,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Vacancy history */
+.statistics-title { margin-bottom: 4px !important; }
+.statistics-card { min-height: 500px; }
+.statistics-controls { align-items: center; margin-bottom: 16px; }
+.statistics-sources { min-width: 220px; flex: 1; }
+.statistics-chart { width: 100%; height: 500px; min-height: 360px; }
+.statistics-loading { min-height: 500px; }
+.statistics-empty { padding-top: 180px; }
+.statistics-warning { margin-bottom: 12px; }
+
+@media (max-width: 576px) {
+  .statistics-card { min-height: 360px; }
+  .statistics-controls { align-items: stretch; }
+  .statistics-sources { width: 100%; min-width: 0; }
+  .statistics-chart { height: 360px; }
+  .statistics-loading { min-height: 360px; }
+  .statistics-empty { padding-top: 100px; }
+}
+
 /* Dark scrollbar */
 :root {
   color-scheme: dark;

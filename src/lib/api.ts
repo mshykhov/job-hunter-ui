@@ -158,5 +158,6 @@ export const API_PATHS = {
   MATERIAL_SELECT: (revisionId: string) => `/materials/revisions/${revisionId}/select`,
   JOBS_REMATCH: "/jobs/rematch",
   AUTOMATION_STATUS: "/automation/status",
+  VACANCY_STATISTICS: "/statistics/vacancies/query",
   HEALTH: "/actuator/health",
 } as const;

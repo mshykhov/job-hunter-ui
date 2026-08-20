@@ -4,6 +4,7 @@ import {
   AimOutlined,
   CompassOutlined,
   FileSearchOutlined,
+  LineChartOutlined,
   LoginOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
@@ -58,6 +59,7 @@ export const Sidebar = ({
             ),
             label: "Jobs",
           },
+          { key: "/statistics", icon: <LineChartOutlined />, label: "Statistics" },
         ]
       : []),
     ...(canReadPreferences
