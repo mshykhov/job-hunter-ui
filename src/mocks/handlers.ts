@@ -7,6 +7,7 @@ import type { VacancyStatisticsQuery } from "@/features/statistics/types";
 
 import { AUTOMATION_STATUS_MOCK } from "./automationFixture";
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
+import { materialsHandlers } from "./materialsHandlers";
 import { AI_PROVIDER_CHAIN_MOCK, AI_PROVIDERS_MOCK, PREFERENCES_MOCK } from "./settingsFixtures";
 import { VACANCY_STATISTICS_MOCK } from "./statisticsFixture";
 
@@ -94,20 +95,7 @@ export const handlers = [
 
   http.post(url("/jobs/rematch"), () => HttpResponse.json({ jobsQueued: 12 })),
 
-  http.get(url("/jobs/:jobId/materials"), () => HttpResponse.json([])),
-  http.get(url("/jobs/:jobId/materials/revisions"), () => HttpResponse.json([])),
-  http.post(url("/jobs/:jobId/materials"), () =>
-    HttpResponse.json({
-      packageId: "mock-package",
-      requestId: "mock-request",
-      status: "QUEUED",
-      mode: "TERRA",
-      requestedKinds: ["CV_DOCX", "CV_PDF", "COVER_LETTER", "RECRUITER_MESSAGE"],
-      coverLetterPolicy: "OPTIONAL_STANDARD",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    })
-  ),
+  ...materialsHandlers,
 
   http.get(url("/public/jobs/sources"), () => HttpResponse.json(SOURCES)),
 
