@@ -715,3 +715,21 @@ body {
   padding: 24px;
   text-align: center;
 }
+
+.materials-panel {
+  border-color: var(--ant-color-border-secondary);
+  background: var(--ant-color-fill-quaternary);
+}
+
+.materials-message {
+  padding: 8px 10px;
+  border: 1px solid var(--ant-color-border-secondary);
+  border-radius: var(--ant-border-radius);
+  background: var(--ant-color-bg-container);
+}
+
+.materials-message-text {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 13px;
+}

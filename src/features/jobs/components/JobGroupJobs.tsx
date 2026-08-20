@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { LinkOutlined } from "@ant-design/icons";
 import { Button, Collapse, Flex, Skeleton, Tag, Typography } from "antd";
 
+import { ApplicationPackageSection } from "@/features/materials/components/ApplicationPackageSection";
 import { formatDescription } from "@/lib/formatDescription";
 
 import { getSourceColor } from "../constants";
@@ -11,15 +12,13 @@ import type { GroupJob } from "../types";
 import { sortJobsByDate } from "../utils/jobDetailUtils";
 import { JobEntryContent } from "./JobEntryContent";
 import { JobEntryLabel } from "./JobEntryLabel";
-import { OutreachSection } from "./OutreachSection";
 
 interface JobGroupJobsProps {
   jobs: GroupJob[];
-  groupId: string;
   loading?: boolean;
 }
 
-export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
+export const JobGroupJobs = ({ jobs, loading }: JobGroupJobsProps) => {
   const sourceNames = useSourceNames();
 
   const groupedBySource = useMemo(() => {
@@ -59,7 +58,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
             Open
           </Button>
         </Flex>
-        <OutreachSection job={job} groupId={groupId} />
+        <ApplicationPackageSection job={job} />
         {job.description ? (
           <div
             className="job-description"
@@ -86,7 +85,7 @@ export const JobGroupJobs = ({ jobs, groupId, loading }: JobGroupJobsProps) => {
     const jobItems = sourceJobs.map((job) => ({
       key: `${source}-${job.jobId}`,
       label: <JobEntryLabel job={job} />,
-      children: <JobEntryContent job={job} groupId={groupId} />,
+      children: <JobEntryContent job={job} />,
     }));
 
     return { source, sourceJobs, jobItems };

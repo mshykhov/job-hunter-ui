@@ -36,8 +36,6 @@ export interface GroupJob {
   salary: string | null;
   location: string | null;
   remote: boolean;
-  coverLetter: string | null;
-  recruiterMessage: string | null;
   publishedAt: string | null;
   scrapedAt: string | null;
 }

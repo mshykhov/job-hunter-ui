@@ -6,12 +6,7 @@ import type { SaveAiProviderChainRequest } from "@/features/settings/types";
 
 import { AUTOMATION_STATUS_MOCK } from "./automationFixture";
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
-import {
-  AI_PROVIDER_CHAIN_MOCK,
-  AI_PROVIDERS_MOCK,
-  OUTREACH_MOCK,
-  PREFERENCES_MOCK,
-} from "./settingsFixtures";
+import { AI_PROVIDER_CHAIN_MOCK, AI_PROVIDERS_MOCK, PREFERENCES_MOCK } from "./settingsFixtures";
 
 const url = (path: string) => `${API_URL}${path}`;
 
@@ -93,6 +88,21 @@ export const handlers = [
 
   http.post(url("/jobs/rematch"), () => HttpResponse.json({ jobsQueued: 12 })),
 
+  http.get(url("/jobs/:jobId/materials"), () => HttpResponse.json([])),
+  http.get(url("/jobs/:jobId/materials/revisions"), () => HttpResponse.json([])),
+  http.post(url("/jobs/:jobId/materials"), () =>
+    HttpResponse.json({
+      packageId: "mock-package",
+      requestId: "mock-request",
+      status: "QUEUED",
+      mode: "TERRA",
+      requestedKinds: ["CV_DOCX", "CV_PDF", "COVER_LETTER", "RECRUITER_MESSAGE"],
+      coverLetterPolicy: "OPTIONAL_STANDARD",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+  ),
+
   http.get(url("/public/jobs/sources"), () => HttpResponse.json(SOURCES)),
 
   http.get(url("/public/jobs"), ({ request }) => {
@@ -143,11 +153,6 @@ export const handlers = [
     HttpResponse.json(await request.json())
   ),
   http.put(url("/preferences/about"), async ({ request }) =>
-    HttpResponse.json(await request.json())
-  ),
-
-  http.get(url("/settings/outreach"), () => HttpResponse.json(OUTREACH_MOCK)),
-  http.put(url("/settings/outreach"), async ({ request }) =>
     HttpResponse.json(await request.json())
   ),
 
