@@ -11,6 +11,7 @@ React frontend for [Job Hunter](https://github.com/mshykhov/job-hunter). Dashboa
 | Vite             | Build tool                |
 | Ant Design 6     | Component library         |
 | TanStack Query   | Server state management   |
+| Apache ECharts 6 | Vacancy history charts    |
 | Authentik (OIDC) | Authentication (optional) |
 | Axios            | HTTP client               |
 
@@ -30,6 +31,7 @@ PostgreSQL and automation runtime
 | ---------- | ---------------- | --------------------------------------------------------------- |
 | Explore    | No               | Public vacancy browser                                          |
 | Jobs       | Yes              | Dashboard with filters, detail panel, and review mode           |
+| Statistics | `read:jobs`      | Vacancy history, matching outcomes, source filters, and AI score |
 | Settings   | Yes              | Preferences, AI providers, outreach, and Telegram               |
 | Automation | Owner scope only | Sanitized runner, browser, MCP, API, database, and Codex health |
 
@@ -39,7 +41,7 @@ PostgreSQL and automation runtime
 src/
 ├── app/              # App shell — routing, providers
 ├── components/       # Shared reusable components (Layout, AuthProvider)
-├── features/         # Feature modules (automation, explore, jobs, settings)
+├── features/         # Feature modules (automation, explore, jobs, settings, statistics)
 ├── hooks/            # Shared hooks (useAuth, useTheme)
 ├── lib/              # Infrastructure — API client, query client
 ├── config/           # Environment config, constants
@@ -64,9 +66,9 @@ npm run dev                   # http://localhost:5173
 | `OIDC_CLIENT_ID` | OIDC public client ID                | No       |
 | `OIDC_ENABLED`   | Enable/disable auth (`true`/`false`) | No       |
 
-When OIDC is not configured, the normal development pages remain accessible. The
-`/automation` route stays closed because production access requires an authenticated
-token with `read:automation` and the API separately enforces the configured owner.
+When OIDC is not configured, the public Explore page remains accessible. Jobs,
+Statistics, Settings, and Automation keep their production permission gates;
+Automation also requires the owner-scoped `read:automation` token.
 
 ## Scripts
 
