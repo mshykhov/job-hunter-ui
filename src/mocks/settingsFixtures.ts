@@ -22,27 +22,6 @@ export const PREFERENCES_MOCK = {
   },
 };
 
-export const OUTREACH_MOCK = {
-  coverLetterPrompt: null,
-  recruiterMessagePrompt: null,
-  sourceConfig: {
-    djinni: {
-      coverLetterEnabled: true,
-      recruiterMessageEnabled: true,
-      coverLetterPrompt: null,
-      recruiterMessagePrompt: null,
-    },
-    dou: {
-      coverLetterEnabled: false,
-      recruiterMessageEnabled: true,
-      coverLetterPrompt: null,
-      recruiterMessagePrompt: null,
-    },
-  },
-  defaultCoverLetterPrompt: "Write a concise, tailored cover letter for {job}.",
-  defaultRecruiterMessagePrompt: "Write a short, friendly recruiter outreach message for {job}.",
-};
-
 export const AI_PROVIDERS_MOCK = {
   providers: [
     {

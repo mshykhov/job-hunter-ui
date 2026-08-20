@@ -147,7 +147,7 @@ export const JobDetailContent = ({
           <Tag>{postingCount}</Tag>
         </div>
 
-        <JobGroupJobs jobs={detail?.jobs ?? []} groupId={job.groupId} loading={detailLoading} />
+        <JobGroupJobs jobs={detail?.jobs ?? []} loading={detailLoading} />
       </div>
     </Flex>
   );

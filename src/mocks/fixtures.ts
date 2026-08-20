@@ -134,8 +134,6 @@ export const buildDetail = (g: JobGroup): JobGroupDetail => ({
     salary: g.salary,
     location: g.locations[0] ?? null,
     remote: g.remote,
-    coverLetter: null,
-    recruiterMessage: null,
     publishedAt: g.publishedAt,
     scrapedAt: g.matchedAt,
   })),

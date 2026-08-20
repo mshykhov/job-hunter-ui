@@ -11,8 +11,6 @@ const makeJob = (overrides: Partial<GroupJob> = {}): GroupJob => ({
   salary: null,
   location: null,
   remote: false,
-  coverLetter: null,
-  recruiterMessage: null,
   publishedAt: null,
   scrapedAt: null,
   ...overrides,

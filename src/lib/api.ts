@@ -149,11 +149,13 @@ export const API_PATHS = {
   PREFERENCES_GENERATE: "/preferences/generate",
   AI_PROVIDERS: "/settings/ai-providers",
   AI_PROVIDER_CHAIN: "/settings/ai/providers",
-  OUTREACH_SETTINGS: "/settings/outreach",
-  OUTREACH_TEST_COVER_LETTER: "/settings/outreach/test/cover-letter",
-  OUTREACH_TEST_RECRUITER_MESSAGE: "/settings/outreach/test/recruiter-message",
-  JOB_COVER_LETTER: (jobId: string) => `/jobs/${jobId}/outreach/cover-letter`,
-  JOB_RECRUITER_MESSAGE: (jobId: string) => `/jobs/${jobId}/outreach/recruiter-message`,
+  JOB_MATERIALS: (jobId: string) => `/jobs/${jobId}/materials`,
+  JOB_MATERIAL_REVISIONS: (jobId: string) => `/jobs/${jobId}/materials/revisions`,
+  MATERIAL_ARTIFACT: (revisionId: string, kind: string) =>
+    `/materials/revisions/${revisionId}/artifacts/${kind}`,
+  MATERIAL_IMPROVE_SOL: (revisionId: string) =>
+    `/materials/revisions/${revisionId}/improve-with-sol`,
+  MATERIAL_SELECT: (revisionId: string) => `/materials/revisions/${revisionId}/select`,
   JOBS_REMATCH: "/jobs/rematch",
   AUTOMATION_STATUS: "/automation/status",
   HEALTH: "/actuator/health",

@@ -1,18 +1,17 @@
 import { Flex, Typography } from "antd";
 
+import { ApplicationPackageSection } from "@/features/materials/components/ApplicationPackageSection";
 import { formatDescription } from "@/lib/formatDescription";
 
 import type { GroupJob } from "../types";
-import { OutreachSection } from "./OutreachSection";
 
 interface JobEntryContentProps {
   job: GroupJob;
-  groupId: string;
 }
 
-export const JobEntryContent = ({ job, groupId }: JobEntryContentProps) => (
+export const JobEntryContent = ({ job }: JobEntryContentProps) => (
   <Flex vertical gap={8}>
-    <OutreachSection job={job} groupId={groupId} />
+    <ApplicationPackageSection job={job} />
     {job.description ? (
       <div
         className="job-description"
