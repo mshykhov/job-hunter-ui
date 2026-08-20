@@ -3,11 +3,12 @@ import { http, HttpResponse } from "msw";
 import { API_URL } from "@/config/constants";
 import type { JobGroup, PaginatedJobGroupsResponse, UserJobStatus } from "@/features/jobs/types";
 import type { SaveAiProviderChainRequest } from "@/features/settings/types";
-import type { VacancyStatisticsQuery, VacancyStatisticsResponse } from "@/features/statistics/types";
+import type { VacancyStatisticsQuery } from "@/features/statistics/types";
 
 import { AUTOMATION_STATUS_MOCK } from "./automationFixture";
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
 import { AI_PROVIDER_CHAIN_MOCK, AI_PROVIDERS_MOCK, PREFERENCES_MOCK } from "./settingsFixtures";
+import { VACANCY_STATISTICS_MOCK } from "./statisticsFixture";
 
 const url = (path: string) => `${API_URL}${path}`;
 
@@ -46,16 +47,6 @@ const sortGroups = (list: JobGroup[], sortBy?: string): JobGroup[] => {
   if (sortBy === "MATCHED") s.sort((a, b) => (b.matchedAt ?? "").localeCompare(a.matchedAt ?? ""));
   else s.sort((a, b) => (b.aiRelevanceScore ?? -1) - (a.aiRelevanceScore ?? -1));
   return s;
-};
-
-const VACANCY_STATISTICS_MOCK: VacancyStatisticsResponse = {
-  from: "2026-08-01T00:00:00Z", to: "2026-08-20T23:59:59Z", bucket: "DAY",
-  exactSince: "2026-08-10T00:00:00Z", sourceCoverageSince: "2026-08-12T00:00:00Z",
-  points: [
-    { start: "2026-08-18T00:00:00Z", allVacancies: 18, coldRejected: 7, notFullyRemote: 4, aiScored: 7, legacyRejectedUnknown: 2, medianScore: 72 },
-    { start: "2026-08-19T00:00:00Z", allVacancies: 23, coldRejected: 8, notFullyRemote: 5, aiScored: 10, legacyRejectedUnknown: 0, medianScore: 76 },
-    { start: "2026-08-20T00:00:00Z", allVacancies: 14, coldRejected: 4, notFullyRemote: 3, aiScored: 7, legacyRejectedUnknown: 0, medianScore: 81 },
-  ],
 };
 
 export const handlers = [

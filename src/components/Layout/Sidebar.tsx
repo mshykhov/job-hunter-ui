@@ -43,8 +43,6 @@ export const Sidebar = ({
   const { isAuthenticated, isConfigured, permissions, user, loginWithRedirect, logout } = useAuth();
 
   const canReadJobs = !isConfigured || permissions.includes(PERMISSIONS.READ_JOBS);
-  const canReadPreferences = !isConfigured || permissions.includes(PERMISSIONS.READ_PREFERENCES);
-  const canReadAutomation = permissions.includes(PERMISSIONS.READ_AUTOMATION);
 
   const navItems = [
     { key: "/explore", icon: <CompassOutlined />, label: "Explore" },
@@ -62,10 +60,10 @@ export const Sidebar = ({
           { key: "/statistics", icon: <LineChartOutlined />, label: "Statistics" },
         ]
       : []),
-    ...(canReadPreferences
+    ...(!isConfigured || permissions.includes(PERMISSIONS.READ_PREFERENCES)
       ? [{ key: "/settings", icon: <SettingOutlined />, label: "Settings" }]
       : []),
-    ...(canReadAutomation
+    ...(permissions.includes(PERMISSIONS.READ_AUTOMATION)
       ? [{ key: "/automation", icon: <RobotOutlined />, label: "Automation" }]
       : []),
   ];
