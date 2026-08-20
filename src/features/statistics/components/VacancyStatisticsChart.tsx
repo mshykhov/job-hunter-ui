@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 
 import { LineChart } from "echarts/charts";
 import {
+  AriaComponent,
   DataZoomComponent,
   GridComponent,
   LegendComponent,
@@ -20,6 +21,7 @@ echarts.use([
   LegendComponent,
   TooltipComponent,
   DataZoomComponent,
+  AriaComponent,
   CanvasRenderer,
 ]);
 

@@ -24,30 +24,3 @@ export const STATISTICS_BUCKET_OPTIONS: { value: VacancyStatsBucket; label: stri
   { value: VACANCY_STATS_BUCKET.WEEK, label: "Week" },
   { value: VACANCY_STATS_BUCKET.MONTH, label: "Month" },
 ];
-
-export const statisticsRangeStart = (
-  range: StatisticsRange,
-  now = new Date()
-): string | undefined => {
-  const days: Record<StatisticsRange, number | undefined> = {
-    [STATISTICS_RANGE.DAYS_7]: 7,
-    [STATISTICS_RANGE.DAYS_30]: 30,
-    [STATISTICS_RANGE.DAYS_90]: 90,
-    [STATISTICS_RANGE.YEAR]: 365,
-    [STATISTICS_RANGE.ALL]: undefined,
-    [STATISTICS_RANGE.CUSTOM]: undefined,
-  };
-  const selectedDays = days[range];
-  if (!selectedDays) return undefined;
-  const from = new Date(now);
-  from.setUTCDate(from.getUTCDate() - selectedDays);
-  return from.toISOString();
-};
-
-export const statisticsRangeBucket = (range: StatisticsRange): VacancyStatsBucket => {
-  if (range === STATISTICS_RANGE.YEAR) return VACANCY_STATS_BUCKET.WEEK;
-  if (range === STATISTICS_RANGE.ALL) return VACANCY_STATS_BUCKET.MONTH;
-  return VACANCY_STATS_BUCKET.DAY;
-};
-
-export const ALL_TIME_START = "1970-01-01T00:00:00.000Z";

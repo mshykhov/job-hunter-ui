@@ -1,22 +1,15 @@
 import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { Alert, Card, DatePicker, Empty, Flex, Segmented, Select, Spin, Typography } from "antd";
-import dayjs from "dayjs";
+import { Alert, Card, Empty, Flex, Spin, Typography } from "antd";
 
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 
-import {
-  ALL_TIME_START,
-  STATISTICS_BUCKET_OPTIONS,
-  STATISTICS_RANGE,
-  STATISTICS_RANGE_OPTIONS,
-  type StatisticsRange,
-  statisticsRangeBucket,
-  statisticsRangeStart,
-} from "../constants";
+import { STATISTICS_RANGE, type StatisticsRange } from "../constants";
 import { useVacancyStatistics } from "../hooks/useVacancyStatistics";
+import { ALL_TIME_START, statisticsRangeBucket, statisticsRangeStart } from "../range";
 import { VACANCY_STATS_BUCKET, type VacancyStatsBucket } from "../types";
+import { StatisticsControls } from "./StatisticsControls";
 
 const VacancyStatisticsChart = lazy(() => import("./VacancyStatisticsChart"));
 
@@ -82,47 +75,26 @@ export const StatisticsPage = () => {
         </Typography.Text>
       </div>
       <Card className="statistics-card">
-        <Flex className="statistics-controls" gap={12} wrap>
-          <Segmented
-            value={range}
-            options={STATISTICS_RANGE_OPTIONS}
-            onChange={(value) => updateParams({ range: value as StatisticsRange })}
-          />
-          <DatePicker.RangePicker
-            value={
-              range === STATISTICS_RANGE.CUSTOM && customFrom && customTo
-                ? [dayjs(customFrom), dayjs(customTo)]
-                : null
-            }
-            onChange={(dates) => {
-              const params = new URLSearchParams(searchParams);
-              if (!dates?.[0] || !dates[1]) return;
-              params.set("range", STATISTICS_RANGE.CUSTOM);
-              params.set("from", dates[0].startOf("day").toISOString());
-              params.set("to", dates[1].endOf("day").toISOString());
-              params.delete("bucket");
-              setSearchParams(params, { replace: true });
-            }}
-          />
-          <Segmented
-            value={bucket}
-            options={STATISTICS_BUCKET_OPTIONS}
-            onChange={(value) => updateParams({ bucket: value as VacancyStatsBucket })}
-          />
-          <Select
-            className="statistics-sources"
-            mode="multiple"
-            allowClear
-            placeholder="All sources"
-            value={sources}
-            options={sourceOptions.map((source) => ({
-              value: source.id,
-              label: source.displayName,
-            }))}
-            onChange={(value) => updateParams({ sources: value })}
-          />
-        </Flex>
-        {data?.exactSince && (
+        <StatisticsControls
+          range={range}
+          bucket={bucket}
+          sources={sources}
+          sourceOptions={sourceOptions}
+          customFrom={customFrom}
+          customTo={customTo}
+          onRange={(value) => updateParams({ range: value })}
+          onBucket={(value) => updateParams({ bucket: value })}
+          onSources={(value) => updateParams({ sources: value })}
+          onCustomRange={(from, to) => {
+            const params = new URLSearchParams(searchParams);
+            params.set("range", STATISTICS_RANGE.CUSTOM);
+            params.set("from", from);
+            params.set("to", to);
+            params.delete("bucket");
+            setSearchParams(params, { replace: true });
+          }}
+        />
+        {data?.exactSince && queryIntersectsBefore(query.from, data.exactSince) && (
           <Alert
             className="statistics-warning"
             type="info"

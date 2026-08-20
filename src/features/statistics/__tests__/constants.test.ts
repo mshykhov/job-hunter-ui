@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { STATISTICS_RANGE, statisticsRangeStart } from "../constants";
+import { STATISTICS_RANGE } from "../constants";
+import { statisticsRangeStart } from "../range";
 
 describe("statisticsRangeStart", () => {
   it("omits the lower bound for the complete history", () => {
@@ -9,7 +10,7 @@ describe("statisticsRangeStart", () => {
 
   it("calculates calendar range boundaries", () => {
     expect(statisticsRangeStart(STATISTICS_RANGE.DAYS_7, new Date("2026-08-20T00:00:00Z"))).toBe(
-      "2026-08-13T00:00:00.000Z"
+      "2026-08-14T00:00:00.000Z"
     );
   });
 });
