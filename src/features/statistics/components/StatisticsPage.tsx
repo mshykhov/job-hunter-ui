@@ -1,20 +1,24 @@
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { Alert, Card, Empty, Flex, Segmented, Select, Spin, Typography } from "antd";
+import { Alert, Card, DatePicker, Empty, Flex, Segmented, Select, Spin, Typography } from "antd";
+import dayjs from "dayjs";
 
 import { useJobSources } from "@/features/jobs/hooks/useJobSources";
 
 import {
+  ALL_TIME_START,
   STATISTICS_BUCKET_OPTIONS,
   STATISTICS_RANGE,
   STATISTICS_RANGE_OPTIONS,
   type StatisticsRange,
+  statisticsRangeBucket,
   statisticsRangeStart,
 } from "../constants";
 import { useVacancyStatistics } from "../hooks/useVacancyStatistics";
 import { VACANCY_STATS_BUCKET, type VacancyStatsBucket } from "../types";
-import { VacancyStatisticsChart } from "./VacancyStatisticsChart";
+
+const VacancyStatisticsChart = lazy(() => import("./VacancyStatisticsChart"));
 
 const ranges = new Set<string>(Object.values(STATISTICS_RANGE));
 const buckets = new Set<string>(Object.values(VACANCY_STATS_BUCKET));
@@ -26,17 +30,28 @@ export const StatisticsPage = () => {
       ? searchParams.get("range")
       : STATISTICS_RANGE.DAYS_30
   ) as StatisticsRange;
+  const bucketParam = searchParams.get("bucket");
   const bucket = (
-    buckets.has(searchParams.get("bucket") ?? "")
-      ? searchParams.get("bucket")
-      : VACANCY_STATS_BUCKET.DAY
+    buckets.has(bucketParam ?? "") ? bucketParam : statisticsRangeBucket(range)
   ) as VacancyStatsBucket;
+  const customFrom = validIso(searchParams.get("from"));
+  const customTo = validIso(searchParams.get("to"));
   const sourceKey = searchParams.getAll("source").join("\u0000");
   const sources = useMemo(() => (sourceKey ? sourceKey.split("\u0000") : []), [sourceKey]);
-  const query = useMemo(
-    () => ({ from: statisticsRangeStart(range), bucket, ...(sources.length ? { sources } : {}) }),
-    [bucket, range, sources]
-  );
+  const query = useMemo(() => {
+    const from =
+      range === STATISTICS_RANGE.ALL
+        ? ALL_TIME_START
+        : range === STATISTICS_RANGE.CUSTOM
+          ? customFrom
+          : statisticsRangeStart(range);
+    return {
+      ...(from ? { from } : {}),
+      ...(range === STATISTICS_RANGE.CUSTOM && customTo ? { to: customTo } : {}),
+      bucket,
+      ...(sources.length ? { sources } : {}),
+    };
+  }, [bucket, customFrom, customTo, range, sources]);
   const { data, isLoading, error } = useVacancyStatistics(query);
   const { data: sourceOptions = [] } = useJobSources();
 
@@ -47,6 +62,7 @@ export const StatisticsPage = () => {
   }) => {
     const params = new URLSearchParams(searchParams);
     if (next.range) params.set("range", next.range);
+    if (next.range) params.delete("bucket");
     if (next.bucket) params.set("bucket", next.bucket);
     if (next.sources) {
       params.delete("source");
@@ -71,6 +87,22 @@ export const StatisticsPage = () => {
             value={range}
             options={STATISTICS_RANGE_OPTIONS}
             onChange={(value) => updateParams({ range: value as StatisticsRange })}
+          />
+          <DatePicker.RangePicker
+            value={
+              range === STATISTICS_RANGE.CUSTOM && customFrom && customTo
+                ? [dayjs(customFrom), dayjs(customTo)]
+                : null
+            }
+            onChange={(dates) => {
+              const params = new URLSearchParams(searchParams);
+              if (!dates?.[0] || !dates[1]) return;
+              params.set("range", STATISTICS_RANGE.CUSTOM);
+              params.set("from", dates[0].startOf("day").toISOString());
+              params.set("to", dates[1].endOf("day").toISOString());
+              params.delete("bucket");
+              setSearchParams(params, { replace: true });
+            }}
           />
           <Segmented
             value={bucket}
@@ -98,14 +130,16 @@ export const StatisticsPage = () => {
             title={`Decision categories are exact from ${formatDate(data.exactSince)}.`}
           />
         )}
-        {data?.sourceCoverageSince && (
-          <Alert
-            className="statistics-warning"
-            type="warning"
-            showIcon
-            title={`Source coverage is complete from ${formatDate(data.sourceCoverageSince)}.`}
-          />
-        )}
+        {data?.sourceCoverageSince &&
+          sources.length > 0 &&
+          queryIntersectsBefore(query.from, data.sourceCoverageSince) && (
+            <Alert
+              className="statistics-warning"
+              type="warning"
+              showIcon
+              title={`Source coverage is complete from ${formatDate(data.sourceCoverageSince)}.`}
+            />
+          )}
         {isLoading && (
           <Flex className="statistics-loading" justify="center" align="center">
             <Spin size="large" />
@@ -122,7 +156,17 @@ export const StatisticsPage = () => {
         {data && !data.points.length && (
           <Empty className="statistics-empty" description="No vacancy history for this period" />
         )}
-        {data?.points.length ? <VacancyStatisticsChart points={data.points} /> : null}
+        {data?.points.length ? (
+          <Suspense
+            fallback={
+              <Flex className="statistics-loading" justify="center" align="center">
+                <Spin size="large" />
+              </Flex>
+            }
+          >
+            <VacancyStatisticsChart points={data.points} exactSince={data.exactSince} />
+          </Suspense>
+        ) : null}
       </Card>
     </Flex>
   );
@@ -130,3 +174,8 @@ export const StatisticsPage = () => {
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(value));
+
+const validIso = (value: string | null): string | undefined =>
+  value && !Number.isNaN(Date.parse(value)) ? value : undefined;
+const queryIntersectsBefore = (from: string | undefined, coverageSince: string) =>
+  !from || from < coverageSince;

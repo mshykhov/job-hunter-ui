@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-exports -- React.lazy requires a default export. */
 import { useEffect, useRef } from "react";
 
 import { LineChart } from "echarts/charts";
@@ -24,9 +25,10 @@ echarts.use([
 
 interface VacancyStatisticsChartProps {
   points: VacancyStatisticsPoint[];
+  exactSince: string | null;
 }
 
-export const VacancyStatisticsChart = ({ points }: VacancyStatisticsChartProps) => {
+const VacancyStatisticsChart = ({ points, exactSince }: VacancyStatisticsChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,8 +47,17 @@ export const VacancyStatisticsChart = ({ points }: VacancyStatisticsChartProps) 
     const element = containerRef.current;
     if (!element) return;
     const chart = echarts.getInstanceByDom(element);
-    chart?.setOption(vacancyStatisticsChartOption(points), true);
-  }, [points]);
+    chart?.setOption(vacancyStatisticsChartOption(points, exactSince), true);
+  }, [exactSince, points]);
 
-  return <div ref={containerRef} className="statistics-chart" aria-label="Vacancy history chart" />;
+  return (
+    <div
+      ref={containerRef}
+      className="statistics-chart"
+      role="img"
+      aria-label="Vacancy history chart"
+    />
+  );
 };
+
+export default VacancyStatisticsChart;

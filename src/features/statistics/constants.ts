@@ -6,6 +6,7 @@ export const STATISTICS_RANGE = {
   DAYS_90: "90d",
   YEAR: "1y",
   ALL: "all",
+  CUSTOM: "custom",
 } as const;
 
 export type StatisticsRange = (typeof STATISTICS_RANGE)[keyof typeof STATISTICS_RANGE];
@@ -34,6 +35,7 @@ export const statisticsRangeStart = (
     [STATISTICS_RANGE.DAYS_90]: 90,
     [STATISTICS_RANGE.YEAR]: 365,
     [STATISTICS_RANGE.ALL]: undefined,
+    [STATISTICS_RANGE.CUSTOM]: undefined,
   };
   const selectedDays = days[range];
   if (!selectedDays) return undefined;
@@ -41,3 +43,11 @@ export const statisticsRangeStart = (
   from.setUTCDate(from.getUTCDate() - selectedDays);
   return from.toISOString();
 };
+
+export const statisticsRangeBucket = (range: StatisticsRange): VacancyStatsBucket => {
+  if (range === STATISTICS_RANGE.YEAR) return VACANCY_STATS_BUCKET.WEEK;
+  if (range === STATISTICS_RANGE.ALL) return VACANCY_STATS_BUCKET.MONTH;
+  return VACANCY_STATS_BUCKET.DAY;
+};
+
+export const ALL_TIME_START = "1970-01-01T00:00:00.000Z";
