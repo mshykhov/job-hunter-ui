@@ -5,6 +5,18 @@ import { API_URL } from "@/config/constants";
 const url = (path: string) => `${API_URL}${path}`;
 
 export const materialsHandlers = [
+  http.get(url("/materials/profiles"), () =>
+    HttpResponse.json([
+      {
+        id: "mock-profile",
+        profileVersion: "mock-profile-version",
+        schemaVersion: "application-materials/v1",
+        sourceCommit: "mock-source-commit",
+        active: true,
+        createdAt: new Date().toISOString(),
+      },
+    ])
+  ),
   http.get(url("/jobs/:jobId/materials"), () => HttpResponse.json([])),
   http.get(url("/jobs/:jobId/materials/revisions"), () => HttpResponse.json([])),
   http.post(url("/jobs/:jobId/materials"), () =>
