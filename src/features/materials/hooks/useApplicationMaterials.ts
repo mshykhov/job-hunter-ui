@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, API_PATHS } from "@/lib/api";
 
 import {
+  type CandidateProfile,
   MATERIAL_STATUS,
   type MaterialKind,
   type MaterialRequest,
@@ -12,6 +13,12 @@ import {
 
 const requestKey = (jobId: string) => ["application-materials", jobId, "requests"] as const;
 const revisionKey = (jobId: string) => ["application-materials", jobId, "revisions"] as const;
+const profileKey = ["application-materials", "profiles"] as const;
+
+export interface CreateApplicationMaterialsInput {
+  requestedKinds: MaterialKind[];
+  regenerate: boolean;
+}
 
 const ACTIVE_STATUSES = new Set<MaterialStatus>([
   MATERIAL_STATUS.QUEUED,
@@ -46,13 +53,26 @@ export const useApplicationMaterials = (jobId: string) => {
 
 export const useCreateApplicationMaterials = (jobId: string) => {
   const queryClient = useQueryClient();
-  return useMutation<MaterialRequest, Error, boolean>({
-    mutationFn: async (regenerate) =>
-      (await api.post<MaterialRequest>(API_PATHS.JOB_MATERIALS(jobId), { regenerate })).data,
+  return useMutation<MaterialRequest, Error, CreateApplicationMaterialsInput>({
+    mutationFn: async (request) =>
+      (await api.post<MaterialRequest>(API_PATHS.JOB_MATERIALS(jobId), request)).data,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: requestKey(jobId) });
     },
   });
+};
+
+export const useCandidateProfiles = () => {
+  const profiles = useQuery({
+    queryKey: profileKey,
+    queryFn: async () => (await api.get<CandidateProfile[]>(API_PATHS.MATERIAL_PROFILES)).data,
+    staleTime: 60_000,
+  });
+  return {
+    profiles: profiles.data ?? [],
+    isLoading: profiles.isLoading,
+    error: profiles.error,
+  };
 };
 
 export const useImproveApplicationMaterials = (jobId: string) => {

@@ -51,3 +51,12 @@ export interface MaterialRevision {
   artifacts: MaterialArtifact[];
   createdAt: string | null;
 }
+
+export interface CandidateProfile {
+  id: string;
+  profileVersion: string;
+  schemaVersion: string;
+  sourceCommit: string;
+  active: boolean;
+  createdAt: string | null;
+}

@@ -156,6 +156,7 @@ export const API_PATHS = {
   MATERIAL_IMPROVE_SOL: (revisionId: string) =>
     `/materials/revisions/${revisionId}/improve-with-sol`,
   MATERIAL_SELECT: (revisionId: string) => `/materials/revisions/${revisionId}/select`,
+  MATERIAL_PROFILES: "/materials/profiles",
   JOBS_REMATCH: "/jobs/rematch",
   AUTOMATION_STATUS: "/automation/status",
   VACANCY_STATISTICS: "/statistics/vacancies/query",

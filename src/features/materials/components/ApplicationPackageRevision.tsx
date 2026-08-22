@@ -31,6 +31,11 @@ export const ApplicationPackageRevision = ({
     MATERIAL_KIND.RECRUITER_MESSAGE,
     revision.artifacts.some(({ kind }) => kind === MATERIAL_KIND.RECRUITER_MESSAGE)
   );
+  const hasCv = revision.artifacts.some(({ kind }) => kind === MATERIAL_KIND.CV_PDF);
+  const hasCoverLetter = revision.artifacts.some(({ kind }) => kind === MATERIAL_KIND.COVER_LETTER);
+  const hasRecruiterMessage = revision.artifacts.some(
+    ({ kind }) => kind === MATERIAL_KIND.RECRUITER_MESSAGE
+  );
 
   return (
     <>
@@ -46,33 +51,39 @@ export const ApplicationPackageRevision = ({
           loading={select.isPending}
           aria-label="Selected application package revision"
         />
-        <Space size="small">
-          <Button
-            size="small"
-            icon={<FilePdfOutlined />}
-            onClick={() => void downloadMaterialArtifact(revision.id, MATERIAL_KIND.CV_PDF)}
-          >
-            PDF
-          </Button>
-          <Button
-            size="small"
-            icon={<FileWordOutlined />}
-            onClick={() => void downloadMaterialArtifact(revision.id, MATERIAL_KIND.CV_DOCX)}
-          >
-            DOCX
-          </Button>
-        </Space>
+        {hasCv && (
+          <Space size="small">
+            <Button
+              size="small"
+              icon={<FilePdfOutlined />}
+              onClick={() => void downloadMaterialArtifact(revision.id, MATERIAL_KIND.CV_PDF)}
+            >
+              PDF
+            </Button>
+            <Button
+              size="small"
+              icon={<FileWordOutlined />}
+              onClick={() => void downloadMaterialArtifact(revision.id, MATERIAL_KIND.CV_DOCX)}
+            >
+              DOCX
+            </Button>
+          </Space>
+        )}
       </Flex>
-      <MaterialMessage
-        label="Cover letter"
-        text={coverLetter.data}
-        loading={coverLetter.isLoading}
-      />
-      <MaterialMessage
-        label="Recruiter message"
-        text={recruiterMessage.data}
-        loading={recruiterMessage.isLoading}
-      />
+      {hasCoverLetter && (
+        <MaterialMessage
+          label="Cover letter"
+          text={coverLetter.data}
+          loading={coverLetter.isLoading}
+        />
+      )}
+      {hasRecruiterMessage && (
+        <MaterialMessage
+          label="Recruiter message"
+          text={recruiterMessage.data}
+          loading={recruiterMessage.isLoading}
+        />
+      )}
     </>
   );
 };
