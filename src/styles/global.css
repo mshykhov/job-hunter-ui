@@ -70,9 +70,18 @@ body {
   }
 }
 
-/* Dark scrollbar */
 :root {
   color-scheme: dark;
+  --app-scrollbar-thumb: rgba(255, 255, 255, 0.24);
+  --app-scrollbar-thumb-hover: rgba(255, 255, 255, 0.42);
+  --app-link-color: #818cf8;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --app-scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --app-scrollbar-thumb-hover: rgba(0, 0, 0, 0.36);
+  --app-link-color: #4f46e5;
 }
 
 *::-webkit-scrollbar {
@@ -85,20 +94,21 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.24);
+  background: var(--app-scrollbar-thumb);
   border-radius: 5px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.42);
+  background: var(--app-scrollbar-thumb-hover);
   background-clip: padding-box;
 }
 
 /* Review card */
 .review-card {
   height: calc(100vh - 130px);
+  min-height: 0;
 }
 
 .review-card-header {
@@ -108,24 +118,23 @@ body {
   margin-bottom: 8px;
 }
 
-.review-card-body {
-  position: relative;
+.review-card > .ant-spin {
   flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.review-card > .ant-spin > .ant-spin-container {
+  height: 100%;
+  min-height: 0;
+}
+
+.review-card-body {
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   border: 1px solid var(--ant-color-border-secondary, #303030);
   border-radius: 8px;
-}
-
-.review-card-body::after {
-  content: "";
-  position: absolute;
-  left: 1px;
-  right: 12px;
-  bottom: 1px;
-  height: 40px;
-  pointer-events: none;
-  border-radius: 0 0 8px 8px;
-  background: linear-gradient(to bottom, transparent, var(--ant-color-bg-layout));
 }
 
 /* Job detail header */
@@ -330,7 +339,7 @@ body {
 }
 
 .job-description a {
-  color: var(--ant-color-primary, #4f46e5);
+  color: var(--app-link-color);
 }
 
 .job-description img {
