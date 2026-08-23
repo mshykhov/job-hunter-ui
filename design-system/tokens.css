@@ -3,6 +3,9 @@
   /* Brand */
   --accent: #4f46e5;
   --accent-selected: rgba(79, 70, 229, 0.15);
+  --dark-link: #818cf8;
+  --dark-link-active: #6366f1;
+  --dark-link-hover: #a5b4fc;
   --radius: 6px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 

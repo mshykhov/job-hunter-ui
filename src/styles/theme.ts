@@ -10,6 +10,9 @@ export const darkTheme: ThemeConfig = {
   algorithm: antTheme.darkAlgorithm,
   token: {
     colorPrimary: ACCENT_COLOR,
+    colorLink: "#818CF8",
+    colorLinkActive: "#6366F1",
+    colorLinkHover: "#A5B4FC",
     borderRadius: 6,
     fontFamily: FONT_FAMILY,
   },

@@ -14,6 +14,8 @@ export const useTheme = () => {
   const [{ mode }, setState] = useState<ThemeState>(storage.load);
 
   useEffect(() => {
+    document.documentElement.dataset.theme = mode;
+    document.documentElement.style.colorScheme = mode;
     storage.save({ mode });
   }, [mode]);
 
