@@ -5,7 +5,7 @@ import type { JobGroup, PaginatedJobGroupsResponse, UserJobStatus } from "@/feat
 import type { SaveAiProviderChainRequest } from "@/features/settings/types";
 import type { VacancyStatisticsQuery } from "@/features/statistics/types";
 
-import { AUTOMATION_STATUS_MOCK } from "./automationFixture";
+import { automationHandlers } from "./automationHandlers";
 import { buildDetail, GROUPS, PUBLIC_JOBS, SOURCES } from "./fixtures";
 import { materialsHandlers } from "./materialsHandlers";
 import { AI_PROVIDER_CHAIN_MOCK, AI_PROVIDERS_MOCK, PREFERENCES_MOCK } from "./settingsFixtures";
@@ -51,6 +51,7 @@ const sortGroups = (list: JobGroup[], sortBy?: string): JobGroup[] => {
 };
 
 export const handlers = [
+  ...automationHandlers,
   http.post(url("/statistics/vacancies/query"), async ({ request }) => {
     const body = (await request.json()) as VacancyStatisticsQuery;
     return HttpResponse.json({ ...VACANCY_STATISTICS_MOCK, ...body });
@@ -134,8 +135,6 @@ export const handlers = [
 
   http.get(url("/public/version"), () => HttpResponse.json({ version: "dev-mock" })),
   http.get(url("/actuator/health"), () => HttpResponse.json({ status: "UP" })),
-  http.get(url("/automation/status"), () => HttpResponse.json(AUTOMATION_STATUS_MOCK)),
-
   http.get(url("/preferences"), () => HttpResponse.json(PREFERENCES_MOCK)),
   http.put(url("/preferences/search"), async ({ request }) =>
     HttpResponse.json(await request.json())

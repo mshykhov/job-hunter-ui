@@ -5,6 +5,7 @@ import { useAutomationStatus } from "../hooks/useAutomationStatus";
 import { AUTOMATION_COMPONENTS, type AutomationState } from "../types";
 import { formatAutomationTimestamp, safeReason } from "../utils";
 import { AutomationStatusCard } from "./AutomationStatusCard";
+import { AutomationWorkflowPanel } from "./AutomationWorkflowPanel";
 
 export const AutomationPage = () => {
   const { data, isLoading, error } = useAutomationStatus();
@@ -65,6 +66,7 @@ export const AutomationPage = () => {
           </Col>
         ))}
       </Row>
+      <AutomationWorkflowPanel />
     </Flex>
   );
 };

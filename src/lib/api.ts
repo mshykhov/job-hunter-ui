@@ -159,6 +159,10 @@ export const API_PATHS = {
   MATERIAL_PROFILES: "/materials/profiles",
   JOBS_REMATCH: "/jobs/rematch",
   AUTOMATION_STATUS: "/automation/status",
+  AUTOMATION_WORKFLOW_RUNS: "/automation/workflows/runs",
+  AUTOMATION_WORKFLOW_RUN: (runId: string) => `/automation/workflows/runs/${runId}`,
+  AUTOMATION_WORKFLOW_CONTROL: (runId: string, action: "pause" | "resume" | "stop") =>
+    `/automation/workflows/runs/${runId}/${action}`,
   VACANCY_STATISTICS: "/statistics/vacancies/query",
   HEALTH: "/actuator/health",
 } as const;

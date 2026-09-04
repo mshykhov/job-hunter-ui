@@ -10,7 +10,9 @@ import { AutomationPage } from "@/features/automation/components/AutomationPage"
 import type { AutomationStatus } from "@/features/automation/types";
 
 const API_URL = "http://localhost:8095/automation/status";
-const server = setupServer();
+const server = setupServer(
+  http.get("http://localhost:8095/automation/workflows/runs", () => HttpResponse.json([]))
+);
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
