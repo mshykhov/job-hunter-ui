@@ -13,6 +13,8 @@ export const darkTheme: ThemeConfig = {
     colorLink: "#818CF8",
     colorLinkActive: "#6366F1",
     colorLinkHover: "#A5B4FC",
+    colorTextSecondary: "#8C8C91",
+    colorTextDescription: "#8C8C91",
     borderRadius: 6,
     fontFamily: FONT_FAMILY,
   },
@@ -32,6 +34,9 @@ export const darkTheme: ThemeConfig = {
     Card: {
       colorBgContainer: "#1A1A1E",
       colorBorderSecondary: "#2A2A2E",
+    },
+    Descriptions: {
+      labelColor: "#8C8C91",
     },
     Table: {
       colorBgContainer: "#1A1A1E",

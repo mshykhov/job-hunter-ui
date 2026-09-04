@@ -47,6 +47,7 @@ export const AutomationWorkflowDetails = ({
           steps={3}
           percent={(run.completedSteps / 3) * 100}
           format={() => `${run.completedSteps}/3`}
+          aria-label="Recovery run progress"
         />
         <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
           <Descriptions.Item label="Work item">{run.workItemStatus}</Descriptions.Item>
@@ -71,7 +72,9 @@ export const AutomationWorkflowDetails = ({
             {actions.map((action) => (
               <Button
                 key={action}
+                type={action === "stop" ? "primary" : "default"}
                 danger={action === "stop"}
+                style={action === "stop" ? { backgroundColor: "#A61D24" } : undefined}
                 disabled={!canWrite}
                 loading={isControlling}
                 onClick={() => onControl(action)}
