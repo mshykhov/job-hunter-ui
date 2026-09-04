@@ -4,7 +4,7 @@ import { AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { WebStorageStateStore } from "oidc-client-ts";
 
 import { OIDC_CONFIG, OIDC_ENABLED } from "@/config/constants";
-import { AuthContext, noopAuth } from "@/hooks/useAuth";
+import { AuthContext, type AuthContextValue, noopAuth, PERMISSIONS } from "@/hooks/useAuth";
 
 import { OidcBridge } from "./OidcBridge";
 
@@ -13,6 +13,16 @@ interface AuthProviderProps {
 }
 
 const isOidcConfigured = OIDC_ENABLED && !!OIDC_CONFIG.authority && !!OIDC_CONFIG.clientId;
+const isMockMode = import.meta.env.VITE_ENABLE_MOCKS === "true";
+
+const mockAuth: AuthContextValue = {
+  ...noopAuth,
+  isAuthenticated: true,
+  isConfigured: true,
+  permissions: Object.values(PERMISSIONS),
+  user: { email: "owner@example.test", name: "Local owner" },
+  getAccessTokenSilently: () => Promise.resolve("mock-owner-token"),
+};
 
 // Strip ?code=&state= left by the authorization code callback
 const onSigninCallback = () => {
@@ -20,6 +30,10 @@ const onSigninCallback = () => {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  if (isMockMode) {
+    return <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>;
+  }
+
   if (!isOidcConfigured) {
     return <AuthContext.Provider value={noopAuth}>{children}</AuthContext.Provider>;
   }

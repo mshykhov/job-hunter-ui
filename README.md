@@ -20,7 +20,7 @@ React frontend for [Job Hunter](https://github.com/mshykhov/job-hunter). Dashboa
 ```
 User's Browser
      ↓ React UI (this module)
-Kotlin API (jobs, preferences, owner-only automation status)
+Kotlin API (jobs, preferences, owner-only automation status and workflow controls)
      ↓
 PostgreSQL and automation runtime
 ```
@@ -33,7 +33,7 @@ PostgreSQL and automation runtime
 | Jobs       | Yes              | Dashboard with filters, detail panel, and review mode           |
 | Statistics | `read:jobs`      | Vacancy history, matching outcomes, source filters, and AI score |
 | Settings   | Yes              | Preferences, AI providers, outreach, and Telegram               |
-| Automation | Owner scope only | Sanitized runner, browser, MCP, API, database, and Codex health |
+| Automation | Owner scope only | Health, durable recovery progress, checkpoints, audit history, and controls |
 
 ### Project Structure
 
@@ -68,7 +68,17 @@ npm run dev                   # http://localhost:5173
 
 When OIDC is not configured, the public Explore page remains accessible. Jobs,
 Statistics, Settings, and Automation keep their production permission gates;
-Automation also requires the owner-scoped `read:automation` token.
+Automation requires the owner-scoped `read:automation` token. Starting, pausing,
+resuming, or stopping a recovery drill additionally requires `write:automation`.
+
+For an isolated local preview with mocked API data and a mocked owner session:
+
+```bash
+npm run dev:mock
+```
+
+Mock authentication is enabled only by `.env.mock` and is not part of production
+builds.
 
 ## Scripts
 
