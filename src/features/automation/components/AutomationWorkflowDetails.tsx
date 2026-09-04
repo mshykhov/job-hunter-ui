@@ -1,21 +1,23 @@
+import { ExperimentOutlined } from "@ant-design/icons";
 import {
+  Alert,
   Button,
   Card,
-  Collapse,
   Descriptions,
   Empty,
   Flex,
+  Popconfirm,
   Progress,
   Space,
   Spin,
   Tag,
-  Timeline,
   Typography,
 } from "antd";
 
 import { formatAutomationTimestamp } from "../utils";
 import type { WorkflowControlAction, WorkflowRun, WorkflowStatus } from "../workflowTypes";
-import { workflowStatusColor } from "../workflowUtils";
+import { workflowStatusColor, workflowStatusLabel } from "../workflowUtils";
+import { AutomationRunReportSections } from "./AutomationRunReportSections";
 
 interface AutomationWorkflowDetailsProps {
   run?: WorkflowRun;
@@ -32,34 +34,59 @@ export const AutomationWorkflowDetails = ({
   isControlling,
   onControl,
 }: AutomationWorkflowDetailsProps) => {
-  if (isLoading) return <Spin />;
-  if (!run) return <Empty description="Select a recovery run" />;
+  if (isLoading) {
+    return (
+      <Flex justify="center" className="automation-report-loading">
+        <Spin />
+      </Flex>
+    );
+  }
+  if (!run) return <Empty description="Select a run to inspect its report" />;
 
   const actions = availableActions(run.status);
   return (
     <Card
       size="small"
-      title="Run details"
-      extra={<Tag color={workflowStatusColor(run.status)}>{run.status}</Tag>}
+      className="automation-run-report"
+      title={
+        <Flex align="center" gap={8}>
+          <ExperimentOutlined />
+          <span>Synthetic recovery report</span>
+        </Flex>
+      }
+      extra={<Tag color={workflowStatusColor(run.status)}>{workflowStatusLabel(run.status)}</Tag>}
     >
       <Flex vertical gap={16}>
+        <Alert
+          type="info"
+          showIcon
+          title="No vacancy is associated with this run"
+          description="The report covers a deterministic infrastructure test. Vacancy details, browser screenshots, and application evidence will belong to future vacancy workflow types."
+        />
         <Progress
           steps={3}
           percent={(run.completedSteps / 3) * 100}
-          format={() => `${run.completedSteps}/3`}
+          format={() => `${run.completedSteps}/3 steps`}
           aria-label="Recovery run progress"
         />
-        <Descriptions size="small" column={{ xs: 1, sm: 2 }}>
+        <Descriptions size="small" bordered column={{ xs: 1, sm: 2 }}>
+          <Descriptions.Item label="Workflow">Synthetic recovery</Descriptions.Item>
+          <Descriptions.Item label="Trigger">Manual</Descriptions.Item>
+          <Descriptions.Item label="Vacancy">Not applicable</Descriptions.Item>
           <Descriptions.Item label="Work item">{run.workItemStatus}</Descriptions.Item>
-          <Descriptions.Item label="Attempts">{run.attemptCount}</Descriptions.Item>
           <Descriptions.Item label="Created">
             {formatAutomationTimestamp(run.createdAt)}
           </Descriptions.Item>
           <Descriptions.Item label="Updated">
             {formatAutomationTimestamp(run.updatedAt)}
           </Descriptions.Item>
+          <Descriptions.Item label="Run ID" span={{ xs: 1, sm: 2 }}>
+            <Typography.Text copyable={{ text: run.id }} code className="automation-technical-id">
+              {run.id}
+            </Typography.Text>
+          </Descriptions.Item>
           {run.failureCode && (
-            <Descriptions.Item label="Failure" span={2}>
+            <Descriptions.Item label="Failure" span={{ xs: 1, sm: 2 }}>
               <Typography.Text type="danger" code>
                 {run.failureCode}
               </Typography.Text>
@@ -69,69 +96,34 @@ export const AutomationWorkflowDetails = ({
         </Descriptions>
         {actions.length > 0 && (
           <Space wrap>
-            {actions.map((action) => (
-              <Button
-                key={action}
-                type={action === "stop" ? "primary" : "default"}
-                danger={action === "stop"}
-                style={action === "stop" ? { backgroundColor: "#A61D24" } : undefined}
-                disabled={!canWrite}
-                loading={isControlling}
-                onClick={() => onControl(action)}
-              >
-                {actionLabel(action)}
-              </Button>
-            ))}
+            {actions.map((action) =>
+              action === "stop" ? (
+                <Popconfirm
+                  key={action}
+                  title="Stop this run?"
+                  description="A stopped run is terminal and cannot be resumed."
+                  okText="Stop run"
+                  okButtonProps={{ danger: true }}
+                  onConfirm={() => onControl(action)}
+                >
+                  <Button danger disabled={!canWrite} loading={isControlling}>
+                    Stop
+                  </Button>
+                </Popconfirm>
+              ) : (
+                <Button
+                  key={action}
+                  disabled={!canWrite}
+                  loading={isControlling}
+                  onClick={() => onControl(action)}
+                >
+                  {actionLabel(action)}
+                </Button>
+              )
+            )}
           </Space>
         )}
-        <Collapse
-          size="small"
-          items={[
-            {
-              key: "attempts",
-              label: `Attempts (${run.attempts.length})`,
-              children: run.attempts.length ? (
-                <Descriptions size="small" column={1}>
-                  {run.attempts.map((attempt) => (
-                    <Descriptions.Item
-                      key={attempt.id}
-                      label={`#${attempt.attemptNumber} ${attempt.outcome}`}
-                    >
-                      Generation {attempt.runnerGeneration}, heartbeat{" "}
-                      {formatAutomationTimestamp(attempt.lastHeartbeatAt)}
-                    </Descriptions.Item>
-                  ))}
-                </Descriptions>
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No attempts" />
-              ),
-            },
-            {
-              key: "checkpoints",
-              label: `Checkpoints (${run.checkpoints.length})`,
-              children: run.checkpoints.length ? (
-                <Space direction="vertical">
-                  {run.checkpoints.map((checkpoint) => (
-                    <Typography.Text key={checkpoint.id}>
-                      {checkpoint.step}:{" "}
-                      <Typography.Text code>
-                        {checkpoint.evidenceSha256.slice(0, 12)}
-                      </Typography.Text>
-                    </Typography.Text>
-                  ))}
-                </Space>
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No checkpoints" />
-              ),
-            },
-          ]}
-        />
-        <Timeline
-          items={run.events.map((event) => ({
-            key: event.id,
-            content: `${event.eventType} · ${formatAutomationTimestamp(event.occurredAt)}`,
-          }))}
-        />
+        <AutomationRunReportSections run={run} />
       </Flex>
     </Card>
   );

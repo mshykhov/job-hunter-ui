@@ -1,4 +1,4 @@
-import { Alert, Col, Descriptions, Flex, Row, Spin, Typography } from "antd";
+import { Alert, Col, Collapse, Descriptions, Flex, Row, Spin, Typography } from "antd";
 import { isAxiosError } from "axios";
 
 import { useAutomationStatus } from "../hooks/useAutomationStatus";
@@ -35,38 +35,58 @@ export const AutomationPage = () => {
   }
 
   return (
-    <Flex vertical gap={16}>
-      <Typography.Title level={4} style={{ margin: 0 }}>
-        Automation
-      </Typography.Title>
+    <Flex vertical gap={16} className="automation-page">
+      <div>
+        <Typography.Title level={1} className="automation-page-title">
+          Automation
+        </Typography.Title>
+        <Typography.Text type="secondary">
+          Private operations console for your runner, durable work queue, and recovery reports.
+        </Typography.Text>
+      </div>
       <Alert
         type={alertType(data.state)}
         showIcon
         title={data.enabled ? stateMessage(data.state) : "Automation is disabled"}
         description={`Reason: ${safeReason(data.reason)}`}
       />
-      <Descriptions bordered size="small" column={{ xs: 1, sm: 2, lg: 4 }}>
-        <Descriptions.Item label="Last heartbeat">
-          {formatAutomationTimestamp(data.lastHeartbeatAt)}
-        </Descriptions.Item>
-        <Descriptions.Item label="Last preflight">
-          {formatAutomationTimestamp(data.lastPreflightSuccessAt)}
-        </Descriptions.Item>
-        <Descriptions.Item label="Last Codex canary">
-          {formatAutomationTimestamp(data.lastCodexSuccessAt)}
-        </Descriptions.Item>
-        <Descriptions.Item label="Launcher version">
-          {data.launcherVersion ?? "Unknown"}
-        </Descriptions.Item>
-      </Descriptions>
-      <Row gutter={[16, 16]}>
-        {AUTOMATION_COMPONENTS.map((component) => (
-          <Col key={component} xs={24} sm={12} xl={6}>
-            <AutomationStatusCard component={component} snapshot={data.components[component]} />
-          </Col>
-        ))}
-      </Row>
       <AutomationWorkflowPanel />
+      <Collapse
+        items={[
+          {
+            key: "runtime",
+            label: `Runtime diagnostics · ${AUTOMATION_COMPONENTS.length} checks`,
+            children: (
+              <Flex vertical gap={16}>
+                <Descriptions bordered size="small" column={{ xs: 1, sm: 2, lg: 4 }}>
+                  <Descriptions.Item label="Last heartbeat">
+                    {formatAutomationTimestamp(data.lastHeartbeatAt)}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Last preflight">
+                    {formatAutomationTimestamp(data.lastPreflightSuccessAt)}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Last Codex canary">
+                    {formatAutomationTimestamp(data.lastCodexSuccessAt)}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Launcher version">
+                    {data.launcherVersion ?? "Unknown"}
+                  </Descriptions.Item>
+                </Descriptions>
+                <Row gutter={[16, 16]}>
+                  {AUTOMATION_COMPONENTS.map((component) => (
+                    <Col key={component} xs={24} sm={12} xl={6}>
+                      <AutomationStatusCard
+                        component={component}
+                        snapshot={data.components[component]}
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              </Flex>
+            ),
+          },
+        ]}
+      />
     </Flex>
   );
 };

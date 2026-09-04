@@ -26,7 +26,7 @@ export const AppVersion = () => {
   const { token } = theme.useToken();
   const { data: apiVersion } = useApiVersion();
 
-  const style = { fontSize: 11, color: token.colorTextQuaternary };
+  const style = { fontSize: 11, color: token.colorTextSecondary };
 
   return (
     <Flex gap={8} style={style}>
