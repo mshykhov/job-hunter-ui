@@ -2,7 +2,16 @@
   "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
   "features": [
     "rules",
+    "mcp",
     "skills"
+  ],
+  "sources": [
+    {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill@v2.14.1:.claude/skills",
+      "skills": [
+        "ui-ux-pro-max"
+      ]
+    }
   ],
   "targets": [
     "claudecode",

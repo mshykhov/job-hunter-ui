@@ -31,5 +31,8 @@ dist-ssr
 !.claude/skills/
 !.claude/skills/**
 
+__pycache__/
+*.py[cod]
+
 # Isolated feature worktrees
 .worktrees/

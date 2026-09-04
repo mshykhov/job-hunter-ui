@@ -1,0 +1,7 @@
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = [ "--no-install", "chrome-devtools-mcp", "--isolated", "--headless", "--no-usage-statistics", "--no-performance-crux" ]
+
+[mcp_servers.playwright]
+command = "npx"
+args = [ "--no-install", "playwright-mcp", "--isolated", "--headless" ]
