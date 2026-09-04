@@ -27,12 +27,12 @@ PostgreSQL and automation runtime
 
 ### Pages
 
-| Page       | Auth             | Description                                                     |
-| ---------- | ---------------- | --------------------------------------------------------------- |
-| Explore    | No               | Public vacancy browser                                          |
-| Jobs       | Yes              | Dashboard with filters, detail panel, and review mode           |
-| Statistics | `read:jobs`      | Vacancy history, matching outcomes, source filters, and AI score |
-| Settings   | Yes              | Preferences, AI providers, outreach, and Telegram               |
+| Page       | Auth             | Description                                                                 |
+| ---------- | ---------------- | --------------------------------------------------------------------------- |
+| Explore    | No               | Public vacancy browser                                                      |
+| Jobs       | Yes              | Dashboard with filters, detail panel, and review mode                       |
+| Statistics | `read:jobs`      | Vacancy history, matching outcomes, source filters, and AI score            |
+| Settings   | Yes              | Preferences, AI providers, outreach, and Telegram                           |
 | Automation | Owner scope only | Health, durable recovery progress, checkpoints, audit history, and controls |
 
 ### Project Structure
@@ -87,6 +87,9 @@ npm run dev           # Start dev server
 npm run build         # TypeScript check + production build
 npm run lint          # ESLint (0 warnings)
 npm run format:check  # Prettier check
+npm run ui:detect -- src/features/automation  # Static UI anti-pattern scan
+npm run ui:a11y -- http://127.0.0.1:5173/automation  # WCAG scan after app readiness
+npm run ui:a11y:test  # Accessibility helper lifecycle and URL safety tests
 ```
 
 ## Docker

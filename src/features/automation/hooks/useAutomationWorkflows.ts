@@ -18,7 +18,13 @@ export const useAutomationRuns = () => {
     },
     refetchInterval: 5_000,
   });
-  return { data: query.data, isLoading: query.isLoading, error: query.error };
+  return {
+    data: query.data,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    dataUpdatedAt: query.dataUpdatedAt,
+    error: query.error,
+  };
 };
 
 export const useAutomationRun = (runId?: string) => {
@@ -34,7 +40,13 @@ export const useAutomationRun = (runId?: string) => {
     enabled: !!runId,
     refetchInterval: 3_000,
   });
-  return { data: query.data, isLoading: query.isLoading, error: query.error };
+  return {
+    data: query.data,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    dataUpdatedAt: query.dataUpdatedAt,
+    error: query.error,
+  };
 };
 
 export const useCreateAutomationRun = () => {

@@ -13,9 +13,12 @@ export const App = () => {
   if (isConfigured && isLoading) {
     return (
       <AppProviders isDark={isDark}>
-        <Flex justify="center" align="center" style={{ minHeight: "100vh" }}>
-          <Spin size="large" />
-        </Flex>
+        <main className="app-initial-loading" aria-label="Loading Job Hunter">
+          <h1 className="visually-hidden">Job Hunter</h1>
+          <Flex justify="center" align="center" style={{ minHeight: "100vh" }}>
+            <Spin size="large" />
+          </Flex>
+        </main>
       </AppProviders>
     );
   }

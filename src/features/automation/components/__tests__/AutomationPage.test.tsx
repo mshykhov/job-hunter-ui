@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -40,6 +41,7 @@ describe("AutomationPage", () => {
     ["AUTH_REQUIRED", "Authentication is required"],
     ["UNAVAILABLE", "Automation is unavailable"],
   ] as const)("renders the %s state", async (state, expected) => {
+    const user = userEvent.setup();
     server.use(
       http.get(API_URL, () =>
         HttpResponse.json(status({ state, reason: state === "READY" ? "NONE" : "OTHER" }))
@@ -49,6 +51,9 @@ describe("AutomationPage", () => {
     renderPage();
 
     expect(await screen.findByText(expected)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Automation" })).toBeInTheDocument();
+    expect(screen.getByText("Runtime diagnostics · 8 checks")).toBeInTheDocument();
+    await user.click(screen.getByText("Runtime diagnostics · 8 checks"));
     expect(screen.getByText("LAUNCHER")).toBeInTheDocument();
     expect(screen.getAllByText("0.1.0").length).toBeGreaterThan(0);
   });
@@ -63,6 +68,7 @@ describe("AutomationPage", () => {
   });
 
   it("does not render unknown server reasons or missing timestamps as data", async () => {
+    const user = userEvent.setup();
     server.use(
       http.get(API_URL, () =>
         HttpResponse.json(
@@ -77,6 +83,7 @@ describe("AutomationPage", () => {
     renderPage();
 
     expect(await screen.findByText("Automation is ready")).toBeInTheDocument();
+    await user.click(screen.getByText("Runtime diagnostics · 8 checks"));
     expect(screen.getAllByText("Never").length).toBeGreaterThan(0);
     expect(screen.queryByText("private backend detail")).not.toBeInTheDocument();
   });

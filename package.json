@@ -26,7 +26,8 @@
     "agents:check": "rulesync generate --config rulesync.jsonc --input-root . --output-roots . --check",
     "ui:browsers:install": "playwright install chromium",
     "ui:detect": "impeccable detect --no-config --json",
-    "ui:a11y": "node .rulesync/skills/ui-workbench/scripts/a11y.mjs"
+    "ui:a11y": "node .rulesync/skills/ui-workbench/scripts/a11y.mjs",
+    "ui:a11y:test": "node --test .rulesync/skills/ui-workbench/scripts/a11y-checks.mjs"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^2.1.0",

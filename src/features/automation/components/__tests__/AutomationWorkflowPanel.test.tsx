@@ -43,13 +43,20 @@ afterAll(() => server.close());
 describe("AutomationWorkflowPanel", () => {
   it("renders durable progress attempts checkpoints and history", async () => {
     useRunHandlers();
+    const user = userEvent.setup();
 
     renderPanel(auth([PERMISSIONS.READ_AUTOMATION, PERMISSIONS.WRITE_AUTOMATION]));
 
-    expect(await screen.findByText("Run details")).toBeInTheDocument();
-    expect(screen.getByText("1/3")).toBeInTheDocument();
+    expect(await screen.findByText("Synthetic recovery report")).toBeInTheDocument();
+    expect(screen.getByText("No vacancy is associated with this run")).toBeInTheDocument();
+    expect(screen.getAllByText(/Manual/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("1/3 steps")).toHaveLength(2);
     expect(screen.getByText("Attempts (1)")).toBeInTheDocument();
-    expect(screen.getByText("Checkpoints (1)")).toBeInTheDocument();
+    expect(screen.getByText("Checkpoint evidence (1)")).toBeInTheDocument();
+    expect(screen.getByText("Queue")).toBeInTheDocument();
+    expect(screen.getByText("History")).toBeInTheDocument();
+
+    await user.click(screen.getByText("Audit timeline (1)"));
     expect(screen.getByText(/RUN_CREATED/)).toBeInTheDocument();
   });
 
@@ -70,7 +77,7 @@ describe("AutomationWorkflowPanel", () => {
     const user = userEvent.setup();
     renderPanel(auth([PERMISSIONS.READ_AUTOMATION, PERMISSIONS.WRITE_AUTOMATION]));
 
-    await user.click(await screen.findByRole("button", { name: "Start recovery drill" }));
+    await user.click(await screen.findByRole("button", { name: "Run recovery test" }));
     await vi.waitFor(() => expect(bodies).toHaveLength(1));
     const body = bodies[0] as { idempotencyKey: string };
     expect(body.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
@@ -84,7 +91,7 @@ describe("AutomationWorkflowPanel", () => {
     renderPanel(auth([PERMISSIONS.READ_AUTOMATION]));
 
     expect(await screen.findByText("Read-only access")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Start recovery drill" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Run recovery test" })).toBeDisabled();
     expect(await screen.findByRole("button", { name: "Pause" })).toBeDisabled();
   });
 });

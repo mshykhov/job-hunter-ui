@@ -30,6 +30,7 @@ try {
   try {
     const page = await context.newPage();
     await page.goto(url.href, { waitUntil: "load" });
+    await page.locator("#root > *").first().waitFor({ state: "attached" });
     const results = await new AxeBuilder({ page }).analyze();
     const report = {
       url: results.url,
