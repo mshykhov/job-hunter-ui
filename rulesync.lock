@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 1,
+  "sources": {
+    "nextlevelbuilder/ui-ux-pro-max-skill@v2.14.1:.claude/skills": {
+      "requestedRef": "v2.14.1",
+      "resolvedRef": "abb7f2fd5a083fa1ff55c326a963ff0d95c33f99",
+      "resolvedAt": "2026-09-04T10:49:41.745Z",
+      "skills": {
+        "ui-ux-pro-max": {
+          "integrity": "sha256-e309d8ebb232cf51dc070494290ae6db80b8de054a89964a32df0f529741e898"
+        }
+      }
+    }
+  }
+}

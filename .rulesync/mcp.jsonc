@@ -1,0 +1,27 @@
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/download/v16.9.1/mcp-schema.json",
+  "mcpServers": {
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "--no-install",
+        "chrome-devtools-mcp",
+        "--isolated",
+        "--headless",
+        "--no-usage-statistics",
+        "--no-performance-crux"
+      ]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "--no-install",
+        "playwright-mcp",
+        "--isolated",
+        "--headless"
+      ]
+    }
+  }
+}

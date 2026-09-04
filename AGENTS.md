@@ -146,3 +146,10 @@ derived outputs and must not be edited directly.
   rather than implementation details.
 - Clear versioned local storage between storage-dependent tests.
 - Add a regression test for every bug fix.
+
+# UI quality
+
+- Read `docs/design/README.md` and the linked living design context before changing UI source.
+- Follow established component, token, asset, state, and responsive patterns. Propose a change before replacing an established pattern.
+- Use the repository-local `ui-workbench` workflow for substantial design, implementation, or audit work.
+- Verify the affected flow at a desktop viewport and `390x844`, including keyboard focus, loading, empty, error, disabled, and destructive states that exist in scope.
